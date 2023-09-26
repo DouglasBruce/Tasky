@@ -1,4 +1,4 @@
-package com.douglasbruce.tasky.ui.theme
+package com.douglasbruce.tasky.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
