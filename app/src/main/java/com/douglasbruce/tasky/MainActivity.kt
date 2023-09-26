@@ -3,13 +3,11 @@ package com.douglasbruce.tasky
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
-import com.douglasbruce.tasky.features.login.LoginScreen
+import com.douglasbruce.tasky.navigation.TaskyNavHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,13 +21,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TaskyTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    LoginScreen(onLoginClick = { /*TODO*/ }, onSignUpClick = { /*TODO*/ })
-                }
+                val navController: NavHostController = rememberNavController()
+                TaskyNavHost(navController = navController)
             }
         }
     }

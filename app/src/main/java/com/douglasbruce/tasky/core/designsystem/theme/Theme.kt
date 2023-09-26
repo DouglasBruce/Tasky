@@ -33,7 +33,7 @@ fun TaskyTheme(
             val window = (view.context as Activity).window
             window.statusBarColor = Black.toArgb()
             window.navigationBarColor = White.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
         }
     }
 
