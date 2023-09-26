@@ -9,12 +9,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.douglasbruce.tasky.ui.theme.TaskyTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        // TODO: Tie to uiState to keep splashScreen visible until we can determine if user is authenticated or not
+        splashScreen.setKeepOnScreenCondition {
+            false
+        }
+
         setContent {
             TaskyTheme {
                 // A surface container using the 'background' color from the theme
@@ -35,12 +42,4 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         text = "Hello $name!",
         modifier = modifier
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TaskyTheme {
-        Greeting("Android")
-    }
 }
