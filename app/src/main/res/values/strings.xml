@@ -12,4 +12,8 @@
     <string name="navigate_up">Navigate up</string>
     <string name="create_account">Create your account</string>
     <string name="welcome_back">Welcome back!</string>
+    <string name="password_error_length">Password must be at least 9 characters long</string>
+    <string name="password_error_format">Password must include a lowercase letter, an uppercase letter and a number</string>
+    <string name="name_error_length">"Name must be between 4 and 50 characters long"</string>
+    <string name="email_error_format">Email must be in a valid format</string>
 </resources>

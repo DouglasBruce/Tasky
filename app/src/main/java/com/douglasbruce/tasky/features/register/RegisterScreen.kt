@@ -21,11 +21,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -33,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.TaskyButton
 import com.douglasbruce.tasky.core.designsystem.component.TaskyHeader
@@ -40,17 +38,23 @@ import com.douglasbruce.tasky.core.designsystem.component.TaskyPasswordField
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextField
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
+import com.douglasbruce.tasky.core.domain.validation.ErrorType
+import com.douglasbruce.tasky.features.register.form.RegistrationFormEvent
+import com.douglasbruce.tasky.features.register.form.RegistrationFormState
 
 @Composable
 internal fun RegisterRoute(
     onRegisterClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: RegisterViewModel = hiltViewModel(),
 ) {
     RegisterScreen(
         onRegisterClick = onRegisterClick,
         onBackClick = onBackClick,
         modifier = modifier.fillMaxSize(),
+        uiState = viewModel.state,
+        onEvent = viewModel::onEvent,
     )
 }
 
@@ -60,21 +64,9 @@ internal fun RegisterScreen(
     onRegisterClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    uiState: RegistrationFormState,
+    onEvent: (RegistrationFormEvent) -> Unit
 ) {
-    // TODO: Hoist state to viewModel
-    var name by remember {
-        mutableStateOf("")
-    }
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
-    var isPasswordVisible by remember {
-        mutableStateOf(false)
-    }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary,
         modifier = modifier,
@@ -91,7 +83,7 @@ internal fun RegisterScreen(
                 ),
         ) {
             TaskyHeader(
-                title = R.string.create_account,
+                title = stringResource(R.string.create_account),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(112.dp)
@@ -109,10 +101,20 @@ internal fun RegisterScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     TaskyTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        isValid = true,
-                        placeholder = R.string.name_placeholder,
+                        value = uiState.name,
+                        onValueChange = {
+                            onEvent(RegistrationFormEvent.NameValueChanged(it))
+                        },
+                        isError = uiState.nameErrorType != ErrorType.NONE,
+                        isValid = uiState.isNameValid,
+                        placeholder = stringResource(R.string.name_placeholder),
+                        supportingText = when (uiState.nameErrorType) {
+                            ErrorType.LENGTH -> {
+                                { Text(text = stringResource(id = R.string.name_error_length)) }
+                            }
+
+                            else -> null
+                        },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Words,
                             autoCorrect = false,
@@ -123,9 +125,20 @@ internal fun RegisterScreen(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     TaskyTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        placeholder = R.string.email_placeholder,
+                        value = uiState.email,
+                        onValueChange = {
+                            onEvent(RegistrationFormEvent.EmailValueChanged(it))
+                        },
+                        isError = uiState.emailErrorType != ErrorType.NONE,
+                        isValid = uiState.isEmailValid,
+                        placeholder = stringResource(R.string.email_placeholder),
+                        supportingText = when (uiState.emailErrorType) {
+                            ErrorType.FORMAT -> {
+                                { Text(text = stringResource(id = R.string.email_error_format)) }
+                            }
+
+                            else -> null
+                        },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.None,
                             autoCorrect = false,
@@ -136,15 +149,31 @@ internal fun RegisterScreen(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     TaskyPasswordField(
-                        value = password,
-                        onValueChange = { password = it },
-                        passwordVisible = isPasswordVisible,
-                        onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
+                        value = uiState.password,
+                        onValueChange = {
+                            onEvent(RegistrationFormEvent.PasswordValueChanged(it))
+                        },
+                        isError = uiState.passwordErrorType != ErrorType.NONE,
+                        supportingText = when (uiState.passwordErrorType) {
+                            ErrorType.LENGTH -> {
+                                { Text(text = stringResource(id = R.string.password_error_length)) }
+                            }
+
+                            ErrorType.FORMAT -> {
+                                { Text(text = stringResource(id = R.string.password_error_format)) }
+                            }
+
+                            else -> null
+                        },
+                        passwordVisible = uiState.isPasswordVisible,
+                        onTrailingIconClick = {
+                            onEvent(RegistrationFormEvent.PasswordVisibilityChanged(!uiState.isPasswordVisible))
+                        },
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Spacer(modifier = Modifier.height(68.dp))
                     TaskyButton(
-                        text = R.string.get_started_button,
+                        text = stringResource(R.string.get_started_button),
                         onClick = onRegisterClick,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -174,6 +203,8 @@ fun RegisterPreview() {
         RegisterScreen(
             onRegisterClick = {},
             onBackClick = {},
+            uiState = RegistrationFormState(),
+            onEvent = {}
         )
     }
 }
