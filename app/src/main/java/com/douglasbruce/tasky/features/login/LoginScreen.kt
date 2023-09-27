@@ -23,10 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.TaskyButton
 import com.douglasbruce.tasky.core.designsystem.component.TaskyHeader
@@ -46,17 +43,22 @@ import com.douglasbruce.tasky.core.designsystem.component.TaskyTextField
 import com.douglasbruce.tasky.core.designsystem.theme.DarkGrayBlue
 import com.douglasbruce.tasky.core.designsystem.theme.Link
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
+import com.douglasbruce.tasky.features.login.form.LoginFormEvent
+import com.douglasbruce.tasky.features.login.form.LoginFormState
 
 @Composable
 internal fun LoginRoute(
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
     LoginScreen(
         onLoginClick = onLoginClick,
         onSignUpClick = onSignUpClick,
         modifier = modifier.fillMaxSize(),
+        uiState = viewModel.state,
+        onEvent = viewModel::onEvent,
     )
 }
 
@@ -66,18 +68,9 @@ internal fun LoginScreen(
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
+    uiState: LoginFormState,
+    onEvent: (LoginFormEvent) -> Unit
 ) {
-    // TODO: Hoist state to viewModel
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
-    var isPasswordVisible by remember {
-        mutableStateOf(false)
-    }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary,
         modifier = modifier,
@@ -94,7 +87,7 @@ internal fun LoginScreen(
                 ),
         ) {
             TaskyHeader(
-                title = R.string.welcome_back,
+                title = stringResource(R.string.welcome_back),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(112.dp)
@@ -113,10 +106,12 @@ internal fun LoginScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     TaskyTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        isValid = true,
-                        placeholder = R.string.email_placeholder,
+                        value = uiState.email,
+                        onValueChange = {
+                            onEvent(LoginFormEvent.EmailValueChanged(it))
+                        },
+                        isValid = uiState.isEmailValid,
+                        placeholder = stringResource(R.string.email_placeholder),
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.None,
                             autoCorrect = false,
@@ -127,15 +122,19 @@ internal fun LoginScreen(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     TaskyPasswordField(
-                        value = password,
-                        onValueChange = { password = it },
-                        passwordVisible = isPasswordVisible,
-                        onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
+                        value = uiState.password,
+                        onValueChange = {
+                            onEvent(LoginFormEvent.PasswordValueChanged(it))
+                        },
+                        passwordVisible = uiState.isPasswordVisible,
+                        onTrailingIconClick = {
+                            onEvent(LoginFormEvent.PasswordVisibilityChanged(!uiState.isPasswordVisible))
+                        },
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     TaskyButton(
-                        text = R.string.log_in_button,
+                        text = stringResource(R.string.log_in_button),
                         onClick = onLoginClick,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -179,6 +178,8 @@ fun LoginPreview() {
         LoginScreen(
             onLoginClick = {},
             onSignUpClick = {},
+            uiState = LoginFormState(),
+            onEvent = {}
         )
     }
 }

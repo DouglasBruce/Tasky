@@ -1,6 +1,5 @@
 package com.douglasbruce.tasky.core.designsystem.component
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -34,7 +33,7 @@ import com.douglasbruce.tasky.core.designsystem.theme.LightGrayBlue
 fun TaskyTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    @StringRes placeholder: Int,
+    placeholder: String,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
     isValid: Boolean = false,
@@ -89,7 +88,7 @@ fun TaskyPasswordField(
         value = value,
         onValueChange = onValueChange,
         isError = isError,
-        placeholder = R.string.password_placeholder,
+        placeholder = stringResource(R.string.password_placeholder),
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Light,
             unfocusedContainerColor = Light,
@@ -140,7 +139,7 @@ private fun TaskyTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
-    @StringRes placeholder: Int,
+    placeholder: String,
     trailingIcon: @Composable (() -> Unit)? = null,
     supportingText: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -152,7 +151,7 @@ private fun TaskyTextField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = stringResource(id = placeholder),
+                text = placeholder,
                 style = TextStyle(
                     fontSize = 16.sp,
                     lineHeight = 30.sp,
