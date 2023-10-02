@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.douglasbruce.tasky.MainActivityUiState.Loading
 import com.douglasbruce.tasky.MainActivityUiState.Success
-import com.douglasbruce.tasky.core.data.repository.UserDataRepository
-import com.douglasbruce.tasky.core.model.data.UserData
+import com.douglasbruce.tasky.core.domain.repository.UserDataRepository
+import com.douglasbruce.tasky.core.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ class MainActivityViewModel @Inject constructor(
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
     val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData.map {
-        Success(it)
+        Success(it, false)
     }.stateIn(
         scope = viewModelScope,
         initialValue = Loading,
@@ -28,5 +28,5 @@ class MainActivityViewModel @Inject constructor(
 
 sealed interface MainActivityUiState {
     data object Loading : MainActivityUiState
-    data class Success(val userData: UserData) : MainActivityUiState
+    data class Success(val userData: UserData, val isUserLoggedIn: Boolean) : MainActivityUiState
 }

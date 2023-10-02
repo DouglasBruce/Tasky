@@ -1,6 +1,6 @@
-package com.douglasbruce.tasky.core.data.repository
+package com.douglasbruce.tasky.core.domain.repository
 
-import com.douglasbruce.tasky.core.model.data.UserData
+import com.douglasbruce.tasky.core.model.UserData
 import kotlinx.coroutines.flow.Flow
 
 interface UserDataRepository {

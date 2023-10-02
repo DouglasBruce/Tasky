@@ -1,7 +1,8 @@
 package com.douglasbruce.tasky.core.data.repository
 
 import com.douglasbruce.tasky.core.datastore.TaskyPreferencesDataSource
-import com.douglasbruce.tasky.core.model.data.UserData
+import com.douglasbruce.tasky.core.domain.repository.UserDataRepository
+import com.douglasbruce.tasky.core.model.UserData
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
