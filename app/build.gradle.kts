@@ -1,9 +1,12 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
+    id("com.google.protobuf")
 }
 
 android {
@@ -21,6 +24,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val apiKey = gradleLocalProperties(rootDir).getProperty("API_KEY")
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        val backendUrl = gradleLocalProperties(rootDir).getProperty("BACKEND_URL")
+        buildConfigField("String", "BACKEND_URL", "\"$backendUrl\"")
     }
 
     buildTypes {
@@ -41,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
@@ -48,6 +57,25 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
+// Setup protobuf configuration, generating lite Java and Kotlin classes
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.24.0"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+                register("kotlin") {
+                    option("lite")
+                }
+            }
         }
     }
 }
@@ -66,8 +94,14 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.navigation:navigation-compose:2.7.3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
-    implementation("com.google.dagger:hilt-android:2.48")
+
+    // Proto Datastore
+    implementation("androidx.datastore:datastore:1.0.0")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.24.0")
+
+    // Dagger - Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("com.google.dagger:hilt-android:2.48")
     ksp("com.google.dagger:hilt-android-compiler:2.48")
 
     testImplementation("junit:junit:4.13.2")
