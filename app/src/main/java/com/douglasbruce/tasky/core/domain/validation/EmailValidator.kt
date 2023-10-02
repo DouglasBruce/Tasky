@@ -7,7 +7,14 @@ class EmailValidator @Inject constructor(
 ) {
 
     operator fun invoke(email: String): ValidationResult {
-        if(!matcher.matches(email)) {
+        if (email.isBlank()) {
+            return ValidationResult(
+                successful = false,
+                errorType = ErrorType.EMPTY
+            )
+        }
+
+        if (!matcher.matches(email)) {
             return ValidationResult(
                 successful = false,
                 errorType = ErrorType.FORMAT

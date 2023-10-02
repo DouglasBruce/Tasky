@@ -14,7 +14,8 @@ import androidx.compose.ui.unit.sp
 fun TaskyButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Button(
         onClick = onClick,
@@ -22,6 +23,7 @@ fun TaskyButton(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
+        enabled = enabled,
         modifier = modifier
     ) {
         Text(

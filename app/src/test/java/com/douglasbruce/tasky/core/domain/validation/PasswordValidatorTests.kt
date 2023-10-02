@@ -13,6 +13,22 @@ internal class PasswordValidatorTests {
     }
 
     @Test
+    fun `Invalid password, empty returns false with empty error`() {
+        val name = ""
+        val result = passwordValidator(name)
+        Truth.assertThat(result.successful).isFalse()
+        Truth.assertThat(result.errorType).isEquivalentAccordingToCompareTo(ErrorType.EMPTY)
+    }
+
+    @Test
+    fun `Invalid password, blank returns false with empty error`() {
+        val name = "    "
+        val result = passwordValidator(name)
+        Truth.assertThat(result.successful).isFalse()
+        Truth.assertThat(result.errorType).isEquivalentAccordingToCompareTo(ErrorType.EMPTY)
+    }
+
+    @Test
     fun `Invalid password, too short returns false with length error`() {
         val password = "abc"
         val result = passwordValidator(password)

@@ -128,7 +128,7 @@ internal fun LoginScreen(
                         },
                         passwordVisible = uiState.isPasswordVisible,
                         onTrailingIconClick = {
-                            onEvent(LoginFormEvent.PasswordVisibilityChanged(!uiState.isPasswordVisible))
+                            onEvent(LoginFormEvent.TogglePasswordVisibility)
                         },
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -136,6 +136,7 @@ internal fun LoginScreen(
                     TaskyButton(
                         text = stringResource(R.string.log_in_button),
                         onClick = onLoginClick,
+                        enabled = uiState.isEmailValid && uiState.password.isNotBlank(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)

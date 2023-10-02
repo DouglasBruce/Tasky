@@ -4,19 +4,28 @@ import javax.inject.Inject
 
 class PasswordValidator @Inject constructor() {
 
-    private val passwordRegex = Regex("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*\$")
     operator fun invoke(password: String): ValidationResult {
-        if(password.length < 9) {
+        if (password.isBlank()) {
             return ValidationResult(
                 successful = false,
-                errorType = ErrorType.LENGTH
+                errorType = ErrorType.EMPTY,
             )
         }
 
-        if(!password.matches(passwordRegex)) {
+        if (password.length < 9) {
             return ValidationResult(
                 successful = false,
-                errorType = ErrorType.FORMAT
+                errorType = ErrorType.LENGTH,
+            )
+        }
+
+        val hasUppercaseChar = password.any { it.isUpperCase() }
+        val hasLowercaseChar = password.any { it.isLowerCase() }
+        val hasDigit = password.any { it.isDigit() }
+        if (!hasUppercaseChar || !hasLowercaseChar || !hasDigit) {
+            return ValidationResult(
+                successful = false,
+                errorType = ErrorType.FORMAT,
             )
         }
 
