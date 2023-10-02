@@ -13,6 +13,22 @@ internal class NameValidatorTests {
     }
 
     @Test
+    fun `Invalid name, empty returns false with empty error`() {
+        val name = ""
+        val result = nameValidator(name)
+        Truth.assertThat(result.successful).isFalse()
+        Truth.assertThat(result.errorType).isEquivalentAccordingToCompareTo(ErrorType.EMPTY)
+    }
+
+    @Test
+    fun `Invalid name, blank returns false with empty error`() {
+        val name = "    "
+        val result = nameValidator(name)
+        Truth.assertThat(result.successful).isFalse()
+        Truth.assertThat(result.errorType).isEquivalentAccordingToCompareTo(ErrorType.EMPTY)
+    }
+
+    @Test
     fun `Invalid name, too short returns false with length error`() {
         val name = "abc"
         val result = nameValidator(name)
@@ -46,7 +62,7 @@ internal class NameValidatorTests {
 
     @Test
     fun `Valid name, returns true with no error`() {
-        val name = "abcde".repeat(5)
+        val name = "Valid Name"
         val result = nameValidator(name)
         Truth.assertThat(result.successful).isTrue()
         Truth.assertThat(result.errorType).isEquivalentAccordingToCompareTo(ErrorType.NONE)

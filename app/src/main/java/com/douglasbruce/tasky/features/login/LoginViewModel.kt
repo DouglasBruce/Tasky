@@ -1,52 +1,49 @@
 package com.douglasbruce.tasky.features.login
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.douglasbruce.tasky.core.domain.validation.EmailValidator
 import com.douglasbruce.tasky.features.login.form.LoginFormEvent
 import com.douglasbruce.tasky.features.login.form.LoginFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-const val loginStateKey = "loginState"
-
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val emailValidator: EmailValidator,
 ) : ViewModel() {
 
-    var state by mutableStateOf(
-        savedStateHandle[loginStateKey] ?: LoginFormState()
-    )
+    var state by savedStateHandle.saveable {
+        mutableStateOf(LoginFormState())
+    }
         private set
 
     fun onEvent(event: LoginFormEvent) {
         when (event) {
             is LoginFormEvent.EmailValueChanged -> {
                 val result = emailValidator(event.email)
-                updateState(
-                    state.copy(
-                        email = event.email, isEmailValid = result.successful
-                    )
+                state = state.copy(
+                    email = event.email,
+                    isEmailValid = result.successful
                 )
             }
 
             is LoginFormEvent.PasswordValueChanged -> {
-                updateState(state.copy(password = event.password))
+                state = state.copy(password = event.password)
             }
 
-            is LoginFormEvent.PasswordVisibilityChanged -> {
-                updateState(state.copy(isPasswordVisible = event.isPasswordVisible))
+            is LoginFormEvent.TogglePasswordVisibility -> {
+                state = state.copy(isPasswordVisible = !state.isPasswordVisible)
+            }
+
+            is LoginFormEvent.Submit -> {
+
             }
         }
-    }
-
-    private fun updateState(newState: LoginFormState) {
-        state = newState
-        savedStateHandle[loginStateKey] = newState
     }
 }

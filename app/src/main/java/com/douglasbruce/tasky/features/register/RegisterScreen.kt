@@ -109,6 +109,10 @@ internal fun RegisterScreen(
                         isValid = uiState.isNameValid,
                         placeholder = stringResource(R.string.name_placeholder),
                         supportingText = when (uiState.nameErrorType) {
+                            ErrorType.EMPTY -> {
+                                { Text(text = stringResource(R.string.name_error_empty)) }
+                            }
+
                             ErrorType.LENGTH -> {
                                 { Text(text = stringResource(id = R.string.name_error_length)) }
                             }
@@ -133,6 +137,10 @@ internal fun RegisterScreen(
                         isValid = uiState.isEmailValid,
                         placeholder = stringResource(R.string.email_placeholder),
                         supportingText = when (uiState.emailErrorType) {
+                            ErrorType.EMPTY -> {
+                                { Text(text = stringResource(R.string.email_error_empty)) }
+                            }
+
                             ErrorType.FORMAT -> {
                                 { Text(text = stringResource(id = R.string.email_error_format)) }
                             }
@@ -155,6 +163,10 @@ internal fun RegisterScreen(
                         },
                         isError = uiState.passwordErrorType != ErrorType.NONE,
                         supportingText = when (uiState.passwordErrorType) {
+                            ErrorType.EMPTY -> {
+                                { Text(text = stringResource(R.string.password_error_empty)) }
+                            }
+
                             ErrorType.LENGTH -> {
                                 { Text(text = stringResource(id = R.string.password_error_length)) }
                             }
@@ -167,7 +179,7 @@ internal fun RegisterScreen(
                         },
                         passwordVisible = uiState.isPasswordVisible,
                         onTrailingIconClick = {
-                            onEvent(RegistrationFormEvent.PasswordVisibilityChanged(!uiState.isPasswordVisible))
+                            onEvent(RegistrationFormEvent.TogglePasswordVisibility)
                         },
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -175,6 +187,7 @@ internal fun RegisterScreen(
                     TaskyButton(
                         text = stringResource(R.string.get_started_button),
                         onClick = onRegisterClick,
+                        enabled = uiState.isNameValid && uiState.isEmailValid && uiState.isPasswordValid,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
