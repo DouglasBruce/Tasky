@@ -135,7 +135,9 @@ internal fun LoginScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     TaskyButton(
                         text = stringResource(R.string.log_in_button),
-                        onClick = onLoginClick,
+                        onClick = {
+                            onEvent(LoginFormEvent.Submit)
+                        },
                         enabled = uiState.isEmailValid && uiState.password.isNotBlank(),
                         modifier = Modifier
                             .fillMaxWidth()

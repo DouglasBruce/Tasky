@@ -3,18 +3,22 @@ package com.douglasbruce.tasky.features.login
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.douglasbruce.tasky.core.domain.repository.AuthRepository
 import com.douglasbruce.tasky.core.domain.validation.EmailValidator
 import com.douglasbruce.tasky.features.login.form.LoginFormEvent
 import com.douglasbruce.tasky.features.login.form.LoginFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val authRepository: AuthRepository,
     private val emailValidator: EmailValidator,
 ) : ViewModel() {
 
@@ -42,8 +46,14 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginFormEvent.Submit -> {
-
+                login(state.email, state.password)
             }
+        }
+    }
+
+    private fun login(email: String, password: String) {
+        viewModelScope.launch {
+            authRepository.login(email, password)
         }
     }
 }
