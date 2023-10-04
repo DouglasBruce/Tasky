@@ -13,14 +13,12 @@ fun NavController.navigateToRegister(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.registerScreen(
-    onRegisterClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     composable(
         route = registerNavigationRoute,
     ) {
         RegisterRoute(
-            onRegisterClick = onRegisterClick,
             onBackClick = onBackClick,
         )
     }

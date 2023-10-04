@@ -44,13 +44,11 @@ import com.douglasbruce.tasky.features.register.form.RegistrationFormState
 
 @Composable
 internal fun RegisterRoute(
-    onRegisterClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RegisterViewModel = hiltViewModel(),
 ) {
     RegisterScreen(
-        onRegisterClick = onRegisterClick,
         onBackClick = onBackClick,
         modifier = modifier.fillMaxSize(),
         uiState = viewModel.state,
@@ -61,7 +59,6 @@ internal fun RegisterRoute(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun RegisterScreen(
-    onRegisterClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     uiState: RegistrationFormState,
@@ -110,11 +107,11 @@ internal fun RegisterScreen(
                         placeholder = stringResource(R.string.name_placeholder),
                         supportingText = when (uiState.nameErrorType) {
                             ErrorType.EMPTY -> {
-                                { Text(text = stringResource(R.string.name_error_empty)) }
+                                { Text(text = stringResource(R.string.error_name_empty)) }
                             }
 
                             ErrorType.LENGTH -> {
-                                { Text(text = stringResource(id = R.string.name_error_length)) }
+                                { Text(text = stringResource(id = R.string.error_name_length)) }
                             }
 
                             else -> null
@@ -138,11 +135,11 @@ internal fun RegisterScreen(
                         placeholder = stringResource(R.string.email_placeholder),
                         supportingText = when (uiState.emailErrorType) {
                             ErrorType.EMPTY -> {
-                                { Text(text = stringResource(R.string.email_error_empty)) }
+                                { Text(text = stringResource(R.string.error_email_empty)) }
                             }
 
                             ErrorType.FORMAT -> {
-                                { Text(text = stringResource(id = R.string.email_error_format)) }
+                                { Text(text = stringResource(id = R.string.error_email_format)) }
                             }
 
                             else -> null
@@ -164,15 +161,15 @@ internal fun RegisterScreen(
                         isError = uiState.passwordErrorType != ErrorType.NONE,
                         supportingText = when (uiState.passwordErrorType) {
                             ErrorType.EMPTY -> {
-                                { Text(text = stringResource(R.string.password_error_empty)) }
+                                { Text(text = stringResource(R.string.error_password_empty)) }
                             }
 
                             ErrorType.LENGTH -> {
-                                { Text(text = stringResource(id = R.string.password_error_length)) }
+                                { Text(text = stringResource(id = R.string.error_password_length)) }
                             }
 
                             ErrorType.FORMAT -> {
-                                { Text(text = stringResource(id = R.string.password_error_format)) }
+                                { Text(text = stringResource(id = R.string.error_password_format)) }
                             }
 
                             else -> null
@@ -216,7 +213,6 @@ internal fun RegisterScreen(
 fun RegisterPreview() {
     TaskyTheme {
         RegisterScreen(
-            onRegisterClick = {},
             onBackClick = {},
             uiState = RegistrationFormState(),
             onEvent = {}

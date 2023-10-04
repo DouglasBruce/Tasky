@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 class NameValidator @Inject constructor() {
 
-    operator fun invoke(name: String): ValidationResult {
+    fun validate(name: String): ValidationResult {
         if (name.isBlank()) {
             return ValidationResult(
                 successful = false,

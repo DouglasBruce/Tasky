@@ -9,7 +9,6 @@ const val loginGraphRoute = "login_graph"
 const val loginNavigationRoute = "login"
 
 fun NavGraphBuilder.loginGraph(
-    onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
@@ -19,7 +18,6 @@ fun NavGraphBuilder.loginGraph(
     ) {
         composable(route = loginNavigationRoute) {
             LoginRoute(
-                onLoginClick = onLoginClick,
                 onSignUpClick = onSignUpClick,
             )
         }

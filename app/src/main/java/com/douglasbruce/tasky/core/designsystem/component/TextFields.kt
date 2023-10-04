@@ -26,7 +26,7 @@ import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.DarkGray
 import com.douglasbruce.tasky.core.designsystem.theme.DarkGrayBlue
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
-import com.douglasbruce.tasky.core.designsystem.theme.Light
+import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.LightGrayBlue
 
 @Composable
@@ -46,9 +46,9 @@ fun TaskyTextField(
         isError = isError,
         placeholder = placeholder,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Light,
-            unfocusedContainerColor = Light,
-            errorContainerColor = Light,
+            focusedContainerColor = LightBlueVariant,
+            unfocusedContainerColor = LightBlueVariant,
+            errorContainerColor = LightBlueVariant,
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = LightGrayBlue,
             errorBorderColor = MaterialTheme.colorScheme.error,
@@ -90,9 +90,9 @@ fun TaskyPasswordField(
         isError = isError,
         placeholder = stringResource(R.string.password_placeholder),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Light,
-            unfocusedContainerColor = Light,
-            errorContainerColor = Light,
+            focusedContainerColor = LightBlueVariant,
+            unfocusedContainerColor = LightBlueVariant,
+            errorContainerColor = LightBlueVariant,
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = LightGrayBlue,
             errorBorderColor = MaterialTheme.colorScheme.error,
