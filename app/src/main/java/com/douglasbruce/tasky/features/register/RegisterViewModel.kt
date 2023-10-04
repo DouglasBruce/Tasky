@@ -34,30 +34,15 @@ class RegisterViewModel @Inject constructor(
     fun onEvent(event: RegistrationFormEvent) {
         when (event) {
             is RegistrationFormEvent.NameValueChanged -> {
-                val result = nameValidator(event.name)
-                state = state.copy(
-                    name = event.name,
-                    nameErrorType = result.errorType,
-                    isNameValid = result.successful,
-                )
+                setAndValidateName(event.name)
             }
 
             is RegistrationFormEvent.EmailValueChanged -> {
-                val result = emailValidator(event.email)
-                state = state.copy(
-                    email = event.email,
-                    emailErrorType = result.errorType,
-                    isEmailValid = result.successful
-                )
+                setAndValidateEmail(event.email)
             }
 
             is RegistrationFormEvent.PasswordValueChanged -> {
-                val result = passwordValidator(event.password)
-                state = state.copy(
-                    password = event.password,
-                    passwordErrorType = result.errorType,
-                    isPasswordValid = result.successful
-                )
+                setAndValidatePassword(event.password)
             }
 
             is RegistrationFormEvent.TogglePasswordVisibility -> {
@@ -65,7 +50,9 @@ class RegisterViewModel @Inject constructor(
             }
 
             is RegistrationFormEvent.Submit -> {
-                register(state.name, state.email, state.password)
+                if (state.isNameValid && state.isEmailValid && state.isPasswordValid) {
+                    register(state.name, state.email, state.password)
+                }
             }
         }
     }
@@ -74,5 +61,32 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.register(name, email, password)
         }
+    }
+
+    private fun setAndValidateName(name: String) {
+        val result = nameValidator.validate(name)
+        state = state.copy(
+            name = name,
+            nameErrorType = result.errorType,
+            isNameValid = result.successful,
+        )
+    }
+
+    private fun setAndValidateEmail(email: String) {
+        val result = emailValidator.validate(email)
+        state = state.copy(
+            email = email,
+            emailErrorType = result.errorType,
+            isEmailValid = result.successful
+        )
+    }
+
+    private fun setAndValidatePassword(password: String) {
+        val result = passwordValidator.validate(password)
+        state = state.copy(
+            password = password,
+            passwordErrorType = result.errorType,
+            isPasswordValid = result.successful
+        )
     }
 }

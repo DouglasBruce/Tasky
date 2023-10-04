@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 class PasswordValidator @Inject constructor() {
 
-    operator fun invoke(password: String): ValidationResult {
+    fun validate(password: String): ValidationResult {
         if (password.isBlank()) {
             return ValidationResult(
                 successful = false,

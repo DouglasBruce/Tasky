@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.douglasbruce.tasky.core.domain.repository.AuthRepository
 import com.douglasbruce.tasky.core.domain.validation.EmailValidator
+import com.douglasbruce.tasky.core.domain.validation.ErrorType
 import com.douglasbruce.tasky.features.login.form.LoginFormEvent
 import com.douglasbruce.tasky.features.login.form.LoginFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,15 +31,11 @@ class LoginViewModel @Inject constructor(
     fun onEvent(event: LoginFormEvent) {
         when (event) {
             is LoginFormEvent.EmailValueChanged -> {
-                val result = emailValidator(event.email)
-                state = state.copy(
-                    email = event.email,
-                    isEmailValid = result.successful
-                )
+                setAndValidateEmail(event.email)
             }
 
             is LoginFormEvent.PasswordValueChanged -> {
-                state = state.copy(password = event.password)
+                setAndValidatePassword(event.password)
             }
 
             is LoginFormEvent.TogglePasswordVisibility -> {
@@ -46,7 +43,9 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginFormEvent.Submit -> {
-                login(state.email, state.password)
+                if (state.isEmailValid && state.isPasswordValid) {
+                    login(state.email, state.password)
+                }
             }
         }
     }
@@ -55,5 +54,23 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.login(email, password)
         }
+    }
+
+    private fun setAndValidateEmail(email: String) {
+        val result = emailValidator.validate(email)
+        state = state.copy(
+            email = email,
+            emailErrorType = result.errorType,
+            isEmailValid = result.successful
+        )
+    }
+
+    private fun setAndValidatePassword(password: String) {
+        val isPasswordNotBlank = password.isNotBlank()
+        state = state.copy(
+            password = password,
+            passwordErrorType = if (isPasswordNotBlank) ErrorType.NONE else ErrorType.EMPTY,
+            isPasswordValid = isPasswordNotBlank
+        )
     }
 }

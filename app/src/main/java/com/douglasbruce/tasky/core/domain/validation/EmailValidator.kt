@@ -6,7 +6,7 @@ class EmailValidator @Inject constructor(
     private val matcher: EmailMatcher
 ) {
 
-    operator fun invoke(email: String): ValidationResult {
+    fun validate(email: String): ValidationResult {
         if (email.isBlank()) {
             return ValidationResult(
                 successful = false,

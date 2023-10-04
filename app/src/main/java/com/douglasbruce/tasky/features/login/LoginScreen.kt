@@ -41,20 +41,19 @@ import com.douglasbruce.tasky.core.designsystem.component.TaskyHeader
 import com.douglasbruce.tasky.core.designsystem.component.TaskyPasswordField
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextField
 import com.douglasbruce.tasky.core.designsystem.theme.DarkGrayBlue
-import com.douglasbruce.tasky.core.designsystem.theme.Link
+import com.douglasbruce.tasky.core.designsystem.theme.LinkBlue
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
+import com.douglasbruce.tasky.core.domain.validation.ErrorType
 import com.douglasbruce.tasky.features.login.form.LoginFormEvent
 import com.douglasbruce.tasky.features.login.form.LoginFormState
 
 @Composable
 internal fun LoginRoute(
-    onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     LoginScreen(
-        onLoginClick = onLoginClick,
         onSignUpClick = onSignUpClick,
         modifier = modifier.fillMaxSize(),
         uiState = viewModel.state,
@@ -65,7 +64,6 @@ internal fun LoginRoute(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun LoginScreen(
-    onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
     uiState: LoginFormState,
@@ -110,8 +108,16 @@ internal fun LoginScreen(
                         onValueChange = {
                             onEvent(LoginFormEvent.EmailValueChanged(it))
                         },
+                        isError = uiState.emailErrorType == ErrorType.EMPTY,
                         isValid = uiState.isEmailValid,
                         placeholder = stringResource(R.string.email_placeholder),
+                        supportingText = when (uiState.emailErrorType) {
+                            ErrorType.EMPTY -> {
+                                { Text(text = stringResource(R.string.error_email_empty)) }
+                            }
+
+                            else -> null
+                        },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.None,
                             autoCorrect = false,
@@ -126,6 +132,14 @@ internal fun LoginScreen(
                         onValueChange = {
                             onEvent(LoginFormEvent.PasswordValueChanged(it))
                         },
+                        isError = uiState.passwordErrorType != ErrorType.NONE,
+                        supportingText = when (uiState.passwordErrorType) {
+                            ErrorType.EMPTY -> {
+                                { Text(text = stringResource(R.string.error_password_empty)) }
+                            }
+
+                            else -> null
+                        },
                         passwordVisible = uiState.isPasswordVisible,
                         onTrailingIconClick = {
                             onEvent(LoginFormEvent.TogglePasswordVisibility)
@@ -138,7 +152,7 @@ internal fun LoginScreen(
                         onClick = {
                             onEvent(LoginFormEvent.Submit)
                         },
-                        enabled = uiState.isEmailValid && uiState.password.isNotBlank(),
+                        enabled = uiState.isEmailValid && uiState.isPasswordValid,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
@@ -162,7 +176,7 @@ internal fun LoginScreen(
                                 fontSize = 14.sp,
                                 lineHeight = 30.sp,
                                 fontWeight = FontWeight(500),
-                                color = Link,
+                                color = LinkBlue,
                                 letterSpacing = 0.7.sp,
                             ),
                             modifier = Modifier.clickable(onClick = onSignUpClick)
@@ -179,7 +193,6 @@ internal fun LoginScreen(
 fun LoginPreview() {
     TaskyTheme {
         LoginScreen(
-            onLoginClick = {},
             onSignUpClick = {},
             uiState = LoginFormState(),
             onEvent = {}
