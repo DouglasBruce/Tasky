@@ -1,4 +1,4 @@
-package com.douglasbruce.tasky.core.datastore.di
+package com.douglasbruce.tasky.core.data.datastore.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -8,7 +8,7 @@ import com.douglasbruce.tasky.UserPreferences
 import com.douglasbruce.tasky.core.common.network.Dispatcher
 import com.douglasbruce.tasky.core.common.network.TaskyDispatchers.IO
 import com.douglasbruce.tasky.core.common.network.di.ApplicationScope
-import com.douglasbruce.tasky.core.datastore.UserPreferencesSerializer
+import com.douglasbruce.tasky.core.data.datastore.UserPreferencesSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

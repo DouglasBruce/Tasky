@@ -1,6 +1,8 @@
 package com.douglasbruce.tasky.core.network.di
 
+import androidx.datastore.core.DataStore
 import com.douglasbruce.tasky.BuildConfig
+import com.douglasbruce.tasky.UserPreferences
 import com.douglasbruce.tasky.core.network.interceptor.ApiKeyInterceptor
 import com.douglasbruce.tasky.core.network.interceptor.JwtInterceptor
 import dagger.Module
@@ -18,7 +20,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
+    fun okHttpCallFactory(userPreferences: DataStore<UserPreferences>): Call.Factory = OkHttpClient.Builder()
         .addInterceptor(
             HttpLoggingInterceptor()
                 .apply {
@@ -28,6 +30,6 @@ object NetworkModule {
                 },
         )
         .addInterceptor(ApiKeyInterceptor())
-        .addInterceptor(JwtInterceptor())
+        .addInterceptor(JwtInterceptor(userPreferences))
         .build()
 }

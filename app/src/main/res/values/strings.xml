@@ -12,11 +12,13 @@
     <string name="navigate_up">Navigate up</string>
     <string name="create_account">Create your account</string>
     <string name="welcome_back">Welcome back!</string>
-    <string name="password_error_empty">A password must be provided</string>
-    <string name="password_error_length">Password must be at least 9 characters long</string>
-    <string name="password_error_format">Password must include a lowercase letter, an uppercase letter and a number</string>
-    <string name="name_error_empty">A name must be provided</string>
-    <string name="name_error_length">"Name must be between 4 and 50 characters long"</string>
-    <string name="email_error_empty">An email must be provided</string>
-    <string name="email_error_format">Email must be in a valid format</string>
+    <string name="error_password_empty">A password must be provided</string>
+    <string name="error_password_length">Password must be at least 9 characters long</string>
+    <string name="error_password_format">Password must include a lowercase letter, an uppercase letter and a number</string>
+    <string name="error_name_empty">A name must be provided</string>
+    <string name="error_name_length">"Name must be between 4 and 50 characters long"</string>
+    <string name="error_email_empty">An email must be provided</string>
+    <string name="error_email_format">Email must be in a valid format</string>
+    <string name="unauthorized">You do not have access. Please login</string>
+    <string name="something_went_wrong">Something went wrong. Please try again later</string>
 </resources>
