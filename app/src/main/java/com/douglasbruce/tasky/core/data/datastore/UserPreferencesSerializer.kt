@@ -1,4 +1,4 @@
-package com.douglasbruce.tasky.core.datastore
+package com.douglasbruce.tasky.core.data.datastore
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
