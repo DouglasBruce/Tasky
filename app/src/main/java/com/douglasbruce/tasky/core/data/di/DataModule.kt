@@ -1,8 +1,10 @@
 package com.douglasbruce.tasky.core.data.di
 
+import com.douglasbruce.tasky.core.data.repository.AuthRepositoryImpl
 import com.douglasbruce.tasky.core.data.repository.OfflineFirstUserDataRepository
-import com.douglasbruce.tasky.core.data.repository.UserDataRepository
+import com.douglasbruce.tasky.core.domain.repository.UserDataRepository
 import com.douglasbruce.tasky.core.data.validation.EmailMatcherImpl
+import com.douglasbruce.tasky.core.domain.repository.AuthRepository
 import com.douglasbruce.tasky.core.domain.validation.EmailMatcher
 import dagger.Binds
 import dagger.Module
@@ -22,4 +24,9 @@ interface DataModule {
     fun bindsUserDataRepository(
         userDataRepository: OfflineFirstUserDataRepository,
     ): UserDataRepository
+
+    @Binds
+    fun bindsAuthRepository(
+        authRepository: AuthRepositoryImpl,
+    ): AuthRepository
 }

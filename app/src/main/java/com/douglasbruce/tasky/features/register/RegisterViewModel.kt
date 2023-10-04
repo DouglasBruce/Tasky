@@ -3,20 +3,24 @@ package com.douglasbruce.tasky.features.register
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.douglasbruce.tasky.core.domain.repository.AuthRepository
 import com.douglasbruce.tasky.core.domain.validation.EmailValidator
 import com.douglasbruce.tasky.core.domain.validation.NameValidator
 import com.douglasbruce.tasky.core.domain.validation.PasswordValidator
 import com.douglasbruce.tasky.features.register.form.RegistrationFormEvent
 import com.douglasbruce.tasky.features.register.form.RegistrationFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val authRepository: AuthRepository,
     private val nameValidator: NameValidator,
     private val emailValidator: EmailValidator,
     private val passwordValidator: PasswordValidator
@@ -61,8 +65,14 @@ class RegisterViewModel @Inject constructor(
             }
 
             is RegistrationFormEvent.Submit -> {
-
+                register(state.name, state.email, state.password)
             }
+        }
+    }
+
+    private fun register(name: String, email: String, password: String) {
+        viewModelScope.launch {
+            authRepository.register(name, email, password)
         }
     }
 }

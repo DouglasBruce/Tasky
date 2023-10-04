@@ -17,6 +17,8 @@ import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.navigation.TaskyNavHost
 import com.douglasbruce.tasky.MainActivityUiState.Loading
 import com.douglasbruce.tasky.MainActivityUiState.Success
+import com.douglasbruce.tasky.features.agenda.navigation.agendaGraphRoute
+import com.douglasbruce.tasky.features.login.navigation.loginGraphRoute
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    val viewModel: MainActivityViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -36,11 +38,9 @@ class MainActivity : ComponentActivity() {
         // Update the uiState
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState
-                    .onEach {
-                        uiState = it
-                    }
-                    .collect()
+                viewModel.uiState.onEach {
+                    uiState = it
+                }.collect()
             }
         }
 
@@ -54,8 +54,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             TaskyTheme {
                 val navController: NavHostController = rememberNavController()
-                TaskyNavHost(navController = navController)
+                TaskyNavHost(
+                    navController = navController,
+                    startDestination = if (isUserLoggedIn(uiState)) agendaGraphRoute else loginGraphRoute
+                )
             }
         }
     }
+}
+
+private fun isUserLoggedIn(
+    uiState: MainActivityUiState,
+): Boolean = when (uiState) {
+    Loading -> false
+    is Success -> uiState.isUserLoggedIn
 }

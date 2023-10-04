@@ -186,7 +186,9 @@ internal fun RegisterScreen(
                     Spacer(modifier = Modifier.height(68.dp))
                     TaskyButton(
                         text = stringResource(R.string.get_started_button),
-                        onClick = onRegisterClick,
+                        onClick = {
+                            onEvent(RegistrationFormEvent.Submit)
+                        },
                         enabled = uiState.isNameValid && uiState.isEmailValid && uiState.isPasswordValid,
                         modifier = Modifier
                             .fillMaxWidth()

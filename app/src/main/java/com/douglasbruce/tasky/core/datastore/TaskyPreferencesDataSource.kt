@@ -3,7 +3,7 @@ package com.douglasbruce.tasky.core.datastore
 import androidx.datastore.core.DataStore
 import com.douglasbruce.tasky.UserPreferences
 import com.douglasbruce.tasky.copy
-import com.douglasbruce.tasky.core.model.data.UserData
+import com.douglasbruce.tasky.core.model.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
