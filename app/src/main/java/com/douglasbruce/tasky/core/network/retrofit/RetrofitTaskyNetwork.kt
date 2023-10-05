@@ -1,16 +1,23 @@
 package com.douglasbruce.tasky.core.network.retrofit
 
 import com.douglasbruce.tasky.BuildConfig
+import com.douglasbruce.tasky.core.common.auth.AuthResult
+import com.douglasbruce.tasky.core.common.auth.asAuthResult
+import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
+import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.network.TaskyNetworkDataSource
 import com.douglasbruce.tasky.core.network.model.LoginRequest
 import com.douglasbruce.tasky.core.network.model.NetworkUser
 import com.douglasbruce.tasky.core.network.model.RegisterRequest
+import com.squareup.moshi.Moshi
 import okhttp3.Call
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,6 +40,7 @@ private const val TASKY_BASE_URL = BuildConfig.BACKEND_URL
 
 @Singleton
 class RetrofitTaskyNetwork @Inject constructor(
+    moshi: Moshi,
     okHttpCallFactory: Call.Factory,
 ) : TaskyNetworkDataSource {
 
@@ -40,7 +48,7 @@ class RetrofitTaskyNetwork @Inject constructor(
         Retrofit.Builder()
             .baseUrl(TASKY_BASE_URL)
             .callFactory(okHttpCallFactory)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(RetrofitTaskyNetworkApi::class.java)
 
@@ -63,5 +71,20 @@ class RetrofitTaskyNetwork @Inject constructor(
 
     override suspend fun authenticate() {
         networkApi.authenticate()
+    }
+}
+
+suspend inline fun <T> authenticatedRetrofitCall(
+    serializer: MoshiSerializer,
+    crossinline doCall: suspend () -> AuthResult<T>
+): AuthResult<T> {
+    return try {
+        doCall()
+    } catch (e: HttpException) {
+        e.printStackTrace()
+        e.asAuthResult(serializer)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        AuthResult.Error(UiText.UnknownError)
     }
 }

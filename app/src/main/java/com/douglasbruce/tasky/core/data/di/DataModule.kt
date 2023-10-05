@@ -1,5 +1,6 @@
 package com.douglasbruce.tasky.core.data.di
 
+import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.data.datastore.TaskyPreferencesDataSource
 import com.douglasbruce.tasky.core.data.repository.AuthRepositoryImpl
 import com.douglasbruce.tasky.core.data.repository.OfflineFirstUserDataRepository
@@ -7,6 +8,7 @@ import com.douglasbruce.tasky.core.data.validation.EmailMatcherImpl
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.repository.AuthRepository
 import com.douglasbruce.tasky.core.domain.repository.UserDataRepository
+import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.domain.validation.EmailMatcher
 import dagger.Binds
 import dagger.Module
@@ -36,4 +38,9 @@ interface DataModule {
     fun bindsUserDataPreferences(
         userDataPreferences: TaskyPreferencesDataSource,
     ): UserDataPreferences
+
+    @Binds
+    fun bindsMoshiSerializer(
+        serializer: MoshiSerializer,
+    ): JsonSerializer
 }

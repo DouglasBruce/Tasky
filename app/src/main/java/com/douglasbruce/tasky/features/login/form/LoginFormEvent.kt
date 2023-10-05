@@ -4,5 +4,5 @@ sealed class LoginFormEvent {
     data class EmailValueChanged(val email: String) : LoginFormEvent()
     data class PasswordValueChanged(val password: String) : LoginFormEvent()
     data object TogglePasswordVisibility : LoginFormEvent()
-    data object Submit : LoginFormEvent()
+    data class Submit(val onLoginClick: () -> Unit) : LoginFormEvent()
 }
