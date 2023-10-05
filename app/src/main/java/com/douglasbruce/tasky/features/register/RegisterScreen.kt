@@ -21,9 +21,17 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -32,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.designsystem.component.TaskyButton
 import com.douglasbruce.tasky.core.designsystem.component.TaskyHeader
 import com.douglasbruce.tasky.core.designsystem.component.TaskyPasswordField
@@ -41,6 +50,8 @@ import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.domain.validation.ErrorType
 import com.douglasbruce.tasky.features.register.form.RegistrationFormEvent
 import com.douglasbruce.tasky.features.register.form.RegistrationFormState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 internal fun RegisterRoute(
@@ -53,18 +64,53 @@ internal fun RegisterRoute(
         modifier = modifier.fillMaxSize(),
         uiState = viewModel.state,
         onEvent = viewModel::onEvent,
+        errors = viewModel.errors,
+        successes = viewModel.successes,
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalComposeUiApi::class)
 @Composable
 internal fun RegisterScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     uiState: RegistrationFormState,
-    onEvent: (RegistrationFormEvent) -> Unit
+    onEvent: (RegistrationFormEvent) -> Unit,
+    errors: Flow<UiText>,
+    successes: Flow<UiText>,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = snackbarHostState) {
+        errors.collect { error ->
+            snackbarHostState.showSnackbar(
+                message = error.asString(context),
+                withDismissAction = true,
+            )
+        }
+    }
+
+    LaunchedEffect(key1 = snackbarHostState) {
+        successes.collect { success ->
+            val result = snackbarHostState.showSnackbar(
+                message = success.asString(context),
+                actionLabel = context.getString(R.string.login_action),
+                withDismissAction = true,
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> {
+                    onBackClick()
+                }
+                SnackbarResult.Dismissed -> {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                }
+            }
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.primary,
         modifier = modifier,
     ) { paddingValues ->
@@ -184,6 +230,7 @@ internal fun RegisterScreen(
                     TaskyButton(
                         text = stringResource(R.string.get_started_button),
                         onClick = {
+                            keyboardController?.hide()
                             onEvent(RegistrationFormEvent.Submit)
                         },
                         enabled = uiState.isNameValid && uiState.isEmailValid && uiState.isPasswordValid,
@@ -215,7 +262,9 @@ fun RegisterPreview() {
         RegisterScreen(
             onBackClick = {},
             uiState = RegistrationFormState(),
-            onEvent = {}
+            onEvent = {},
+            errors = emptyFlow(),
+            successes = emptyFlow(),
         )
     }
 }

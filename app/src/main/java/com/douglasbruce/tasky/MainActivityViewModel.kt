@@ -2,31 +2,42 @@ package com.douglasbruce.tasky
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.douglasbruce.tasky.MainActivityUiState.Loading
-import com.douglasbruce.tasky.MainActivityUiState.Success
-import com.douglasbruce.tasky.core.domain.repository.UserDataRepository
-import com.douglasbruce.tasky.core.model.UserData
+import com.douglasbruce.tasky.core.common.auth.AuthResult
+import com.douglasbruce.tasky.core.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    userDataRepository: UserDataRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
-    val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData.map {
-        Success(it, false)
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = Loading,
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-}
 
-sealed interface MainActivityUiState {
-    data object Loading : MainActivityUiState
-    data class Success(val userData: UserData, val isUserLoggedIn: Boolean) : MainActivityUiState
+    private val _isAuthenticated = MutableStateFlow(false)
+    val isAuthenticated = _isAuthenticated.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading = _isLoading.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _isLoading.value = true
+            when (authRepository.authenticate()) {
+                is AuthResult.Success -> {
+                    _isAuthenticated.value = true
+                }
+
+                is AuthResult.Error -> {
+                    _isAuthenticated.value = true
+                }
+
+                is AuthResult.Unauthorized -> {
+                    _isAuthenticated.value = false
+                }
+            }
+            _isLoading.value = false
+        }
+    }
 }

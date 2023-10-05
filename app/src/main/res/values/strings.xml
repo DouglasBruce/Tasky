@@ -7,6 +7,7 @@
     <string name="name_placeholder">Name</string>
     <string name="get_started_button">GET STARTED</string>
     <string name="log_in_button">LOG IN</string>
+    <string name="login_action">Login</string>
     <string name="no_account">DON\'T HAVE AN ACCOUNT?</string>
     <string name="sign_up">SIGN UP</string>
     <string name="navigate_up">Navigate up</string>
@@ -21,4 +22,5 @@
     <string name="error_email_format">Email must be in a valid format</string>
     <string name="unauthorized">You do not have access. Please login</string>
     <string name="something_went_wrong">Something went wrong. Please try again later</string>
+    <string name="success_account_creation">Account created successfully</string>
 </resources>

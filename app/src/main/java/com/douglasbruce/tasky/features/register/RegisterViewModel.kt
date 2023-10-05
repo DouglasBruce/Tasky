@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.auth.AuthResult
+import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.domain.repository.AuthRepository
 import com.douglasbruce.tasky.core.domain.validation.EmailValidator
 import com.douglasbruce.tasky.core.domain.validation.NameValidator
@@ -13,6 +16,8 @@ import com.douglasbruce.tasky.core.domain.validation.PasswordValidator
 import com.douglasbruce.tasky.features.register.form.RegistrationFormEvent
 import com.douglasbruce.tasky.features.register.form.RegistrationFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +35,12 @@ class RegisterViewModel @Inject constructor(
         mutableStateOf(RegistrationFormState())
     }
         private set
+
+    private val successChannel = Channel<UiText>()
+    val successes = successChannel.receiveAsFlow()
+
+    private val errorChannel = Channel<UiText>()
+    val errors = errorChannel.receiveAsFlow()
 
     fun onEvent(event: RegistrationFormEvent) {
         when (event) {
@@ -59,7 +70,20 @@ class RegisterViewModel @Inject constructor(
 
     private fun register(name: String, email: String, password: String) {
         viewModelScope.launch {
-            authRepository.register(name, email, password)
+            val result = authRepository.register(name, email, password)
+            if (result is AuthResult.Success) {
+                successChannel.send(
+                    UiText.StringResource(
+                        resId = R.string.success_account_creation,
+                    )
+                )
+            } else if (result is AuthResult.Error) {
+                result.message?.let {
+                    errorChannel.send(
+                        result.message
+                    )
+                }
+            }
         }
     }
 

@@ -1,10 +1,11 @@
 package com.douglasbruce.tasky.core.network.di
 
-import androidx.datastore.core.DataStore
 import com.douglasbruce.tasky.BuildConfig
-import com.douglasbruce.tasky.UserPreferences
+import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.network.interceptor.ApiKeyInterceptor
 import com.douglasbruce.tasky.core.network.interceptor.JwtInterceptor
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(userPreferences: DataStore<UserPreferences>): Call.Factory = OkHttpClient.Builder()
+    fun moshi(): Moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
+
+    @Provides
+    @Singleton
+    fun okHttpCallFactory(userDataPreferences: UserDataPreferences): Call.Factory = OkHttpClient.Builder()
         .addInterceptor(
             HttpLoggingInterceptor()
                 .apply {
@@ -30,6 +37,6 @@ object NetworkModule {
                 },
         )
         .addInterceptor(ApiKeyInterceptor())
-        .addInterceptor(JwtInterceptor(userPreferences))
+        .addInterceptor(JwtInterceptor(userDataPreferences))
         .build()
 }

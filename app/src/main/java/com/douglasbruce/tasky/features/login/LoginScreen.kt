@@ -21,10 +21,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.designsystem.component.TaskyButton
 import com.douglasbruce.tasky.core.designsystem.component.TaskyHeader
 import com.douglasbruce.tasky.core.designsystem.component.TaskyPasswordField
@@ -46,30 +54,50 @@ import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.domain.validation.ErrorType
 import com.douglasbruce.tasky.features.login.form.LoginFormEvent
 import com.douglasbruce.tasky.features.login.form.LoginFormState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 internal fun LoginRoute(
+    onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     LoginScreen(
+        onLoginClick = onLoginClick,
         onSignUpClick = onSignUpClick,
         modifier = modifier.fillMaxSize(),
         uiState = viewModel.state,
         onEvent = viewModel::onEvent,
+        errors = viewModel.errors,
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalComposeUiApi::class)
 @Composable
 internal fun LoginScreen(
+    onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
     uiState: LoginFormState,
-    onEvent: (LoginFormEvent) -> Unit
+    onEvent: (LoginFormEvent) -> Unit,
+    errors: Flow<UiText>,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = snackbarHostState) {
+        errors.collect { error ->
+            snackbarHostState.showSnackbar(
+                message = error.asString(context),
+                withDismissAction = true,
+            )
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.primary,
         modifier = modifier,
     ) { paddingValues ->
@@ -150,7 +178,8 @@ internal fun LoginScreen(
                     TaskyButton(
                         text = stringResource(R.string.log_in_button),
                         onClick = {
-                            onEvent(LoginFormEvent.Submit)
+                            keyboardController?.hide()
+                            onEvent(LoginFormEvent.Submit(onLoginClick))
                         },
                         enabled = uiState.isEmailValid && uiState.isPasswordValid,
                         modifier = Modifier
@@ -193,9 +222,11 @@ internal fun LoginScreen(
 fun LoginPreview() {
     TaskyTheme {
         LoginScreen(
+            onLoginClick = {},
             onSignUpClick = {},
             uiState = LoginFormState(),
-            onEvent = {}
+            onEvent = {},
+            errors = emptyFlow()
         )
     }
 }
