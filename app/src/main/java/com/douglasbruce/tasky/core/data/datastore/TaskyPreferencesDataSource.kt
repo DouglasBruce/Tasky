@@ -3,14 +3,16 @@ package com.douglasbruce.tasky.core.data.datastore
 import androidx.datastore.core.DataStore
 import com.douglasbruce.tasky.UserPreferences
 import com.douglasbruce.tasky.copy
+import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.model.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TaskyPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
-) {
-    val userData = userPreferences.data
+): UserDataPreferences {
+
+    override val userData = userPreferences.data
         .map {
             UserData(
                 token = it.token,
