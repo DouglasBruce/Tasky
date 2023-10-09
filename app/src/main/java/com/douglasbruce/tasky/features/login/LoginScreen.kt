@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -104,7 +105,7 @@ internal fun LoginScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .statusBarsPadding()
                 .consumeWindowInsets(paddingValues)
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing.only(
@@ -118,99 +119,95 @@ internal fun LoginScreen(
                     .fillMaxWidth()
                     .height(112.dp)
             )
-            Row(
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
                         color = MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
                     )
-                    .padding(start = 16.dp, top = 48.dp, end = 16.dp, bottom = 40.dp)
+                    .padding(start = 16.dp, top = 48.dp, end = 16.dp, bottom = 40.dp),
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    TaskyTextField(
-                        value = uiState.email,
-                        onValueChange = {
-                            onEvent(LoginFormEvent.EmailValueChanged(it))
-                        },
-                        isError = uiState.emailErrorType == ErrorType.EMPTY,
-                        isValid = uiState.isEmailValid,
-                        placeholder = stringResource(R.string.email_placeholder),
-                        supportingText = when (uiState.emailErrorType) {
-                            ErrorType.EMPTY -> {
-                                { Text(text = stringResource(R.string.error_email_empty)) }
-                            }
+                TaskyTextField(
+                    value = uiState.email,
+                    onValueChange = {
+                        onEvent(LoginFormEvent.EmailValueChanged(it))
+                    },
+                    isError = uiState.emailErrorType == ErrorType.EMPTY,
+                    isValid = uiState.isEmailValid,
+                    placeholder = stringResource(R.string.email_placeholder),
+                    supportingText = when (uiState.emailErrorType) {
+                        ErrorType.EMPTY -> {
+                            { Text(text = stringResource(R.string.error_email_empty)) }
+                        }
 
-                            else -> null
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            autoCorrect = false,
-                            keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next,
+                        else -> null
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = false,
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next,
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                TaskyPasswordField(
+                    value = uiState.password,
+                    onValueChange = {
+                        onEvent(LoginFormEvent.PasswordValueChanged(it))
+                    },
+                    isError = uiState.passwordErrorType != ErrorType.NONE,
+                    supportingText = when (uiState.passwordErrorType) {
+                        ErrorType.EMPTY -> {
+                            { Text(text = stringResource(R.string.error_password_empty)) }
+                        }
+
+                        else -> null
+                    },
+                    passwordVisible = uiState.isPasswordVisible,
+                    onTrailingIconClick = {
+                        onEvent(LoginFormEvent.TogglePasswordVisibility)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                TaskyButton(
+                    text = stringResource(R.string.log_in_button),
+                    onClick = {
+                        keyboardController?.hide()
+                        onEvent(LoginFormEvent.Submit(onLoginClick))
+                    },
+                    enabled = uiState.isEmailValid && uiState.isPasswordValid,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.no_account),
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            lineHeight = 30.sp,
+                            fontWeight = FontWeight(500),
+                            color = DarkGrayBlue,
+                            letterSpacing = 0.7.sp,
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(id = R.string.sign_up),
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            lineHeight = 30.sp,
+                            fontWeight = FontWeight(500),
+                            color = LinkBlue,
+                            letterSpacing = 0.7.sp,
                         ),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.clickable(onClick = onSignUpClick)
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    TaskyPasswordField(
-                        value = uiState.password,
-                        onValueChange = {
-                            onEvent(LoginFormEvent.PasswordValueChanged(it))
-                        },
-                        isError = uiState.passwordErrorType != ErrorType.NONE,
-                        supportingText = when (uiState.passwordErrorType) {
-                            ErrorType.EMPTY -> {
-                                { Text(text = stringResource(R.string.error_password_empty)) }
-                            }
-
-                            else -> null
-                        },
-                        passwordVisible = uiState.isPasswordVisible,
-                        onTrailingIconClick = {
-                            onEvent(LoginFormEvent.TogglePasswordVisibility)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    TaskyButton(
-                        text = stringResource(R.string.log_in_button),
-                        onClick = {
-                            keyboardController?.hide()
-                            onEvent(LoginFormEvent.Submit(onLoginClick))
-                        },
-                        enabled = uiState.isEmailValid && uiState.isPasswordValid,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Row {
-                        Text(
-                            text = stringResource(id = R.string.no_account),
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                lineHeight = 30.sp,
-                                fontWeight = FontWeight(500),
-                                color = DarkGrayBlue,
-                                letterSpacing = 0.7.sp,
-                            )
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(id = R.string.sign_up),
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                lineHeight = 30.sp,
-                                fontWeight = FontWeight(500),
-                                color = LinkBlue,
-                                letterSpacing = 0.7.sp,
-                            ),
-                            modifier = Modifier.clickable(onClick = onSignUpClick)
-                        )
-                    }
                 }
             }
         }
