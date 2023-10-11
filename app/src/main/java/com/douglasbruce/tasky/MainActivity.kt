@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.features.agenda.navigation.agendaGraphRoute
 import com.douglasbruce.tasky.features.login.navigation.loginGraphRoute
+import com.douglasbruce.tasky.features.login.navigation.navigateToLoginGraph
 import com.douglasbruce.tasky.navigation.TaskyNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,8 +53,11 @@ fun TaskyApp(viewModel: MainActivityViewModel) {
         if (!isLoading) {
             val isAuthenticated by viewModel.isAuthenticated.collectAsStateWithLifecycle()
             val navController: NavHostController = rememberNavController()
-
             TaskyNavHost(
+                onLogoutClick = {
+                    viewModel.logout()
+                    navController.navigateToLoginGraph()
+                },
                 navController = navController,
                 startDestination = if (isAuthenticated) agendaGraphRoute else loginGraphRoute
             )

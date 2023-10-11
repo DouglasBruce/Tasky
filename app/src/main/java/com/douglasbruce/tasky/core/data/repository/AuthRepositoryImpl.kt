@@ -29,4 +29,9 @@ class AuthRepositoryImpl @Inject constructor(
         taskyNetwork.authenticate()
         AuthResult.Success(Unit)
     }
+
+    override suspend fun logout() = authenticatedRetrofitCall(serializer) {
+        taskyNetwork.logout()
+        AuthResult.Success(Unit)
+    }
 }

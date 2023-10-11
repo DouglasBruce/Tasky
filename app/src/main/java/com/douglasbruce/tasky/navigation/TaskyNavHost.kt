@@ -10,10 +10,13 @@ import com.douglasbruce.tasky.features.login.navigation.loginGraph
 import com.douglasbruce.tasky.features.login.navigation.loginGraphRoute
 import com.douglasbruce.tasky.features.register.navigation.navigateToRegister
 import com.douglasbruce.tasky.features.register.navigation.registerScreen
+import com.douglasbruce.tasky.features.task.navigation.navigateToTask
+import com.douglasbruce.tasky.features.task.navigation.taskScreen
 
 @Composable
 fun TaskyNavHost(
     navController: NavHostController,
+    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = loginGraphRoute,
 ) {
@@ -32,8 +35,12 @@ fun TaskyNavHost(
             }
         )
         agendaGraph(
+            onLogoutClick = onLogoutClick,
+            onAddTaskClick = navController::navigateToTask,
             nestedGraphs = {
-
+                taskScreen(
+                    onBackClick = navController::popBackStack
+                )
             }
         )
     }

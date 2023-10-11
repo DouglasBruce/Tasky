@@ -3,6 +3,7 @@ package com.douglasbruce.tasky.core.designsystem.icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.NavigateBefore
 import androidx.compose.material.icons.filled.Visibility
@@ -19,4 +20,5 @@ object TaskyIcons {
     val CheckCircleOutlined = Icons.Outlined.CheckCircle
     val CircleOutlined = Icons.Outlined.Circle
     val Add = Icons.Filled.Add
+    val Close = Icons.Filled.Close
 }

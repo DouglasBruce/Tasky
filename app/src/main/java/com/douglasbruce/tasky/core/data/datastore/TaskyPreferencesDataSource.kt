@@ -21,6 +21,16 @@ class TaskyPreferencesDataSource @Inject constructor(
             )
         }
 
+    override suspend fun clearPreferences() {
+        userPreferences.updateData {
+            it.copy {
+                this.token = ""
+                this.userId = ""
+                this.fullName = ""
+            }
+        }
+    }
+
     suspend fun setToken(token: String) {
         userPreferences.updateData {
             it.copy {
