@@ -34,5 +34,25 @@
     <string name="new_event">New event</string>
     <string name="new_task">New task</string>
     <string name="new_reminder">New reminder</string>
+    <string name="event_description">Event description</string>
+    <string name="task_description">Task description</string>
+    <string name="reminder_description">Reminder description</string>
+    <string name="edit_event">Edit event</string>
+    <string name="edit_task">Edit task</string>
+    <string name="edit_reminder">Edit reminder</string>
+    <string name="delete_event">DELETE EVENT</string>
+    <string name="delete_task">DELETE TASK</string>
+    <string name="delete_reminder">DELETE REMINDER</string>
+    <string name="save">Save</string>
     <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="ten_minutes_before">10 minutes before</string>
+    <string name="thirty_minutes_before">30 minutes before</string>
+    <string name="one_hour_before">1 hour before</string>
+    <string name="six_hours_before">6 hours before</string>
+    <string name="one_day_before">1 day before</string>
+    <string name="at">At</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="add_photos">Add photos</string>
 </resources>

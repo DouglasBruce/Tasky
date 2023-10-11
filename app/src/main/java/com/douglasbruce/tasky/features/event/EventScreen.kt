@@ -1,7 +1,8 @@
-package com.douglasbruce.tasky.features.task
+package com.douglasbruce.tasky.features.event
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -45,18 +46,18 @@ import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.DarkGray
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
-import com.douglasbruce.tasky.core.designsystem.theme.Green
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
+import com.douglasbruce.tasky.core.designsystem.theme.LightGreen
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
 
 @Composable
-internal fun TaskRoute(
+internal fun EventRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TaskScreen(
+    EventScreen(
         onBackClick = onBackClick,
         modifier = modifier.fillMaxSize(),
     )
@@ -64,7 +65,7 @@ internal fun TaskRoute(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun TaskScreen(
+internal fun EventScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -139,12 +140,12 @@ internal fun TaskScreen(
                             .width(24.dp)
                             .height(24.dp)
                             .background(
-                                color = Green,
+                                color = LightGreen,
                                 shape = RoundedCornerShape(size = 2.dp),
                             ),
                     )
                     Text(
-                        text = stringResource(R.string.task),
+                        text = stringResource(R.string.event),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 19.2.sp,
@@ -163,7 +164,7 @@ internal fun TaskScreen(
                     },
                     headlineContent = {
                         Text(
-                            text = stringResource(R.string.new_task),
+                            text = stringResource(R.string.new_event),
                             style = TextStyle(
                                 fontSize = 26.sp,
                                 lineHeight = 25.sp,
@@ -185,7 +186,7 @@ internal fun TaskScreen(
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = stringResource(R.string.task_description),
+                            text = stringResource(R.string.event_description),
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 15.sp,
@@ -203,23 +204,52 @@ internal fun TaskScreen(
                     },
                     modifier = Modifier.clickable { }
                 )
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(color = LightBlueVariant)
+                        .clickable {  }
+                ) {
+                    Icon(
+                        imageVector = TaskyIcons.Add,
+                        contentDescription = null,
+                        tint = Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.add_photos),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 18.sp,
+                            fontWeight = FontWeight(600),
+                            color = Gray,
+                        )
+                    )
+                }
                 Divider(color = LightBlue)
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier
-                        .weight(1f)
-                        .clickable { }) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { }
+                    ) {
                         ListItem(
                             leadingContent = {
                                 Text(
-                                    text = stringResource(R.string.at),
+                                    text = stringResource(R.string.from),
                                     style = TextStyle(
                                         fontSize = 16.sp,
                                         lineHeight = 15.sp,
                                         fontWeight = FontWeight(400),
                                         color = Black,
-                                    )
+                                    ),
+                                    modifier = Modifier.width(40.dp)
                                 )
                             },
                             headlineContent = {
@@ -243,9 +273,82 @@ internal fun TaskScreen(
                             modifier = Modifier.clickable { }
                         )
                     }
-                    Column(modifier = Modifier
-                        .weight(1f)
-                        .clickable { }) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { }
+                    ) {
+                        ListItem(
+                            headlineContent = {
+                                Text(
+                                    text = "Jul 21 2022",
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        lineHeight = 15.sp,
+                                        fontWeight = FontWeight(400),
+                                        color = Black,
+                                    )
+                                )
+                            },
+                            trailingContent = {
+                                Icon(
+                                    imageVector = TaskyIcons.ChevronRight,
+                                    contentDescription = null,
+                                    tint = Black,
+                                )
+                            },
+                            modifier = Modifier.clickable { }
+                        )
+                    }
+                }
+                Divider(color = LightBlue)
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { }
+                    ) {
+                        ListItem(
+                            leadingContent = {
+                                Text(
+                                    text = stringResource(R.string.to),
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        lineHeight = 15.sp,
+                                        fontWeight = FontWeight(400),
+                                        color = Black,
+                                    ),
+                                    modifier = Modifier.width(40.dp)
+                                )
+                            },
+                            headlineContent = {
+                                Text(
+                                    text = "08:00",
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        lineHeight = 15.sp,
+                                        fontWeight = FontWeight(400),
+                                        color = Black,
+                                    ),
+                                )
+                            },
+                            trailingContent = {
+                                Icon(
+                                    imageVector = TaskyIcons.ChevronRight,
+                                    contentDescription = null,
+                                    tint = Black,
+                                )
+                            },
+                            modifier = Modifier.clickable { }
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { }
+                    ) {
                         ListItem(
                             headlineContent = {
                                 Text(
@@ -308,7 +411,7 @@ internal fun TaskScreen(
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = { /*TODO*/ }) {
                     Text(
-                        text = stringResource(R.string.delete_task),
+                        text = stringResource(R.string.delete_event),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 30.sp,
@@ -324,9 +427,9 @@ internal fun TaskScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun TaskPreview() {
+fun EventPreview() {
     TaskyTheme {
-        TaskScreen(
+        EventScreen(
             onBackClick = {},
         )
     }

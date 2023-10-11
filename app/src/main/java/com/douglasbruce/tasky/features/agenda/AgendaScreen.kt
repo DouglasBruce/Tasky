@@ -55,12 +55,16 @@ import com.douglasbruce.tasky.core.designsystem.theme.White
 @Composable
 internal fun AgendaRoute(
     onLogoutClick: () -> Unit,
+    onAddEventClick: () -> Unit,
     onAddTaskClick: () -> Unit,
+    onAddReminderClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AgendaScreen(
         onLogoutClick = onLogoutClick,
+        onAddEventClick = onAddEventClick,
         onAddTaskClick = onAddTaskClick,
+        onAddReminderClick = onAddReminderClick,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -69,7 +73,9 @@ internal fun AgendaRoute(
 @Composable
 internal fun AgendaScreen(
     onLogoutClick: () -> Unit,
+    onAddEventClick: () -> Unit,
     onAddTaskClick: () -> Unit,
+    onAddReminderClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     //TODO: Hoist state to viewModel
@@ -159,7 +165,7 @@ internal fun AgendaScreen(
                                 )
                             )
                         },
-                        onClick = { /*TODO*/ },
+                        onClick = onAddEventClick,
                     )
                     DropdownMenuItem(
                         text = {
@@ -185,7 +191,7 @@ internal fun AgendaScreen(
                                 )
                             )
                         },
-                        onClick = { /*TODO*/ },
+                        onClick = onAddReminderClick,
                     )
                 }
             }
@@ -237,7 +243,9 @@ fun AgendaPreview() {
     TaskyTheme {
         AgendaScreen(
             onLogoutClick = {},
+            onAddEventClick = {},
             onAddTaskClick = {},
+            onAddReminderClick = {},
         )
     }
 }
