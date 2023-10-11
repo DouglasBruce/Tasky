@@ -28,4 +28,11 @@
     <string name="open">Open</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="event">Event</string>
+    <string name="task">Task</string>
+    <string name="reminder">Reminder</string>
+    <string name="new_event">New event</string>
+    <string name="new_task">New task</string>
+    <string name="new_reminder">New reminder</string>
+    <string name="today">Today</string>
 </resources>

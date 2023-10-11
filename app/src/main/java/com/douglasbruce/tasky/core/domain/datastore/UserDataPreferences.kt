@@ -9,4 +9,6 @@ interface UserDataPreferences {
      * Stream of [UserData]
      */
     val userData: Flow<UserData>
+
+    suspend fun clearPreferences()
 }

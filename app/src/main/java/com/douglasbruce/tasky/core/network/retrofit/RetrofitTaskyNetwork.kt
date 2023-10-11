@@ -34,6 +34,9 @@ private interface RetrofitTaskyNetworkApi {
 
     @GET("/authenticate")
     suspend fun authenticate()
+
+    @GET("/logout")
+    suspend fun logout()
 }
 
 private const val TASKY_BASE_URL = BuildConfig.BACKEND_URL
@@ -71,6 +74,10 @@ class RetrofitTaskyNetwork @Inject constructor(
 
     override suspend fun authenticate() {
         networkApi.authenticate()
+    }
+
+    override suspend fun logout() {
+        networkApi.logout()
     }
 }
 

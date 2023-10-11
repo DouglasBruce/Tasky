@@ -13,6 +13,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -38,5 +39,8 @@ object NetworkModule {
         )
         .addInterceptor(ApiKeyInterceptor())
         .addInterceptor(JwtInterceptor(userDataPreferences))
+        .readTimeout(1, TimeUnit.MINUTES)
+        .callTimeout(1, TimeUnit.MINUTES)
+        .writeTimeout(1, TimeUnit.MINUTES)
         .build()
 }
