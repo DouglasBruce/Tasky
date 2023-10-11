@@ -1,6 +1,7 @@
-package com.douglasbruce.tasky.features.task
+package com.douglasbruce.tasky.features.reminder
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,18 +46,17 @@ import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.DarkGray
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
-import com.douglasbruce.tasky.core.designsystem.theme.Green
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
 
 @Composable
-internal fun TaskRoute(
+internal fun ReminderRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TaskScreen(
+    ReminderScreen(
         onBackClick = onBackClick,
         modifier = modifier.fillMaxSize(),
     )
@@ -64,7 +64,7 @@ internal fun TaskRoute(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun TaskScreen(
+internal fun ReminderScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -134,17 +134,22 @@ internal fun TaskScreen(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
                     Box(
-                        Modifier
-                            .padding(end = 16.dp)
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Gray,
+                                shape = RoundedCornerShape(size = 2.dp)
+                            )
                             .width(24.dp)
                             .height(24.dp)
                             .background(
-                                color = Green,
+                                color = LightBlueVariant,
                                 shape = RoundedCornerShape(size = 2.dp),
                             ),
                     )
                     Text(
-                        text = stringResource(R.string.task),
+                        text = stringResource(R.string.reminder),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 19.2.sp,
@@ -163,7 +168,7 @@ internal fun TaskScreen(
                     },
                     headlineContent = {
                         Text(
-                            text = stringResource(R.string.new_task),
+                            text = stringResource(R.string.new_reminder),
                             style = TextStyle(
                                 fontSize = 26.sp,
                                 lineHeight = 25.sp,
@@ -185,7 +190,7 @@ internal fun TaskScreen(
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = stringResource(R.string.task_description),
+                            text = stringResource(R.string.reminder_description),
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 15.sp,
@@ -308,7 +313,7 @@ internal fun TaskScreen(
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = { /*TODO*/ }) {
                     Text(
-                        text = stringResource(R.string.delete_task),
+                        text = stringResource(R.string.delete_reminder),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 30.sp,
@@ -324,9 +329,9 @@ internal fun TaskScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun TaskPreview() {
+fun ReminderPreview() {
     TaskyTheme {
-        TaskScreen(
+        ReminderScreen(
             onBackClick = {},
         )
     }
