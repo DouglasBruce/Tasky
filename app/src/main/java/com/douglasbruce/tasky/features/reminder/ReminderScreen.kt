@@ -1,50 +1,41 @@
 package com.douglasbruce.tasky.features.reminder
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
+import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
+import com.douglasbruce.tasky.core.designsystem.component.AgendaReminder
+import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
+import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
+import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
+import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
-import com.douglasbruce.tasky.core.designsystem.theme.Black
-import com.douglasbruce.tasky.core.designsystem.theme.DarkGray
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
@@ -70,33 +61,24 @@ internal fun ReminderScreen(
 ) {
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(text = "11 October 2023")
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick,
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = White,
-                        ),
-                    ) {
-                        Icon(imageVector = TaskyIcons.Close, contentDescription = null)
-                    }
-                },
+            TaskyCenterAlignedTopAppBar(
+                title = "11 October 2023",
+                navigationIcon = TaskyIcons.Close,
+                navigationIconContentDescription = stringResource(R.string.navigate_up),
+                onNavigationClick = onBackClick,
                 actions = {
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = White,
-                        ),
-                    ) {
-                        Icon(imageVector = TaskyIcons.EditOutlined, contentDescription = null)
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = TaskyIcons.EditOutlined,
+                            contentDescription = stringResource(R.string.edit_reminder),
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = White,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = White
                 ),
             )
         },
@@ -127,201 +109,40 @@ internal fun ReminderScreen(
                     )
                     .padding(vertical = 16.dp),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                AgendaTypeIndicator(
+                    color = LightBlueVariant,
+                    borderColor = Gray,
+                    agendaType = stringResource(R.string.reminder),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp, horizontal = 16.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Gray,
-                                shape = RoundedCornerShape(size = 2.dp)
-                            )
-                            .width(24.dp)
-                            .height(24.dp)
-                            .background(
-                                color = LightBlueVariant,
-                                shape = RoundedCornerShape(size = 2.dp),
-                            ),
-                    )
-                    Text(
-                        text = stringResource(R.string.reminder),
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 19.2.sp,
-                            fontWeight = FontWeight(600),
-                            color = DarkGray,
-                        )
-                    )
-                }
-                ListItem(
-                    leadingContent = {
-                        Icon(
-                            imageVector = TaskyIcons.CircleOutlined,
-                            contentDescription = null,
-                            tint = Black,
-                        )
-                    },
-                    headlineContent = {
-                        Text(
-                            text = stringResource(R.string.new_reminder),
-                            style = TextStyle(
-                                fontSize = 26.sp,
-                                lineHeight = 25.sp,
-                                fontWeight = FontWeight(700),
-                                color = Black,
-                            ),
-                        )
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = TaskyIcons.ChevronRight,
-                            contentDescription = null,
-                            tint = Black,
-                        )
-                    },
-                    modifier = Modifier.clickable { }
+                )
+                AgendaTitle(
+                    title = stringResource(R.string.new_reminder),
+                    onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
-                ListItem(
-                    headlineContent = {
-                        Text(
-                            text = stringResource(R.string.reminder_description),
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 15.sp,
-                                fontWeight = FontWeight(400),
-                                color = Black,
-                            )
-                        )
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = TaskyIcons.ChevronRight,
-                            contentDescription = null,
-                            tint = Black,
-                        )
-                    },
-                    modifier = Modifier.clickable { }
+                AgendaDescription(
+                    description = stringResource(R.string.reminder_description),
+                    onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
-                Row(
+                AgendaDateTime(
+                    label = stringResource(R.string.at),
+                    time = "08:00",
+                    date = "Jul 21 2023",
+                    onTimeClick = { /*TODO*/ },
+                    onDateClick = { /*TODO*/ },
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier
-                        .weight(1f)
-                        .clickable { }) {
-                        ListItem(
-                            leadingContent = {
-                                Text(
-                                    text = stringResource(R.string.at),
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        lineHeight = 15.sp,
-                                        fontWeight = FontWeight(400),
-                                        color = Black,
-                                    )
-                                )
-                            },
-                            headlineContent = {
-                                Text(
-                                    text = "08:00",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        lineHeight = 15.sp,
-                                        fontWeight = FontWeight(400),
-                                        color = Black,
-                                    )
-                                )
-                            },
-                            trailingContent = {
-                                Icon(
-                                    imageVector = TaskyIcons.ChevronRight,
-                                    contentDescription = null,
-                                    tint = Black,
-                                )
-                            },
-                            modifier = Modifier.clickable { }
-                        )
-                    }
-                    Column(modifier = Modifier
-                        .weight(1f)
-                        .clickable { }) {
-                        ListItem(
-                            headlineContent = {
-                                Text(
-                                    text = "Jul 21 2022",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        lineHeight = 15.sp,
-                                        fontWeight = FontWeight(400),
-                                        color = Black,
-                                    )
-                                )
-                            },
-                            trailingContent = {
-                                Icon(
-                                    imageVector = TaskyIcons.ChevronRight,
-                                    contentDescription = null,
-                                    tint = Black,
-                                )
-                            },
-                            modifier = Modifier.clickable { }
-                        )
-                    }
-                }
-                Divider(color = LightBlue)
-                ListItem(
-                    leadingContent = {
-                        Icon(
-                            imageVector = TaskyIcons.NotificationsOutlined,
-                            contentDescription = null,
-                            tint = Gray,
-                            modifier = Modifier
-                                .background(
-                                    color = LightBlueVariant,
-                                    shape = RoundedCornerShape(size = 5.dp)
-                                )
-                                .padding(4.dp)
-                        )
-                    },
-                    headlineContent = {
-                        Text(
-                            text = stringResource(R.string.thirty_minutes_before),
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 15.sp,
-                                fontWeight = FontWeight(400),
-                                color = Black,
-                            )
-                        )
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = TaskyIcons.ChevronRight,
-                            contentDescription = null,
-                            tint = Black,
-                        )
-                    },
-                    modifier = Modifier.clickable { }
                 )
+                Divider(color = LightBlue)
+                AgendaReminder(onClick = {})
                 Divider(color = LightBlue)
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(
-                        text = stringResource(R.string.delete_reminder),
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 30.sp,
-                            fontWeight = FontWeight(600),
-                            color = Gray,
-                        )
-                    )
-                }
+                TaskyTextButton(
+                    text = stringResource(R.string.delete_reminder),
+                    onClick = { /*TODO*/ },
+                )
             }
         }
     }
