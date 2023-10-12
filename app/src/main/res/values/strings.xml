@@ -37,6 +37,9 @@
     <string name="event_description">Event description</string>
     <string name="task_description">Task description</string>
     <string name="reminder_description">Reminder description</string>
+    <string name="create_event">Create event</string>
+    <string name="create_task">Create task</string>
+    <string name="create_reminder">Create reminder</string>
     <string name="edit_event">Edit event</string>
     <string name="edit_task">Edit task</string>
     <string name="edit_reminder">Edit reminder</string>
@@ -55,4 +58,5 @@
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="add_photos">Add photos</string>
+    <string name="cancel">Cancel</string>
 </resources>

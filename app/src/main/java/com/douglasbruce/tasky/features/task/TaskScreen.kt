@@ -20,13 +20,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
@@ -40,14 +46,18 @@ import com.douglasbruce.tasky.core.designsystem.theme.Green
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.features.task.form.TaskState
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun TaskRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: TaskViewModel = hiltViewModel(),
 ) {
     TaskScreen(
         onBackClick = onBackClick,
+        taskUiState = viewModel.state,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -56,21 +66,49 @@ internal fun TaskRoute(
 @Composable
 internal fun TaskScreen(
     onBackClick: () -> Unit,
+    taskUiState: TaskState,
     modifier: Modifier = Modifier,
 ) {
+    val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
+    var title = taskUiState.date.format(titleDateFormatter)
+    if (taskUiState.isNew) {
+        title = stringResource(R.string.create_task)
+    } else if (taskUiState.isEditing) {
+        title = stringResource(R.string.edit_task)
+    }
+
     Scaffold(
         topBar = {
             TaskyCenterAlignedTopAppBar(
-                title = "11 October 2023",
+                title = title.uppercase(),
                 navigationIcon = TaskyIcons.Close,
-                navigationIconContentDescription = stringResource(R.string.navigate_up),
+                navigationIconContentDescription = stringResource(R.string.cancel),
                 onNavigationClick = onBackClick,
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = TaskyIcons.EditOutlined,
-                            contentDescription = stringResource(R.string.edit_task),
-                        )
+                actions = when (taskUiState.isEditing) {
+                    true -> {
+                        {
+                            TextButton(onClick = { /*TODO*/ }) {
+                                Text(
+                                    text = stringResource(R.string.save),
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        lineHeight = 12.sp,
+                                        fontWeight = FontWeight(600),
+                                        color = White,
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    imageVector = TaskyIcons.EditOutlined,
+                                    contentDescription = stringResource(R.string.edit_task),
+                                )
+                            }
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -116,37 +154,42 @@ internal fun TaskScreen(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 )
                 AgendaTitle(
-                    title = stringResource(R.string.new_task),
-                    isReadOnly = true,
+                    title = if (taskUiState.title.isNullOrBlank()) stringResource(R.string.new_task) else taskUiState.title,
+                    isReadOnly = !taskUiState.isEditing,
                     onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
                 AgendaDescription(
-                    description = stringResource(R.string.task_description),
-                    isReadOnly = true,
+                    description = if (taskUiState.description.isNullOrBlank()) stringResource(R.string.task_description) else taskUiState.description,
+                    isReadOnly = !taskUiState.isEditing,
                     onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
+                // TODO: Move formatters into AgendaDateTime composable when other screens have DateTime state
+                val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+                val dateFormatter = DateTimeFormatter.ofPattern("MMM dd uuuu")
                 AgendaDateTime(
                     label = stringResource(R.string.at),
-                    time = "08:00",
-                    date = "Jul 21 2023",
+                    time = taskUiState.time.format(timeFormatter),
+                    date = taskUiState.date.format(dateFormatter),
                     onTimeClick = { /*TODO*/ },
                     onDateClick = { /*TODO*/ },
-                    isReadOnly = true,
+                    isReadOnly = !taskUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider(color = LightBlue)
                 AgendaReminder(
                     onClick = {},
-                    isReadOnly = true,
+                    isReadOnly = !taskUiState.isEditing,
                 )
                 Divider(color = LightBlue)
                 Spacer(Modifier.weight(1f))
-                TaskyTextButton(
-                    text = stringResource(R.string.delete_task),
-                    onClick = { /*TODO*/ },
-                )
+                if (!taskUiState.isNew) {
+                    TaskyTextButton(
+                        text = stringResource(R.string.delete_task),
+                        onClick = { /*TODO*/ },
+                    )
+                }
             }
         }
     }
@@ -158,6 +201,7 @@ fun TaskPreview() {
     TaskyTheme {
         TaskScreen(
             onBackClick = {},
+            taskUiState = TaskState(),
         )
     }
 }
