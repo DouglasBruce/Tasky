@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -45,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.designsystem.component.TaskyDropdownMenuItem
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
@@ -56,7 +56,7 @@ import com.douglasbruce.tasky.core.designsystem.theme.White
 internal fun AgendaRoute(
     onLogoutClick: () -> Unit,
     onAddEventClick: () -> Unit,
-    onAddTaskClick: () -> Unit,
+    onAddTaskClick: (String) -> Unit,
     onAddReminderClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -74,7 +74,7 @@ internal fun AgendaRoute(
 internal fun AgendaScreen(
     onLogoutClick: () -> Unit,
     onAddEventClick: () -> Unit,
-    onAddTaskClick: () -> Unit,
+    onAddTaskClick: (String) -> Unit,
     onAddReminderClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -115,17 +115,8 @@ internal fun AgendaScreen(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
                         ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = stringResource(R.string.logout),
-                                        style = TextStyle(
-                                            fontSize = 16.sp,
-                                            lineHeight = 15.sp,
-                                            fontWeight = FontWeight(400),
-                                        )
-                                    )
-                                },
+                            TaskyDropdownMenuItem(
+                                text = stringResource(R.string.logout),
                                 onClick = onLogoutClick,
                             )
                         }
@@ -154,43 +145,16 @@ internal fun AgendaScreen(
                     expanded = expanded2,
                     onDismissRequest = { expanded2 = false },
                 ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.event),
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    lineHeight = 15.sp,
-                                    fontWeight = FontWeight(400),
-                                )
-                            )
-                        },
+                    TaskyDropdownMenuItem(
+                        text = stringResource(R.string.event),
                         onClick = onAddEventClick,
                     )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.task),
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    lineHeight = 15.sp,
-                                    fontWeight = FontWeight(400),
-                                )
-                            )
-                        },
-                        onClick = onAddTaskClick,
+                    TaskyDropdownMenuItem(
+                        text = stringResource(R.string.task),
+                        onClick = { onAddTaskClick("-1") },
                     )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.reminder),
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    lineHeight = 15.sp,
-                                    fontWeight = FontWeight(400),
-                                )
-                            )
-                        },
+                    TaskyDropdownMenuItem(
+                        text = stringResource(R.string.reminder),
                         onClick = onAddReminderClick,
                     )
                 }
