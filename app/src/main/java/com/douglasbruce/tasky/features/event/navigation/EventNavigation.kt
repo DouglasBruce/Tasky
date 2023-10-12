@@ -1,22 +1,42 @@
 package com.douglasbruce.tasky.features.event.navigation
 
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.douglasbruce.tasky.features.event.EventRoute
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 const val eventNavigationRoute = "event"
+private val urlCharacterEncoding = Charsets.UTF_8.name()
 
-fun NavController.navigateToEvent(navOptions: NavOptions? = null) {
-    this.navigate(eventNavigationRoute, navOptions)
+@VisibleForTesting
+internal const val eventIdArg = "eventId"
+
+internal class EventArgs(val eventId: String) {
+    constructor(savedStateHandle: SavedStateHandle) :
+            this(URLDecoder.decode(checkNotNull(savedStateHandle[eventIdArg]), urlCharacterEncoding))
+}
+
+fun NavController.navigateToEvent(eventId: String) {
+    val encodedId = URLEncoder.encode(eventId, urlCharacterEncoding)
+    this.navigate("$eventNavigationRoute/$encodedId") {
+        launchSingleTop = true
+    }
 }
 
 fun NavGraphBuilder.eventScreen(
     onBackClick: () -> Unit,
 ) {
     composable(
-        route = eventNavigationRoute,
+        route = "$eventNavigationRoute/{$eventIdArg}",
+        arguments = listOf(
+            navArgument(eventIdArg) { type = NavType.StringType },
+        ),
     ) {
         EventRoute(
             onBackClick = onBackClick,

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
@@ -44,6 +45,7 @@ import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
+import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
@@ -51,14 +53,18 @@ import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.LightGreen
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.features.event.form.EventState
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun EventRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: EventViewModel = hiltViewModel(),
 ) {
     EventScreen(
         onBackClick = onBackClick,
+        eventUiState = viewModel.state,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -67,21 +73,43 @@ internal fun EventRoute(
 @Composable
 internal fun EventScreen(
     onBackClick: () -> Unit,
+    eventUiState: EventState,
     modifier: Modifier = Modifier,
 ) {
+    val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
+    var title = eventUiState.fromDate.format(titleDateFormatter)
+    if (eventUiState.isNew) {
+        title = stringResource(R.string.create_event)
+    } else if (eventUiState.isEditing) {
+        title = stringResource(R.string.edit_event)
+    }
+
     Scaffold(
         topBar = {
             TaskyCenterAlignedTopAppBar(
-                title = "11 October 2023",
+                title = title.uppercase(),
                 navigationIcon = TaskyIcons.Close,
-                navigationIconContentDescription = stringResource(R.string.navigate_up),
+                navigationIconContentDescription = stringResource(R.string.cancel),
                 onNavigationClick = onBackClick,
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = TaskyIcons.EditOutlined,
-                            contentDescription = stringResource(R.string.edit_event),
-                        )
+                actions = when (eventUiState.isEditing) {
+                    true -> {
+                        {
+                            TaskyTopAppBarTextButton(
+                                text = stringResource(R.string.save),
+                                onClick = { /*TODO*/ },
+                                color = White,
+                            )
+                        }
+                    }
+                    else -> {
+                        {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    imageVector = TaskyIcons.EditOutlined,
+                                    contentDescription = stringResource(R.string.edit_event),
+                                )
+                            }
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -127,12 +155,14 @@ internal fun EventScreen(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 )
                 AgendaTitle(
-                    title = stringResource(R.string.new_event),
+                    title = if (eventUiState.title.isNullOrBlank()) stringResource(R.string.new_event) else eventUiState.title,
+                    isReadOnly = !eventUiState.isEditing,
                     onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
                 AgendaDescription(
-                    description = stringResource(R.string.event_description),
+                    description = if (eventUiState.description.isNullOrBlank()) stringResource(R.string.event_description) else eventUiState.description,
+                    isReadOnly = !eventUiState.isEditing,
                     onClick = { /*TODO*/ }
                 )
                 Row(
@@ -164,29 +194,36 @@ internal fun EventScreen(
                 Divider(color = LightBlue)
                 AgendaDateTime(
                     label = stringResource(R.string.from),
-                    time = "08:00",
-                    date = "Jul 21 2023",
+                    time = eventUiState.fromTime,
+                    date = eventUiState.fromDate,
                     onTimeClick = { /*TODO*/ },
                     onDateClick = { /*TODO*/ },
+                    isReadOnly = !eventUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider(color = LightBlue)
                 AgendaDateTime(
                     label = stringResource(R.string.to),
-                    time = "09:00",
-                    date = "Jul 21 2023",
+                    time = eventUiState.toTime,
+                    date = eventUiState.toDate,
                     onTimeClick = { /*TODO*/ },
                     onDateClick = { /*TODO*/ },
+                    isReadOnly = !eventUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider(color = LightBlue)
-                AgendaReminder(onClick = {})
+                AgendaReminder(
+                    onClick = { /*TODO*/ },
+                    isReadOnly = !eventUiState.isEditing,
+                )
                 Divider(color = LightBlue)
                 Spacer(Modifier.weight(1f))
-                TaskyTextButton(
-                    text = stringResource(R.string.delete_event),
-                    onClick = { /*TODO*/ },
-                )
+                if (!eventUiState.isNew) {
+                    TaskyTextButton(
+                        text = stringResource(R.string.delete_event),
+                        onClick = { /*TODO*/ },
+                    )
+                }
             }
         }
     }
@@ -198,6 +235,7 @@ fun EventPreview() {
     TaskyTheme {
         EventScreen(
             onBackClick = {},
+            eventUiState = EventState(),
         )
     }
 }

@@ -15,17 +15,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun AgendaDateTime(
     label: String,
-    time: String,
-    date: String,
+    time: LocalTime,
+    date: LocalDate,
     onTimeClick: () -> Unit,
     onDateClick: () -> Unit,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false,
 ) {
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    val formattedTime = time.format(timeFormatter)
+    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd uuuu")
+    val formattedDate = date.format(dateFormatter)
+
     Row(
         modifier = modifier
     ) {
@@ -49,7 +57,7 @@ fun AgendaDateTime(
                 },
                 headlineContent = {
                     Text(
-                        text = time,
+                        text = formattedTime,
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 15.sp,
@@ -80,7 +88,7 @@ fun AgendaDateTime(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = date,
+                        text = formattedDate,
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 15.sp,
