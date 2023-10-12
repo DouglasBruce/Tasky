@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
@@ -35,20 +36,25 @@ import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
+import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.features.reminder.form.ReminderState
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun ReminderRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ReminderViewModel = hiltViewModel(),
 ) {
     ReminderScreen(
         onBackClick = onBackClick,
+        reminderUiState = viewModel.state,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -57,21 +63,43 @@ internal fun ReminderRoute(
 @Composable
 internal fun ReminderScreen(
     onBackClick: () -> Unit,
+    reminderUiState: ReminderState,
     modifier: Modifier = Modifier,
 ) {
+    val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
+    var title = reminderUiState.date.format(titleDateFormatter)
+    if (reminderUiState.isNew) {
+        title = stringResource(R.string.create_reminder)
+    } else if (reminderUiState.isEditing) {
+        title = stringResource(R.string.edit_reminder)
+    }
+
     Scaffold(
         topBar = {
             TaskyCenterAlignedTopAppBar(
-                title = "11 October 2023",
+                title = title.uppercase(),
                 navigationIcon = TaskyIcons.Close,
-                navigationIconContentDescription = stringResource(R.string.navigate_up),
+                navigationIconContentDescription = stringResource(R.string.cancel),
                 onNavigationClick = onBackClick,
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = TaskyIcons.EditOutlined,
-                            contentDescription = stringResource(R.string.edit_reminder),
-                        )
+                actions = when (reminderUiState.isEditing) {
+                    true -> {
+                        {
+                            TaskyTopAppBarTextButton(
+                                text = stringResource(R.string.save),
+                                onClick = { /*TODO*/ },
+                                color = White,
+                            )
+                        }
+                    }
+                    else -> {
+                        {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    imageVector = TaskyIcons.EditOutlined,
+                                    contentDescription = stringResource(R.string.edit_reminder),
+                                )
+                            }
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -118,31 +146,39 @@ internal fun ReminderScreen(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 )
                 AgendaTitle(
-                    title = stringResource(R.string.new_reminder),
+                    title = if (reminderUiState.title.isNullOrBlank()) stringResource(R.string.new_reminder) else reminderUiState.title,
+                    isReadOnly = !reminderUiState.isEditing,
                     onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
                 AgendaDescription(
-                    description = stringResource(R.string.reminder_description),
+                    description = if (reminderUiState.description.isNullOrBlank()) stringResource(R.string.reminder_description) else reminderUiState.description,
+                    isReadOnly = !reminderUiState.isEditing,
                     onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
                 AgendaDateTime(
                     label = stringResource(R.string.at),
-                    time = "08:00",
-                    date = "Jul 21 2023",
+                    time = reminderUiState.time,
+                    date = reminderUiState.date,
                     onTimeClick = { /*TODO*/ },
                     onDateClick = { /*TODO*/ },
+                    isReadOnly = !reminderUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider(color = LightBlue)
-                AgendaReminder(onClick = {})
+                AgendaReminder(
+                    onClick = { /*TODO*/ },
+                    isReadOnly = !reminderUiState.isEditing,
+                )
                 Divider(color = LightBlue)
                 Spacer(Modifier.weight(1f))
-                TaskyTextButton(
-                    text = stringResource(R.string.delete_reminder),
-                    onClick = { /*TODO*/ },
-                )
+                if (!reminderUiState.isNew) {
+                    TaskyTextButton(
+                        text = stringResource(R.string.delete_reminder),
+                        onClick = { /*TODO*/ },
+                    )
+                }
             }
         }
     }
@@ -154,6 +190,7 @@ fun ReminderPreview() {
     TaskyTheme {
         ReminderScreen(
             onBackClick = {},
+            reminderUiState = ReminderState(),
         )
     }
 }

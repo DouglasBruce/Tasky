@@ -20,18 +20,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
@@ -41,6 +36,7 @@ import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
+import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Green
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
@@ -87,17 +83,11 @@ internal fun TaskScreen(
                 actions = when (taskUiState.isEditing) {
                     true -> {
                         {
-                            TextButton(onClick = { /*TODO*/ }) {
-                                Text(
-                                    text = stringResource(R.string.save),
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        lineHeight = 12.sp,
-                                        fontWeight = FontWeight(600),
-                                        color = White,
-                                    )
-                                )
-                            }
+                            TaskyTopAppBarTextButton(
+                                text = stringResource(R.string.save),
+                                onClick = { /*TODO*/ },
+                                color = White,
+                            )
                         }
                     }
                     else -> {
@@ -165,13 +155,10 @@ internal fun TaskScreen(
                     onClick = { /*TODO*/ }
                 )
                 Divider(color = LightBlue)
-                // TODO: Move formatters into AgendaDateTime composable when other screens have DateTime state
-                val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-                val dateFormatter = DateTimeFormatter.ofPattern("MMM dd uuuu")
                 AgendaDateTime(
                     label = stringResource(R.string.at),
-                    time = taskUiState.time.format(timeFormatter),
-                    date = taskUiState.date.format(dateFormatter),
+                    time = taskUiState.time,
+                    date = taskUiState.date,
                     onTimeClick = { /*TODO*/ },
                     onDateClick = { /*TODO*/ },
                     isReadOnly = !taskUiState.isEditing,
@@ -179,7 +166,7 @@ internal fun TaskScreen(
                 )
                 Divider(color = LightBlue)
                 AgendaReminder(
-                    onClick = {},
+                    onClick = { /*TODO*/ },
                     isReadOnly = !taskUiState.isEditing,
                 )
                 Divider(color = LightBlue)
