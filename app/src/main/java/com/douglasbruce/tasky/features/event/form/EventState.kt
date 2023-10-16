@@ -7,13 +7,13 @@ import java.time.LocalTime
 
 @Parcelize
 data class EventState(
-    val id: String = "-1",
+    val id: String? = null,
     val title: String? = null,
     val description: String? = null,
-    val isEditing: Boolean = true,
+    val isEditing: Boolean = id.isNullOrBlank(),
     val fromDate: LocalDate = LocalDate.now(),
     val fromTime: LocalTime = LocalTime.now(),
     val toDate: LocalDate = LocalDate.now(),
     val toTime: LocalTime = LocalTime.now(),
-    val isNew: Boolean = id == "-1",
+    val isNew: Boolean = id.isNullOrBlank(),
 ) : Parcelable

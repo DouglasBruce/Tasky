@@ -22,6 +22,13 @@ internal class EventArgs(val eventId: String) {
             this(URLDecoder.decode(checkNotNull(savedStateHandle[eventIdArg]), urlCharacterEncoding))
 }
 
+fun NavController.navigateToNewEvent() {
+    val encodedId = URLEncoder.encode("-1", urlCharacterEncoding)
+    this.navigate("$eventNavigationRoute/$encodedId") {
+        launchSingleTop = true
+    }
+}
+
 fun NavController.navigateToEvent(eventId: String) {
     val encodedId = URLEncoder.encode(eventId, urlCharacterEncoding)
     this.navigate("$eventNavigationRoute/$encodedId") {

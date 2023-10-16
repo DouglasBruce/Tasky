@@ -67,11 +67,10 @@ internal fun ReminderScreen(
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
-    var title = reminderUiState.date.format(titleDateFormatter)
-    if (reminderUiState.isNew) {
-        title = stringResource(R.string.create_reminder)
-    } else if (reminderUiState.isEditing) {
-        title = stringResource(R.string.edit_reminder)
+    val title = when {
+        reminderUiState.isNew -> stringResource(R.string.create_task)
+        reminderUiState.isEditing -> stringResource(R.string.edit_task)
+        else -> reminderUiState.date.format(titleDateFormatter)
     }
 
     Scaffold(

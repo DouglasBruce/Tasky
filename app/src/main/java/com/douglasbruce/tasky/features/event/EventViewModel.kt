@@ -19,7 +19,7 @@ class EventViewModel @Inject constructor(
     private val eventArgs: EventArgs = EventArgs(savedStateHandle)
 
     var state by savedStateHandle.saveable {
-        mutableStateOf(EventState(id = eventArgs.eventId))
+        mutableStateOf(EventState(id = if(eventArgs.eventId == "-1") null else eventArgs.eventId))
     }
         private set
 }

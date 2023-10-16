@@ -64,7 +64,7 @@ android {
 // Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.24.0"
+        artifact = "com.google.protobuf:protoc:3.24.4"
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -97,17 +97,17 @@ dependencies {
 
     // Proto Datastore
     implementation("androidx.datastore:datastore:1.0.0")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:3.24.0")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.24.4")
 
     // Dagger - Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("com.google.dagger:hilt-android:2.48")
-    ksp("com.google.dagger:hilt-android-compiler:2.48")
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.48.1")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     //Moshi Library Dependencies - Core Moshi JSON Library and Moshi's Kotlin support and converter factory
     implementation("com.squareup.moshi:moshi:1.12.0")

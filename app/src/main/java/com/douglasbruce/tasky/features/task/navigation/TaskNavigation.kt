@@ -22,6 +22,13 @@ internal class TaskArgs(val taskId: String) {
             this(URLDecoder.decode(checkNotNull(savedStateHandle[taskIdArg]), urlCharacterEncoding))
 }
 
+fun NavController.navigateToNewTask() {
+    val encodedId = URLEncoder.encode("-1", urlCharacterEncoding)
+    this.navigate("$taskNavigationRoute/$encodedId") {
+        launchSingleTop = true
+    }
+}
+
 fun NavController.navigateToTask(taskId: String) {
     val encodedId = URLEncoder.encode(taskId, urlCharacterEncoding)
     this.navigate("$taskNavigationRoute/$encodedId") {

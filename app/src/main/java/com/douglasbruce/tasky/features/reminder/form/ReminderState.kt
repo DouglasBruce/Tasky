@@ -7,11 +7,11 @@ import java.time.LocalTime
 
 @Parcelize
 data class ReminderState(
-    val id: String = "-1",
+    val id: String? = null,
     val title: String? = null,
     val description: String? = null,
-    val isEditing: Boolean = true,
+    val isEditing: Boolean = id.isNullOrBlank(),
     val date: LocalDate = LocalDate.now(),
     val time: LocalTime = LocalTime.now(),
-    val isNew: Boolean = id == "-1",
+    val isNew: Boolean = id.isNullOrBlank(),
 ) : Parcelable

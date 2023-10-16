@@ -17,9 +17,9 @@ fun NavController.navigateToAgendaGraph() {
 
 fun NavGraphBuilder.agendaGraph(
     onLogoutClick: () -> Unit,
-    onAddEventClick: (String) -> Unit,
-    onAddTaskClick: (String) -> Unit,
-    onAddReminderClick: (String) -> Unit,
+    onAddEventClick: () -> Unit,
+    onAddTaskClick: () -> Unit,
+    onAddReminderClick: () -> Unit,
     nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
     navigation(

@@ -66,11 +66,10 @@ internal fun TaskScreen(
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
-    var title = taskUiState.date.format(titleDateFormatter)
-    if (taskUiState.isNew) {
-        title = stringResource(R.string.create_task)
-    } else if (taskUiState.isEditing) {
-        title = stringResource(R.string.edit_task)
+    val title = when {
+        taskUiState.isNew -> stringResource(R.string.create_task)
+        taskUiState.isEditing -> stringResource(R.string.edit_task)
+        else -> taskUiState.date.format(titleDateFormatter)
     }
 
     Scaffold(

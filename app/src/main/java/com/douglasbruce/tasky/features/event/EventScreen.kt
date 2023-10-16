@@ -77,11 +77,10 @@ internal fun EventScreen(
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
-    var title = eventUiState.fromDate.format(titleDateFormatter)
-    if (eventUiState.isNew) {
-        title = stringResource(R.string.create_event)
-    } else if (eventUiState.isEditing) {
-        title = stringResource(R.string.edit_event)
+    val title = when {
+        eventUiState.isNew -> stringResource(R.string.create_task)
+        eventUiState.isEditing -> stringResource(R.string.edit_task)
+        else -> eventUiState.fromDate.format(titleDateFormatter)
     }
 
     Scaffold(
