@@ -22,13 +22,15 @@ internal class ReminderArgs(val reminderId: String) {
             this(URLDecoder.decode(checkNotNull(savedStateHandle[reminderIdArg]), urlCharacterEncoding))
 }
 
-fun NavController.navigateToReminder(reminderId: String?) {
-    var id = reminderId
-    if (reminderId.isNullOrBlank()) {
-        id = "-1"
+fun NavController.navigateToNewReminder() {
+    val encodedId = URLEncoder.encode("-1", urlCharacterEncoding)
+    this.navigate("$reminderNavigationRoute/$encodedId") {
+        launchSingleTop = true
     }
+}
 
-    val encodedId = URLEncoder.encode(id, urlCharacterEncoding)
+fun NavController.navigateToReminder(reminderId: String) {
+    val encodedId = URLEncoder.encode(reminderId, urlCharacterEncoding)
     this.navigate("$reminderNavigationRoute/$encodedId") {
         launchSingleTop = true
     }

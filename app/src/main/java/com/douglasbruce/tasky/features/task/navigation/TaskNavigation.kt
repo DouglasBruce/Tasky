@@ -22,13 +22,15 @@ internal class TaskArgs(val taskId: String) {
             this(URLDecoder.decode(checkNotNull(savedStateHandle[taskIdArg]), urlCharacterEncoding))
 }
 
-fun NavController.navigateToTask(taskId: String?) {
-    var id = taskId
-    if (taskId.isNullOrBlank()) {
-        id = "-1"
+fun NavController.navigateToNewTask() {
+    val encodedId = URLEncoder.encode("-1", urlCharacterEncoding)
+    this.navigate("$taskNavigationRoute/$encodedId") {
+        launchSingleTop = true
     }
+}
 
-    val encodedId = URLEncoder.encode(id, urlCharacterEncoding)
+fun NavController.navigateToTask(taskId: String) {
+    val encodedId = URLEncoder.encode(taskId, urlCharacterEncoding)
     this.navigate("$taskNavigationRoute/$encodedId") {
         launchSingleTop = true
     }

@@ -7,14 +7,14 @@ import androidx.navigation.compose.NavHost
 import com.douglasbruce.tasky.features.agenda.navigation.agendaGraph
 import com.douglasbruce.tasky.features.agenda.navigation.navigateToAgendaGraph
 import com.douglasbruce.tasky.features.event.navigation.eventScreen
-import com.douglasbruce.tasky.features.event.navigation.navigateToEvent
+import com.douglasbruce.tasky.features.event.navigation.navigateToNewEvent
 import com.douglasbruce.tasky.features.login.navigation.loginGraph
 import com.douglasbruce.tasky.features.login.navigation.loginGraphRoute
 import com.douglasbruce.tasky.features.register.navigation.navigateToRegister
 import com.douglasbruce.tasky.features.register.navigation.registerScreen
-import com.douglasbruce.tasky.features.reminder.navigation.navigateToReminder
+import com.douglasbruce.tasky.features.reminder.navigation.navigateToNewReminder
 import com.douglasbruce.tasky.features.reminder.navigation.reminderScreen
-import com.douglasbruce.tasky.features.task.navigation.navigateToTask
+import com.douglasbruce.tasky.features.task.navigation.navigateToNewTask
 import com.douglasbruce.tasky.features.task.navigation.taskScreen
 
 @Composable
@@ -40,9 +40,9 @@ fun TaskyNavHost(
         )
         agendaGraph(
             onLogoutClick = onLogoutClick,
-            onAddEventClick = navController::navigateToEvent,
-            onAddTaskClick = navController::navigateToTask,
-            onAddReminderClick = navController::navigateToReminder,
+            onAddEventClick = navController::navigateToNewEvent,
+            onAddTaskClick = navController::navigateToNewTask,
+            onAddReminderClick = navController::navigateToNewReminder,
             nestedGraphs = {
                 eventScreen(
                     onBackClick = navController::popBackStack
