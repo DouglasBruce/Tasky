@@ -1,5 +1,8 @@
 package com.douglasbruce.tasky.core.designsystem.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -31,16 +34,17 @@ fun AgendaDescription(
                 )
             )
         },
-        trailingContent = when (isReadOnly) {
-            true -> null
-            else -> {
-                {
-                    Icon(
-                        imageVector = TaskyIcons.ChevronRight,
-                        contentDescription = null,
-                        tint = Black,
-                    )
-                }
+        trailingContent = {
+            AnimatedVisibility(
+                visible = !isReadOnly,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Icon(
+                    imageVector = TaskyIcons.ChevronRight,
+                    contentDescription = null,
+                    tint = Black,
+                )
             }
         },
         modifier = modifier.clickable(enabled = !isReadOnly) { onClick() }

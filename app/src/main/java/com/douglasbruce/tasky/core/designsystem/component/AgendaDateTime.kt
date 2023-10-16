@@ -1,5 +1,8 @@
 package com.douglasbruce.tasky.core.designsystem.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -66,18 +69,19 @@ fun AgendaDateTime(
                         )
                     )
                 },
-                trailingContent = when (isReadOnly) {
-                    true -> null
-                    else -> {
-                        {
-                            Icon(
-                                imageVector = TaskyIcons.ChevronRight,
-                                contentDescription = null,
-                                tint = Black,
-                            )
-                        }
+                trailingContent = {
+                    AnimatedVisibility(
+                        visible = !isReadOnly,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                    ) {
+                        Icon(
+                            imageVector = TaskyIcons.ChevronRight,
+                            contentDescription = null,
+                            tint = Black,
+                        )
                     }
-                }
+                },
             )
         }
         Column(
@@ -97,18 +101,19 @@ fun AgendaDateTime(
                         )
                     )
                 },
-                trailingContent = when (isReadOnly) {
-                    true -> null
-                    else -> {
-                        {
-                            Icon(
-                                imageVector = TaskyIcons.ChevronRight,
-                                contentDescription = null,
-                                tint = Black,
-                            )
-                        }
+                trailingContent = {
+                    AnimatedVisibility(
+                        visible = !isReadOnly,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                    ) {
+                        Icon(
+                            imageVector = TaskyIcons.ChevronRight,
+                            contentDescription = null,
+                            tint = Black,
+                        )
                     }
-                }
+                },
             )
         }
     }
