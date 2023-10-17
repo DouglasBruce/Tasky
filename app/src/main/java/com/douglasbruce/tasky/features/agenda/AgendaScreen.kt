@@ -30,10 +30,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.TaskyDropdownMenuItem
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
@@ -51,6 +48,9 @@ import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.LightGrayBlue
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
+import com.douglasbruce.tasky.features.agenda.form.AgendaState
+import java.time.LocalDate
 
 @Composable
 internal fun AgendaRoute(
@@ -59,8 +59,11 @@ internal fun AgendaRoute(
     onAddTaskClick: () -> Unit,
     onAddReminderClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: AgendaViewModel = hiltViewModel(),
 ) {
     AgendaScreen(
+        agendaUiState = viewModel.state,
+        onEvent = viewModel::onEvent,
         onLogoutClick = onLogoutClick,
         onAddEventClick = onAddEventClick,
         onAddTaskClick = onAddTaskClick,
@@ -72,26 +75,19 @@ internal fun AgendaRoute(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun AgendaScreen(
+    agendaUiState: AgendaState,
+    onEvent: (AgendaEvent) -> Unit,
     onLogoutClick: () -> Unit,
     onAddEventClick: () -> Unit,
     onAddTaskClick: () -> Unit,
     onAddReminderClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    //TODO: Hoist state to viewModel
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-    var expanded2 by remember {
-        mutableStateOf(false)
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    //TODO: Hoist selected month to viewModel
-                    Text(text = "October")
+                    Text(text = agendaUiState.selectedDate.month.name)
                 },
                 actions = {
                     Box(
@@ -101,23 +97,25 @@ internal fun AgendaScreen(
                             .size(34.dp)
                             .clip(CircleShape)
                             .background(LightBlue)
-                            .clickable { expanded = !expanded },
+                            .clickable { onEvent(AgendaEvent.ToggleShowAccountOptions) },
                     ) {
                         Text(
-                            //TODO: Hoist initials to viewModel
-                            text = "DB", style = TextStyle(
+                            text = agendaUiState.initials, style = TextStyle(
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight(600),
                                 color = LightGrayBlue,
                             )
                         )
                         DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
+                            expanded = agendaUiState.showAccountOptions,
+                            onDismissRequest = { onEvent(AgendaEvent.ToggleShowAccountOptions) },
                         ) {
                             TaskyDropdownMenuItem(
                                 text = stringResource(R.string.logout),
-                                onClick = onLogoutClick,
+                                onClick = {
+                                    onEvent(AgendaEvent.ToggleShowAccountOptions)
+                                    onLogoutClick()
+                                },
                             )
                         }
                     }
@@ -137,25 +135,34 @@ internal fun AgendaScreen(
                 FloatingActionButton(
                     containerColor = Black,
                     contentColor = White,
-                    onClick = { expanded2 = !expanded2 },
+                    onClick = { onEvent(AgendaEvent.ToggleShowCreateAgendaOptions) },
                 ) {
                     Icon(imageVector = TaskyIcons.Add, contentDescription = null)
                 }
                 DropdownMenu(
-                    expanded = expanded2,
-                    onDismissRequest = { expanded2 = false },
+                    expanded = agendaUiState.showCreateAgendaOptions,
+                    onDismissRequest = { onEvent(AgendaEvent.ToggleShowCreateAgendaOptions) },
                 ) {
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.event),
-                        onClick = { onAddEventClick() },
+                        onClick = {
+                            onEvent(AgendaEvent.ToggleShowCreateAgendaOptions)
+                            onAddEventClick()
+                        },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.task),
-                        onClick = { onAddTaskClick() },
+                        onClick = {
+                            onEvent(AgendaEvent.ToggleShowCreateAgendaOptions)
+                            onAddTaskClick()
+                        },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.reminder),
-                        onClick = { onAddReminderClick() },
+                        onClick = {
+                            onEvent(AgendaEvent.ToggleShowCreateAgendaOptions)
+                            onAddReminderClick()
+                        },
                     )
                 }
             }
@@ -188,7 +195,11 @@ internal fun AgendaScreen(
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = stringResource(R.string.today),
+                    text = when (agendaUiState.selectedDate) {
+                        LocalDate.now() -> stringResource(R.string.today)
+                        LocalDate.now().plusDays(1) -> stringResource(R.string.tomorrow)
+                        else -> agendaUiState.selectedDate.toString()
+                    },
                     style = TextStyle(
                         fontSize = 20.sp,
                         lineHeight = 16.sp,
@@ -206,6 +217,8 @@ internal fun AgendaScreen(
 fun AgendaPreview() {
     TaskyTheme {
         AgendaScreen(
+            agendaUiState = AgendaState(),
+            onEvent = {},
             onLogoutClick = {},
             onAddEventClick = {},
             onAddTaskClick = {},
