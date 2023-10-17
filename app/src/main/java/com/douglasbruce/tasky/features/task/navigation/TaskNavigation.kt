@@ -8,30 +8,25 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.douglasbruce.tasky.features.task.TaskRoute
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 const val taskNavigationRoute = "task"
-private val urlCharacterEncoding = Charsets.UTF_8.name()
 
 @VisibleForTesting
 internal const val taskIdArg = "taskId"
 
-internal class TaskArgs(val taskId: String) {
+internal class TaskArgs(val taskId: String?) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(URLDecoder.decode(checkNotNull(savedStateHandle[taskIdArg]), urlCharacterEncoding))
+            this(savedStateHandle[taskIdArg])
 }
 
 fun NavController.navigateToNewTask() {
-    val encodedId = URLEncoder.encode("-1", urlCharacterEncoding)
-    this.navigate("$taskNavigationRoute/$encodedId") {
+    this.navigate("$taskNavigationRoute/") {
         launchSingleTop = true
     }
 }
 
 fun NavController.navigateToTask(taskId: String) {
-    val encodedId = URLEncoder.encode(taskId, urlCharacterEncoding)
-    this.navigate("$taskNavigationRoute/$encodedId") {
+    this.navigate("$taskNavigationRoute/$taskId") {
         launchSingleTop = true
     }
 }
@@ -40,9 +35,12 @@ fun NavGraphBuilder.taskScreen(
     onBackClick: () -> Unit,
 ) {
     composable(
-        route = "$taskNavigationRoute/{$taskIdArg}",
+        route = "$taskNavigationRoute/?$taskIdArg={$taskIdArg}",
         arguments = listOf(
-            navArgument(taskIdArg) { type = NavType.StringType },
+            navArgument(taskIdArg) {
+                type = NavType.StringType
+                nullable = true
+            },
         ),
     ) {
         TaskRoute(

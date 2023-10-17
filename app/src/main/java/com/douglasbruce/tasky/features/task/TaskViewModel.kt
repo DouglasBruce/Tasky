@@ -19,7 +19,7 @@ class TaskViewModel @Inject constructor(
     private val taskArgs: TaskArgs = TaskArgs(savedStateHandle)
 
     var state by savedStateHandle.saveable {
-        mutableStateOf(TaskState(id = if(taskArgs.taskId == "-1") null else taskArgs.taskId))
+        mutableStateOf(TaskState(id = taskArgs.taskId))
     }
         private set
 }

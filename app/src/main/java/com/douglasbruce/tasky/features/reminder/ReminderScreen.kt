@@ -68,8 +68,8 @@ internal fun ReminderScreen(
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
     val title = when {
-        reminderUiState.isNew -> stringResource(R.string.create_task)
-        reminderUiState.isEditing -> stringResource(R.string.edit_task)
+        reminderUiState.isNew -> stringResource(R.string.create_reminder)
+        reminderUiState.isEditing -> stringResource(R.string.edit_reminder)
         else -> reminderUiState.date.format(titleDateFormatter)
     }
 
