@@ -8,30 +8,25 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.douglasbruce.tasky.features.event.EventRoute
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 const val eventNavigationRoute = "event"
-private val urlCharacterEncoding = Charsets.UTF_8.name()
 
 @VisibleForTesting
 internal const val eventIdArg = "eventId"
 
-internal class EventArgs(val eventId: String) {
+internal class EventArgs(val eventId: String?) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(URLDecoder.decode(checkNotNull(savedStateHandle[eventIdArg]), urlCharacterEncoding))
+            this(savedStateHandle[eventIdArg])
 }
 
 fun NavController.navigateToNewEvent() {
-    val encodedId = URLEncoder.encode("-1", urlCharacterEncoding)
-    this.navigate("$eventNavigationRoute/$encodedId") {
+    this.navigate("$eventNavigationRoute/") {
         launchSingleTop = true
     }
 }
 
 fun NavController.navigateToEvent(eventId: String) {
-    val encodedId = URLEncoder.encode(eventId, urlCharacterEncoding)
-    this.navigate("$eventNavigationRoute/$encodedId") {
+    this.navigate("$eventNavigationRoute/$eventId") {
         launchSingleTop = true
     }
 }
@@ -40,9 +35,12 @@ fun NavGraphBuilder.eventScreen(
     onBackClick: () -> Unit,
 ) {
     composable(
-        route = "$eventNavigationRoute/{$eventIdArg}",
+        route = "$eventNavigationRoute/?$eventIdArg={$eventIdArg}",
         arguments = listOf(
-            navArgument(eventIdArg) { type = NavType.StringType },
+            navArgument(eventIdArg) {
+                type = NavType.StringType
+                nullable = true
+            },
         ),
     ) {
         EventRoute(

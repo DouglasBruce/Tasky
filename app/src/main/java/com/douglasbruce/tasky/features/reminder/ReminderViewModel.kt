@@ -19,7 +19,7 @@ class ReminderViewModel @Inject constructor(
     private val reminderArgs: ReminderArgs = ReminderArgs(savedStateHandle)
 
     var state by savedStateHandle.saveable {
-        mutableStateOf(ReminderState(id = if(reminderArgs.reminderId == "-1") null else reminderArgs.reminderId))
+        mutableStateOf(ReminderState(id = reminderArgs.reminderId))
     }
         private set
 }
