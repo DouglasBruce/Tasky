@@ -13,6 +13,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
@@ -38,14 +41,41 @@ class AgendaViewModel @Inject constructor(
 
     fun onEvent(event: AgendaEvent) {
         when (event) {
-            is AgendaEvent.ToggleShowCreateAgendaOptions -> {
-                state = state.copy(showCreateAgendaOptions = !state.showCreateAgendaOptions)
+            is AgendaEvent.OnCreateAgendaOptionsClick -> {
+                state = state.copy(showCreateAgendaOptions = event.show)
             }
-            is AgendaEvent.ToggleShowSelectedAgendaOptions -> {
-                state = state.copy(showSelectedAgendaOptions = !state.showSelectedAgendaOptions)
+
+            is AgendaEvent.OnAgendaOptionsClick -> {
+                state = state.copy(showSelectedAgendaOptions = event.show)
             }
-            is AgendaEvent.ToggleShowAccountOptions -> {
-                state = state.copy(showAccountOptions = !state.showAccountOptions)
+
+            is AgendaEvent.OnAccountOptionsClick -> {
+                state = state.copy(showAccountOptions = event.show)
+            }
+
+            is AgendaEvent.OnDatePickerClick -> {
+                state = state.copy(showDatePicker = event.show)
+            }
+
+            is AgendaEvent.OnDateSelected -> {
+                val localDate = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(event.dateMillis),
+                    ZoneId.of("UTC")
+                ).toLocalDate()
+
+                state = state.copy(
+                    selectedDate = localDate,
+                    displayDate = localDate,
+                    selectedDay = 0,
+                    showDatePicker = false,
+                )
+            }
+
+            is AgendaEvent.OnDayClick -> {
+                state = state.copy(
+                    selectedDay = event.day,
+                    displayDate = state.selectedDate.plusDays(event.day.toLong())
+                )
             }
         }
     }

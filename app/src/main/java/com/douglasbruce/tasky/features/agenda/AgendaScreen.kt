@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -26,10 +29,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.designsystem.component.AgendaDayPicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyDropdownMenuItem
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
@@ -51,6 +61,8 @@ import com.douglasbruce.tasky.core.designsystem.theme.White
 import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
 import com.douglasbruce.tasky.features.agenda.form.AgendaState
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun AgendaRoute(
@@ -87,7 +99,23 @@ internal fun AgendaScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = agendaUiState.selectedDate.month.name)
+                    TextButton(onClick = { onEvent(AgendaEvent.OnDatePickerClick(true)) }) {
+                        Text(
+                            text = agendaUiState.selectedDate.month.name,
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 19.2.sp,
+                                fontWeight = FontWeight(700),
+                                color = White,
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = TaskyIcons.ArrowDropDown,
+                            tint = White,
+                            contentDescription = stringResource(R.string.change_date)
+                        )
+                    }
                 },
                 actions = {
                     Box(
@@ -97,7 +125,7 @@ internal fun AgendaScreen(
                             .size(34.dp)
                             .clip(CircleShape)
                             .background(LightBlue)
-                            .clickable { onEvent(AgendaEvent.ToggleShowAccountOptions) },
+                            .clickable { onEvent(AgendaEvent.OnAccountOptionsClick(true)) },
                     ) {
                         Text(
                             text = agendaUiState.initials, style = TextStyle(
@@ -108,12 +136,12 @@ internal fun AgendaScreen(
                         )
                         DropdownMenu(
                             expanded = agendaUiState.showAccountOptions,
-                            onDismissRequest = { onEvent(AgendaEvent.ToggleShowAccountOptions) },
+                            onDismissRequest = { onEvent(AgendaEvent.OnAccountOptionsClick(false)) },
                         ) {
                             TaskyDropdownMenuItem(
                                 text = stringResource(R.string.logout),
                                 onClick = {
-                                    onEvent(AgendaEvent.ToggleShowAccountOptions)
+                                    onEvent(AgendaEvent.OnAccountOptionsClick(false))
                                     onLogoutClick()
                                 },
                             )
@@ -135,32 +163,32 @@ internal fun AgendaScreen(
                 FloatingActionButton(
                     containerColor = Black,
                     contentColor = White,
-                    onClick = { onEvent(AgendaEvent.ToggleShowCreateAgendaOptions) },
+                    onClick = { onEvent(AgendaEvent.OnCreateAgendaOptionsClick(true)) },
                 ) {
                     Icon(imageVector = TaskyIcons.Add, contentDescription = null)
                 }
                 DropdownMenu(
                     expanded = agendaUiState.showCreateAgendaOptions,
-                    onDismissRequest = { onEvent(AgendaEvent.ToggleShowCreateAgendaOptions) },
+                    onDismissRequest = { onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false)) },
                 ) {
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.event),
                         onClick = {
-                            onEvent(AgendaEvent.ToggleShowCreateAgendaOptions)
+                            onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
                             onAddEventClick()
                         },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.task),
                         onClick = {
-                            onEvent(AgendaEvent.ToggleShowCreateAgendaOptions)
+                            onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
                             onAddTaskClick()
                         },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.reminder),
                         onClick = {
-                            onEvent(AgendaEvent.ToggleShowCreateAgendaOptions)
+                            onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
                             onAddReminderClick()
                         },
                     )
@@ -193,12 +221,56 @@ internal fun AgendaScreen(
                     )
                     .padding(12.dp),
             ) {
+                if (agendaUiState.showDatePicker) {
+                    val datePickerState = rememberDatePickerState(
+                        initialSelectedDateMillis = agendaUiState.selectedDate.atStartOfDay(
+                            ZoneId.of(
+                                "UTC"
+                            )
+                        ).toInstant().toEpochMilli()
+                    )
+                    val confirmEnabled by
+                    remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
+
+                    DatePickerDialog(
+                        onDismissRequest = { onEvent(AgendaEvent.OnDatePickerClick(false)) },
+                        confirmButton = {
+                            TextButton(
+                                onClick = { onEvent(AgendaEvent.OnDateSelected(datePickerState.selectedDateMillis!!)) },
+                                enabled = confirmEnabled
+                            ) {
+                                Text(stringResource(R.string.ok))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { onEvent(AgendaEvent.OnDatePickerClick(false)) }
+                            ) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
+
+                val today = rememberSaveable { LocalDate.now() }
+                val yesterday = rememberSaveable { today.minusDays(1) }
+                val tomorrow = rememberSaveable { today.plusDays(1) }
+                val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
+
+                AgendaDayPicker(
+                    date = agendaUiState.selectedDate,
+                    selectedDay = agendaUiState.selectedDay,
+                    onClick = { onEvent(AgendaEvent.OnDayClick(it)) }
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = when (agendaUiState.selectedDate) {
-                        LocalDate.now() -> stringResource(R.string.today)
-                        LocalDate.now().plusDays(1) -> stringResource(R.string.tomorrow)
-                        else -> agendaUiState.selectedDate.toString()
+                    text = when (agendaUiState.displayDate) {
+                        yesterday -> stringResource(R.string.yesterday)
+                        today -> stringResource(R.string.today)
+                        tomorrow -> stringResource(R.string.tomorrow)
+                        else -> agendaUiState.displayDate.format(dateFormatter)
                     },
                     style = TextStyle(
                         fontSize = 20.sp,

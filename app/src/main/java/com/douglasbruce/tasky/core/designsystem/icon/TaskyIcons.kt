@@ -2,6 +2,7 @@ package com.douglasbruce.tasky.core.designsystem.icon
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
@@ -29,4 +30,5 @@ object TaskyIcons {
     val ChevronLeft = Icons.Filled.ChevronLeft
     val NotificationsOutlined = Icons.Outlined.Notifications
     val EditOutlined = Icons.Outlined.Edit
+    val ArrowDropDown = Icons.Filled.ArrowDropDown
 }
