@@ -5,7 +5,7 @@ import javax.inject.Inject
 class NameFormatter @Inject constructor() {
 
     fun getInitials(fullName: String): String {
-        // Check if the full name is null or blank.
+        // Check if the full name is blank.
         if (fullName.isBlank()) {
             return ""
         }
