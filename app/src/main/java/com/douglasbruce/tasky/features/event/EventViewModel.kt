@@ -8,6 +8,9 @@ import androidx.lifecycle.viewmodel.compose.saveable
 import com.douglasbruce.tasky.features.event.form.EventState
 import com.douglasbruce.tasky.features.event.navigation.EventArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
@@ -19,7 +22,19 @@ class EventViewModel @Inject constructor(
     private val eventArgs: EventArgs = EventArgs(savedStateHandle)
 
     var state by savedStateHandle.saveable {
-        mutableStateOf(EventState(id = eventArgs.eventId))
+        mutableStateOf(
+            EventState(
+                id = eventArgs.eventId,
+                fromDate = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(eventArgs.eventFromDateMilli),
+                    ZoneId.of("UTC")
+                ).toLocalDate(),
+                toDate = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(eventArgs.eventToDateMilli),
+                    ZoneId.of("UTC")
+                ).toLocalDate()
+            )
+        )
     }
         private set
 }

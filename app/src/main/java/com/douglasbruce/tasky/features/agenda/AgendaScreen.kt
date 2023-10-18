@@ -61,15 +61,14 @@ import com.douglasbruce.tasky.core.designsystem.theme.White
 import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
 import com.douglasbruce.tasky.features.agenda.form.AgendaState
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun AgendaRoute(
     onLogoutClick: () -> Unit,
-    onAddEventClick: () -> Unit,
-    onAddTaskClick: () -> Unit,
-    onAddReminderClick: () -> Unit,
+    onAddEventClick: (Long) -> Unit,
+    onAddTaskClick: (Long) -> Unit,
+    onAddReminderClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AgendaViewModel = hiltViewModel(),
 ) {
@@ -90,9 +89,9 @@ internal fun AgendaScreen(
     agendaUiState: AgendaState,
     onEvent: (AgendaEvent) -> Unit,
     onLogoutClick: () -> Unit,
-    onAddEventClick: () -> Unit,
-    onAddTaskClick: () -> Unit,
-    onAddReminderClick: () -> Unit,
+    onAddEventClick: (Long) -> Unit,
+    onAddTaskClick: (Long) -> Unit,
+    onAddReminderClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -175,21 +174,21 @@ internal fun AgendaScreen(
                         text = stringResource(R.string.event),
                         onClick = {
                             onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
-                            onAddEventClick()
+                            onAddEventClick(agendaUiState.getDateMilli(agendaUiState.displayDate))
                         },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.task),
                         onClick = {
                             onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
-                            onAddTaskClick()
+                            onAddTaskClick(agendaUiState.getDateMilli(agendaUiState.displayDate))
                         },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.reminder),
                         onClick = {
                             onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
-                            onAddReminderClick()
+                            onAddReminderClick(agendaUiState.getDateMilli(agendaUiState.displayDate))
                         },
                     )
                 }
@@ -223,11 +222,7 @@ internal fun AgendaScreen(
             ) {
                 if (agendaUiState.showDatePicker) {
                     val datePickerState = rememberDatePickerState(
-                        initialSelectedDateMillis = agendaUiState.selectedDate.atStartOfDay(
-                            ZoneId.of(
-                                "UTC"
-                            )
-                        ).toInstant().toEpochMilli()
+                        initialSelectedDateMillis = agendaUiState.getDateMilli(agendaUiState.selectedDate)
                     )
                     val confirmEnabled by
                     remember { derivedStateOf { datePickerState.selectedDateMillis != null } }

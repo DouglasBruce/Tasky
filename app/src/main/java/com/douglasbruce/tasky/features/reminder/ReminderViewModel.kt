@@ -8,6 +8,9 @@ import androidx.lifecycle.viewmodel.compose.saveable
 import com.douglasbruce.tasky.features.reminder.form.ReminderState
 import com.douglasbruce.tasky.features.reminder.navigation.ReminderArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
@@ -19,7 +22,15 @@ class ReminderViewModel @Inject constructor(
     private val reminderArgs: ReminderArgs = ReminderArgs(savedStateHandle)
 
     var state by savedStateHandle.saveable {
-        mutableStateOf(ReminderState(id = reminderArgs.reminderId))
+        mutableStateOf(
+            ReminderState(
+                id = reminderArgs.reminderId,
+                date = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(reminderArgs.reminderDateMilli),
+                    ZoneId.of("UTC")
+                ).toLocalDate()
+            )
+        )
     }
         private set
 }

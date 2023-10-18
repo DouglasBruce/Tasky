@@ -3,6 +3,7 @@ package com.douglasbruce.tasky.features.agenda.form
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
+import java.time.ZoneId
 
 @Parcelize
 data class AgendaState(
@@ -15,4 +16,9 @@ data class AgendaState(
     val showSelectedAgendaOptions: Boolean = false,
     val showAccountOptions: Boolean = false,
     val showDatePicker: Boolean = false,
-) : Parcelable
+) : Parcelable {
+
+    fun getDateMilli(date: LocalDate): Long {
+        return date.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+    }
+}
