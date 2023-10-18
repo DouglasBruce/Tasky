@@ -42,6 +42,7 @@ import com.douglasbruce.tasky.core.designsystem.theme.Green
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.features.task.form.TaskEvent
 import com.douglasbruce.tasky.features.task.form.TaskState
 import java.time.format.DateTimeFormatter
 
@@ -54,6 +55,7 @@ internal fun TaskRoute(
     TaskScreen(
         onBackClick = onBackClick,
         taskUiState = viewModel.state,
+        onEvent = viewModel::onEvent,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -63,6 +65,7 @@ internal fun TaskRoute(
 internal fun TaskScreen(
     onBackClick: () -> Unit,
     taskUiState: TaskState,
+    onEvent: (TaskEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
@@ -91,7 +94,7 @@ internal fun TaskScreen(
                     }
                     else -> {
                         {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = { onEvent(TaskEvent.ToggleEditMode) }) {
                                 Icon(
                                     imageVector = TaskyIcons.EditOutlined,
                                     contentDescription = stringResource(R.string.edit_task),
@@ -188,6 +191,7 @@ fun TaskPreview() {
         TaskScreen(
             onBackClick = {},
             taskUiState = TaskState(),
+            onEvent = {},
         )
     }
 }

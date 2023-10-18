@@ -14,13 +14,16 @@ const val reminderNavigationRoute = "reminder"
 @VisibleForTesting
 internal const val reminderIdArg = "reminderId"
 
-internal class ReminderArgs(val reminderId: String?) {
+@VisibleForTesting
+internal const val reminderDateArg = "reminderDate"
+
+internal class ReminderArgs(val reminderId: String?, val reminderDateMilli: Long) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(savedStateHandle[reminderIdArg])
+            this(savedStateHandle[reminderIdArg], checkNotNull(savedStateHandle[reminderDateArg]))
 }
 
-fun NavController.navigateToNewReminder() {
-    this.navigate("$reminderNavigationRoute/") {
+fun NavController.navigateToNewReminder(dateMilli: Long) {
+    this.navigate("$reminderNavigationRoute/$dateMilli") {
         launchSingleTop = true
     }
 }
@@ -35,8 +38,11 @@ fun NavGraphBuilder.reminderScreen(
     onBackClick: () -> Unit,
 ) {
     composable(
-        route = "$reminderNavigationRoute/?$reminderIdArg={$reminderIdArg}",
+        route = "$reminderNavigationRoute/{$reminderDateArg}?$reminderIdArg={$reminderIdArg}",
         arguments = listOf(
+            navArgument(reminderDateArg) {
+                type = NavType.LongType
+            },
             navArgument(reminderIdArg) {
                 type = NavType.StringType
                 nullable = true

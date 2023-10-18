@@ -14,13 +14,16 @@ const val taskNavigationRoute = "task"
 @VisibleForTesting
 internal const val taskIdArg = "taskId"
 
-internal class TaskArgs(val taskId: String?) {
+@VisibleForTesting
+internal const val taskDateArg = "taskDate"
+
+internal class TaskArgs(val taskId: String?, val taskDateMilli: Long) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(savedStateHandle[taskIdArg])
+            this(savedStateHandle[taskIdArg], checkNotNull(savedStateHandle[taskDateArg]))
 }
 
-fun NavController.navigateToNewTask() {
-    this.navigate("$taskNavigationRoute/") {
+fun NavController.navigateToNewTask(dateMilli: Long) {
+    this.navigate("$taskNavigationRoute/$dateMilli") {
         launchSingleTop = true
     }
 }
@@ -35,8 +38,11 @@ fun NavGraphBuilder.taskScreen(
     onBackClick: () -> Unit,
 ) {
     composable(
-        route = "$taskNavigationRoute/?$taskIdArg={$taskIdArg}",
+        route = "$taskNavigationRoute/{$taskDateArg}?$taskIdArg={$taskIdArg}",
         arguments = listOf(
+            navArgument(taskDateArg) {
+                type = NavType.LongType
+            },
             navArgument(taskIdArg) {
                 type = NavType.StringType
                 nullable = true

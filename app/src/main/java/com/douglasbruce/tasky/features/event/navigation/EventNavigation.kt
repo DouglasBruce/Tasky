@@ -14,13 +14,27 @@ const val eventNavigationRoute = "event"
 @VisibleForTesting
 internal const val eventIdArg = "eventId"
 
-internal class EventArgs(val eventId: String?) {
+@VisibleForTesting
+internal const val eventFromDateArg = "eventFromDate"
+
+@VisibleForTesting
+internal const val eventToDateArg = "eventToDate"
+
+internal class EventArgs(
+    val eventId: String?,
+    val eventToDateMilli: Long,
+    val eventFromDateMilli: Long
+) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(savedStateHandle[eventIdArg])
+            this(
+                savedStateHandle[eventIdArg],
+                checkNotNull(savedStateHandle[eventToDateArg]),
+                checkNotNull(savedStateHandle[eventFromDateArg])
+            )
 }
 
-fun NavController.navigateToNewEvent() {
-    this.navigate("$eventNavigationRoute/") {
+fun NavController.navigateToNewEvent(dateMilli: Long) {
+    this.navigate("$eventNavigationRoute/$dateMilli/$dateMilli") {
         launchSingleTop = true
     }
 }
@@ -35,8 +49,14 @@ fun NavGraphBuilder.eventScreen(
     onBackClick: () -> Unit,
 ) {
     composable(
-        route = "$eventNavigationRoute/?$eventIdArg={$eventIdArg}",
+        route = "$eventNavigationRoute/{$eventToDateArg}/{$eventFromDateArg}?$eventIdArg={$eventIdArg}",
         arguments = listOf(
+            navArgument(eventToDateArg) {
+                type = NavType.LongType
+            },
+            navArgument(eventFromDateArg) {
+                type = NavType.LongType
+            },
             navArgument(eventIdArg) {
                 type = NavType.StringType
                 nullable = true
