@@ -5,15 +5,23 @@ import javax.inject.Inject
 class NameFormatter @Inject constructor() {
 
     fun getInitials(fullName: String): String {
-        // Split the full name into first and last name.
-        val (firstName, lastName) = fullName.split(' ')
+        // Check if the full name is blank.
+        if (fullName.isBlank()) {
+            return ""
+        }
+
+        // Trim any leading and trailing whitespace characters from the full name.
+        val trimmedFullName = fullName.trim()
+
+        // Split the full name using a regular expression to split on any whitespace characters, including trailing whitespace characters.
+        val splitNames = trimmedFullName.split("\\s+".toRegex())
 
         // If the full name consists of one word, return the first 2 characters.
-        if (lastName.isEmpty()) {
-            return firstName.take(2)
+        if (splitNames.size == 1) {
+            return trimmedFullName.take(2)
         }
 
         // Otherwise, return the first letter of the first and last name.
-        return firstName.take(1) + lastName.take(1)
+        return splitNames.first().take(1) + splitNames.last().take(1)
     }
 }
