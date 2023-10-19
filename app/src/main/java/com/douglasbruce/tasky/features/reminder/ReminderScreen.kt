@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -43,18 +44,33 @@ import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.features.reminder.form.ReminderEvent
 import com.douglasbruce.tasky.features.reminder.form.ReminderState
 import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun ReminderRoute(
+    reminderTitle: String,
+    reminderDescription: String,
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReminderViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(reminderTitle, reminderDescription) {
+        viewModel.onEvent(
+            ReminderEvent.OnEditorSave(
+                reminderTitle,
+                reminderDescription
+            )
+        )
+    }
+
     ReminderScreen(
         onBackClick = onBackClick,
+        onEditorClick = onEditorClick,
         reminderUiState = viewModel.state,
+        onEvent = viewModel::onEvent,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -63,7 +79,9 @@ internal fun ReminderRoute(
 @Composable
 internal fun ReminderScreen(
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
     reminderUiState: ReminderState,
+    onEvent: (ReminderEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
@@ -92,7 +110,7 @@ internal fun ReminderScreen(
                     }
                     else -> {
                         {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = { onEvent(ReminderEvent.ToggleEditMode) }) {
                                 Icon(
                                     imageVector = TaskyIcons.EditOutlined,
                                     contentDescription = stringResource(R.string.edit_reminder),
@@ -136,6 +154,11 @@ internal fun ReminderScreen(
                     )
                     .padding(vertical = 16.dp),
             ) {
+                val reminderTitle =
+                    if (reminderUiState.title.isNullOrBlank()) stringResource(R.string.new_reminder) else reminderUiState.title
+                val reminderDesc =
+                    if (reminderUiState.description.isNullOrBlank()) stringResource(R.string.reminder_description) else reminderUiState.description
+
                 AgendaTypeIndicator(
                     color = LightBlueVariant,
                     borderColor = Gray,
@@ -145,15 +168,15 @@ internal fun ReminderScreen(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 )
                 AgendaTitle(
-                    title = if (reminderUiState.title.isNullOrBlank()) stringResource(R.string.new_reminder) else reminderUiState.title,
+                    title = reminderTitle,
                     isReadOnly = !reminderUiState.isEditing,
-                    onClick = { /*TODO*/ }
+                    onClick = { onEditorClick(true, "reminder_title", reminderTitle) }
                 )
                 Divider(color = LightBlue)
                 AgendaDescription(
-                    description = if (reminderUiState.description.isNullOrBlank()) stringResource(R.string.reminder_description) else reminderUiState.description,
+                    description = reminderDesc,
                     isReadOnly = !reminderUiState.isEditing,
-                    onClick = { /*TODO*/ }
+                    onClick = { onEditorClick(false, "reminder_desc", reminderDesc) }
                 )
                 Divider(color = LightBlue)
                 AgendaDateTime(
@@ -189,7 +212,9 @@ fun ReminderPreview() {
     TaskyTheme {
         ReminderScreen(
             onBackClick = {},
+            onEditorClick = { _: Boolean, _: String, _: String -> },
             reminderUiState = ReminderState(),
+            onEvent = {},
         )
     }
 }

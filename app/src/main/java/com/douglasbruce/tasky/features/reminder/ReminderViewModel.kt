@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.douglasbruce.tasky.features.reminder.form.ReminderEvent
 import com.douglasbruce.tasky.features.reminder.form.ReminderState
 import com.douglasbruce.tasky.features.reminder.navigation.ReminderArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,4 +34,16 @@ class ReminderViewModel @Inject constructor(
         )
     }
         private set
+
+    fun onEvent(event: ReminderEvent) {
+        when (event) {
+            is ReminderEvent.ToggleEditMode -> {
+                state = state.copy(isEditing = !state.isEditing)
+            }
+
+            is ReminderEvent.OnEditorSave -> {
+                state = state.copy(title = event.title, description = event.description)
+            }
+        }
+    }
 }
