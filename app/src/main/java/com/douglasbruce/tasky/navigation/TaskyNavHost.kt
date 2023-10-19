@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.douglasbruce.tasky.features.agenda.navigation.agendaGraph
 import com.douglasbruce.tasky.features.agenda.navigation.navigateToAgendaGraph
+import com.douglasbruce.tasky.features.editor.navigation.editorScreen
+import com.douglasbruce.tasky.features.editor.navigation.navigateToEditor
 import com.douglasbruce.tasky.features.event.navigation.eventScreen
 import com.douglasbruce.tasky.features.event.navigation.navigateToNewEvent
 import com.douglasbruce.tasky.features.login.navigation.loginGraph
@@ -48,10 +50,18 @@ fun TaskyNavHost(
                     onBackClick = navController::popBackStack
                 )
                 taskScreen(
-                    onBackClick = navController::popBackStack
+                    onBackClick = navController::popBackStack,
+                    onEditorClick = navController::navigateToEditor,
                 )
                 reminderScreen(
                     onBackClick = navController::popBackStack
+                )
+                editorScreen(
+                    onBackClick = navController::popBackStack,
+                    onSaveClick = { key: String, value: String ->
+                        navController.previousBackStackEntry?.savedStateHandle?.set(key, value)
+                        navController.popBackStack()
+                    }
                 )
             }
         )

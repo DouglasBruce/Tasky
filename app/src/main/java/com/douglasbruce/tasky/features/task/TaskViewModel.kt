@@ -40,6 +40,10 @@ class TaskViewModel @Inject constructor(
             is TaskEvent.ToggleEditMode -> {
                 state = state.copy(isEditing = !state.isEditing)
             }
+
+            is TaskEvent.OnEditorSave -> {
+                state = state.copy(title = event.title, description = event.description)
+            }
         }
     }
 }

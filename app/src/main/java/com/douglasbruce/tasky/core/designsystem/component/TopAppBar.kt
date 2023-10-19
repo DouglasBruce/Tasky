@@ -36,7 +36,7 @@ fun TaskyCenterAlignedTopAppBar(
             Text(
                 text = title,
                 style = TextStyle(
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     lineHeight = 12.sp,
                     fontWeight = FontWeight(600),
                 )

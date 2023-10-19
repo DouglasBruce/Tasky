@@ -9,10 +9,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.features.agenda.navigation.agendaGraphRoute
 import com.douglasbruce.tasky.features.login.navigation.loginGraphRoute
@@ -32,8 +34,8 @@ class MainActivity : ComponentActivity() {
             viewModel.isLoading.value
         }
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                Color.TRANSPARENT, Color.TRANSPARENT
+            statusBarStyle = SystemBarStyle.dark(
+                Black.toArgb()
             ),
             navigationBarStyle = SystemBarStyle.auto(
                 Color.TRANSPARENT, Color.TRANSPARENT

@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
@@ -26,6 +28,8 @@ fun AgendaDescription(
         headlineContent = {
             Text(
                 text = description,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 5,
                 style = TextStyle(
                     fontSize = 16.sp,
                     lineHeight = 15.sp,
@@ -48,5 +52,14 @@ fun AgendaDescription(
             }
         },
         modifier = modifier.clickable(enabled = !isReadOnly) { onClick() }
+    )
+}
+
+@Preview
+@Composable
+fun AgendaDescriptionPreview() {
+    AgendaDescription(
+        description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex",
+        onClick = {}
     )
 }
