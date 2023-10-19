@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -53,18 +54,33 @@ import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.LightGreen
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.features.event.form.EventFormEvent
 import com.douglasbruce.tasky.features.event.form.EventState
 import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun EventRoute(
+    eventTitle: String,
+    eventDescription: String,
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EventViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(eventTitle, eventDescription) {
+        viewModel.onEvent(
+            EventFormEvent.OnEditorSave(
+                eventTitle,
+                eventDescription
+            )
+        )
+    }
+
     EventScreen(
         onBackClick = onBackClick,
+        onEditorClick = onEditorClick,
         eventUiState = viewModel.state,
+        onEvent = viewModel::onEvent,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -73,7 +89,9 @@ internal fun EventRoute(
 @Composable
 internal fun EventScreen(
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
     eventUiState: EventState,
+    onEvent: (EventFormEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
@@ -102,7 +120,7 @@ internal fun EventScreen(
                     }
                     else -> {
                         {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = { onEvent(EventFormEvent.ToggleEditMode) }) {
                                 Icon(
                                     imageVector = TaskyIcons.EditOutlined,
                                     contentDescription = stringResource(R.string.edit_event),
@@ -146,6 +164,11 @@ internal fun EventScreen(
                     )
                     .padding(vertical = 16.dp),
             ) {
+                val eventTitle =
+                    if (eventUiState.title.isNullOrBlank()) stringResource(R.string.new_event) else eventUiState.title
+                val eventDesc =
+                    if (eventUiState.description.isNullOrBlank()) stringResource(R.string.event_description) else eventUiState.description
+
                 AgendaTypeIndicator(
                     color = LightGreen,
                     agendaType = stringResource(R.string.event),
@@ -154,15 +177,15 @@ internal fun EventScreen(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 )
                 AgendaTitle(
-                    title = if (eventUiState.title.isNullOrBlank()) stringResource(R.string.new_event) else eventUiState.title,
+                    title = eventTitle,
                     isReadOnly = !eventUiState.isEditing,
-                    onClick = { /*TODO*/ }
+                    onClick = { onEditorClick(true, "event_title", eventTitle) }
                 )
                 Divider(color = LightBlue)
                 AgendaDescription(
-                    description = if (eventUiState.description.isNullOrBlank()) stringResource(R.string.event_description) else eventUiState.description,
+                    description = eventDesc,
                     isReadOnly = !eventUiState.isEditing,
-                    onClick = { /*TODO*/ }
+                    onClick = { onEditorClick(false, "event_desc", eventDesc) }
                 )
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -234,7 +257,9 @@ fun EventPreview() {
     TaskyTheme {
         EventScreen(
             onBackClick = {},
+            onEditorClick = { _: Boolean, _: String, _: String -> },
             eventUiState = EventState(),
+            onEvent = {},
         )
     }
 }

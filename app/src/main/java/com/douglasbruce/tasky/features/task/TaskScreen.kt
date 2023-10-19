@@ -143,11 +143,6 @@ internal fun TaskScreen(
                     color = MaterialTheme.colorScheme.primary,
                 ),
         ) {
-            val taskTitle =
-                if (taskUiState.title.isNullOrBlank()) stringResource(R.string.new_task) else taskUiState.title
-            val taskDesc =
-                if (taskUiState.description.isNullOrBlank()) stringResource(R.string.task_description) else taskUiState.description
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -158,6 +153,11 @@ internal fun TaskScreen(
                     )
                     .padding(vertical = 16.dp),
             ) {
+                val taskTitle =
+                    if (taskUiState.title.isNullOrBlank()) stringResource(R.string.new_task) else taskUiState.title
+                val taskDesc =
+                    if (taskUiState.description.isNullOrBlank()) stringResource(R.string.task_description) else taskUiState.description
+
                 AgendaTypeIndicator(
                     color = Green,
                     agendaType = stringResource(R.string.task),

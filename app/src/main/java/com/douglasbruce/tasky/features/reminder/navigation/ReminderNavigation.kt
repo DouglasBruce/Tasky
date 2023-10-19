@@ -36,6 +36,7 @@ fun NavController.navigateToReminder(reminderId: String) {
 
 fun NavGraphBuilder.reminderScreen(
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
 ) {
     composable(
         route = "$reminderNavigationRoute/{$reminderDateArg}?$reminderIdArg={$reminderIdArg}",
@@ -49,8 +50,13 @@ fun NavGraphBuilder.reminderScreen(
             },
         ),
     ) {
+        val reminderTitle = it.savedStateHandle.get<String>("reminder_title") ?: ""
+        val reminderDescription = it.savedStateHandle.get<String>("reminder_desc") ?: ""
         ReminderRoute(
+            reminderTitle = reminderTitle,
+            reminderDescription = reminderDescription,
             onBackClick = onBackClick,
+            onEditorClick = onEditorClick,
         )
     }
 }

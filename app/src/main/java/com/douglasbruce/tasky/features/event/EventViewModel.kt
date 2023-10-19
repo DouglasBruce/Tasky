@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.douglasbruce.tasky.features.event.form.EventFormEvent
 import com.douglasbruce.tasky.features.event.form.EventState
 import com.douglasbruce.tasky.features.event.navigation.EventArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,4 +38,16 @@ class EventViewModel @Inject constructor(
         )
     }
         private set
+
+    fun onEvent(event: EventFormEvent) {
+        when (event) {
+            is EventFormEvent.ToggleEditMode -> {
+                state = state.copy(isEditing = !state.isEditing)
+            }
+
+            is EventFormEvent.OnEditorSave -> {
+                state = state.copy(title = event.title, description = event.description)
+            }
+        }
+    }
 }

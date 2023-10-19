@@ -47,6 +47,7 @@ fun NavController.navigateToEvent(eventId: String) {
 
 fun NavGraphBuilder.eventScreen(
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
 ) {
     composable(
         route = "$eventNavigationRoute/{$eventToDateArg}/{$eventFromDateArg}?$eventIdArg={$eventIdArg}",
@@ -63,8 +64,13 @@ fun NavGraphBuilder.eventScreen(
             },
         ),
     ) {
+        val eventTitle = it.savedStateHandle.get<String>("event_title") ?: ""
+        val eventDescription = it.savedStateHandle.get<String>("event_desc") ?: ""
         EventRoute(
+            eventTitle = eventTitle,
+            eventDescription = eventDescription,
             onBackClick = onBackClick,
+            onEditorClick = onEditorClick,
         )
     }
 }

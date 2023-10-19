@@ -47,14 +47,16 @@ fun TaskyNavHost(
             onAddReminderClick = navController::navigateToNewReminder,
             nestedGraphs = {
                 eventScreen(
-                    onBackClick = navController::popBackStack
+                    onBackClick = navController::popBackStack,
+                    onEditorClick = navController::navigateToEditor,
                 )
                 taskScreen(
                     onBackClick = navController::popBackStack,
                     onEditorClick = navController::navigateToEditor,
                 )
                 reminderScreen(
-                    onBackClick = navController::popBackStack
+                    onBackClick = navController::popBackStack,
+                    onEditorClick = navController::navigateToEditor,
                 )
                 editorScreen(
                     onBackClick = navController::popBackStack,
