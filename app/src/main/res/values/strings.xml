@@ -62,4 +62,6 @@
     <string name="cancel">Cancel</string>
     <string name="ok">@android:string/ok</string>
     <string name="change_date">Change date</string>
+    <string name="edit_title">EDIT TITLE</string>
+    <string name="edit_description">EDIT DESCRIPTION</string>
 </resources>

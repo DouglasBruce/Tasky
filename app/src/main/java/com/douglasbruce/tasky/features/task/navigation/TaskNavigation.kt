@@ -36,6 +36,7 @@ fun NavController.navigateToTask(taskId: String) {
 
 fun NavGraphBuilder.taskScreen(
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
 ) {
     composable(
         route = "$taskNavigationRoute/{$taskDateArg}?$taskIdArg={$taskIdArg}",
@@ -49,8 +50,13 @@ fun NavGraphBuilder.taskScreen(
             },
         ),
     ) {
+        val taskTitle = it.savedStateHandle.get<String>("task_title") ?: ""
+        val taskDescription = it.savedStateHandle.get<String>("task_desc") ?: ""
         TaskRoute(
+            taskTitle = taskTitle,
+            taskDescription = taskDescription,
             onBackClick = onBackClick,
+            onEditorClick = onEditorClick,
         )
     }
 }

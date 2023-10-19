@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -48,12 +49,25 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun TaskRoute(
+    taskTitle: String,
+    taskDescription: String,
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TaskViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(taskTitle, taskDescription) {
+        viewModel.onEvent(
+            TaskEvent.OnEditorSave(
+                taskTitle,
+                taskDescription
+            )
+        )
+    }
+
     TaskScreen(
         onBackClick = onBackClick,
+        onEditorClick = onEditorClick,
         taskUiState = viewModel.state,
         onEvent = viewModel::onEvent,
         modifier = modifier.fillMaxSize(),
@@ -64,6 +78,7 @@ internal fun TaskRoute(
 @Composable
 internal fun TaskScreen(
     onBackClick: () -> Unit,
+    onEditorClick: (Boolean, String, String) -> Unit,
     taskUiState: TaskState,
     onEvent: (TaskEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -128,6 +143,11 @@ internal fun TaskScreen(
                     color = MaterialTheme.colorScheme.primary,
                 ),
         ) {
+            val taskTitle =
+                if (taskUiState.title.isNullOrBlank()) stringResource(R.string.new_task) else taskUiState.title
+            val taskDesc =
+                if (taskUiState.description.isNullOrBlank()) stringResource(R.string.task_description) else taskUiState.description
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -146,15 +166,15 @@ internal fun TaskScreen(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 )
                 AgendaTitle(
-                    title = if (taskUiState.title.isNullOrBlank()) stringResource(R.string.new_task) else taskUiState.title,
+                    title = taskTitle,
                     isReadOnly = !taskUiState.isEditing,
-                    onClick = { /*TODO*/ }
+                    onClick = { onEditorClick(true, "task_title", taskTitle) },
                 )
                 Divider(color = LightBlue)
                 AgendaDescription(
-                    description = if (taskUiState.description.isNullOrBlank()) stringResource(R.string.task_description) else taskUiState.description,
+                    description = taskDesc,
                     isReadOnly = !taskUiState.isEditing,
-                    onClick = { /*TODO*/ }
+                    onClick = { onEditorClick(false, "task_desc", taskDesc) },
                 )
                 Divider(color = LightBlue)
                 AgendaDateTime(
@@ -190,6 +210,7 @@ fun TaskPreview() {
     TaskyTheme {
         TaskScreen(
             onBackClick = {},
+            onEditorClick = { _: Boolean, _: String, _: String -> },
             taskUiState = TaskState(),
             onEvent = {},
         )
