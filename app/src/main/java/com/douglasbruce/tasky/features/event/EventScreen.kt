@@ -27,6 +27,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -39,13 +41,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
 import com.douglasbruce.tasky.core.designsystem.component.AgendaReminder
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
+import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
+import com.douglasbruce.tasky.core.designsystem.component.TaskyTimePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
@@ -169,6 +174,51 @@ internal fun EventScreen(
                 val eventDesc =
                     if (eventUiState.description.isNullOrBlank()) stringResource(R.string.event_description) else eventUiState.description
 
+                if (eventUiState.showTimePicker) {
+                    val timePickerState = if (eventUiState.isEditingToTime) {
+                        rememberTimePickerState(
+                            initialHour = eventUiState.toTime.hour,
+                            initialMinute = eventUiState.toTime.minute
+                        )
+                    } else {
+                        rememberTimePickerState(
+                            initialHour = eventUiState.fromTime.hour,
+                            initialMinute = eventUiState.fromTime.minute
+                        )
+                    }
+
+                    TaskyTimePicker(
+                        timePickerState = timePickerState,
+                        onOkClick = {
+                            onEvent(
+                                EventFormEvent.OnTimeSelected(
+                                    timePickerState.hour,
+                                    timePickerState.minute
+                                )
+                            )
+                        },
+                        onDismiss = { onEvent(EventFormEvent.OnHideTimePicker) },
+                    )
+                }
+
+                if (eventUiState.showDatePicker) {
+                    val datePickerState = if (eventUiState.isEditingToDate) {
+                        rememberDatePickerState(
+                            initialSelectedDateMillis = DateUtils.getDateMilli(eventUiState.toDate)
+                        )
+                    } else {
+                        rememberDatePickerState(
+                            initialSelectedDateMillis = DateUtils.getDateMilli(eventUiState.fromDate)
+                        )
+                    }
+
+                    TaskyDatePicker(
+                        datePickerState = datePickerState,
+                        onOkClick = { onEvent(EventFormEvent.OnDateSelected(datePickerState.selectedDateMillis!!)) },
+                        onDismiss = { onEvent(EventFormEvent.OnHideDatePicker) },
+                    )
+                }
+
                 AgendaTypeIndicator(
                     color = LightGreen,
                     agendaType = stringResource(R.string.event),
@@ -218,8 +268,8 @@ internal fun EventScreen(
                     label = stringResource(R.string.from),
                     time = eventUiState.fromTime,
                     date = eventUiState.fromDate,
-                    onTimeClick = { /*TODO*/ },
-                    onDateClick = { /*TODO*/ },
+                    onTimeClick = { onEvent(EventFormEvent.OnTimePickerClick(false)) },
+                    onDateClick = { onEvent(EventFormEvent.OnDatePickerClick(false)) },
                     isReadOnly = !eventUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -228,8 +278,8 @@ internal fun EventScreen(
                     label = stringResource(R.string.to),
                     time = eventUiState.toTime,
                     date = eventUiState.toDate,
-                    onTimeClick = { /*TODO*/ },
-                    onDateClick = { /*TODO*/ },
+                    onTimeClick = { onEvent(EventFormEvent.OnTimePickerClick(true)) },
+                    onDateClick = { onEvent(EventFormEvent.OnDatePickerClick(true)) },
                     isReadOnly = !eventUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
