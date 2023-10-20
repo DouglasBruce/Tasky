@@ -14,4 +14,6 @@ data class TaskState(
     val date: LocalDate = LocalDate.now(),
     val time: LocalTime = LocalTime.now(),
     val isNew: Boolean = id.isNullOrBlank(),
+    val showTimePicker: Boolean = false,
+    val showDatePicker: Boolean = false,
 ) : Parcelable

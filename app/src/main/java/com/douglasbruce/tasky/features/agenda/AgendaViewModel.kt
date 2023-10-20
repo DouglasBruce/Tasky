@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.formatter.NameFormatter
 import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
@@ -13,17 +14,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class AgendaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    nameFormatter: NameFormatter,
     private val userDataPreferences: UserDataPreferences,
-    private val nameFormatter: NameFormatter,
 ) : ViewModel() {
 
     var state by savedStateHandle.saveable {
@@ -58,10 +56,7 @@ class AgendaViewModel @Inject constructor(
             }
 
             is AgendaEvent.OnDateSelected -> {
-                val localDate = LocalDateTime.ofInstant(
-                    Instant.ofEpochMilli(event.dateMillis),
-                    ZoneId.of("UTC")
-                ).toLocalDate()
+                val localDate = DateUtils.getLocalDate(event.dateMillis)
 
                 state = state.copy(
                     selectedDate = localDate,
