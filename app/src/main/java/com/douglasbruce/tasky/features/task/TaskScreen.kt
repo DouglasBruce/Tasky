@@ -21,6 +21,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -30,13 +32,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
 import com.douglasbruce.tasky.core.designsystem.component.AgendaReminder
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
+import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
+import com.douglasbruce.tasky.core.designsystem.component.TaskyTimePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Green
@@ -107,6 +112,7 @@ internal fun TaskScreen(
                             )
                         }
                     }
+
                     else -> {
                         {
                             IconButton(onClick = { onEvent(TaskEvent.ToggleEditMode) }) {
@@ -158,6 +164,38 @@ internal fun TaskScreen(
                 val taskDesc =
                     if (taskUiState.description.isNullOrBlank()) stringResource(R.string.task_description) else taskUiState.description
 
+                if (taskUiState.showTimePicker) {
+                    val timePickerState = rememberTimePickerState(
+                        initialHour = taskUiState.time.hour,
+                        initialMinute = taskUiState.time.minute
+                    )
+
+                    TaskyTimePicker(
+                        timePickerState = timePickerState,
+                        onOkClick = {
+                            onEvent(
+                                TaskEvent.OnTimeSelected(
+                                    timePickerState.hour,
+                                    timePickerState.minute
+                                )
+                            )
+                        },
+                        onDismiss = { onEvent(TaskEvent.OnTimePickerClick(false)) },
+                    )
+                }
+
+                if (taskUiState.showDatePicker) {
+                    val datePickerState = rememberDatePickerState(
+                        initialSelectedDateMillis = DateUtils.getDateMilli(taskUiState.date)
+                    )
+
+                    TaskyDatePicker(
+                        datePickerState = datePickerState,
+                        onOkClick = { onEvent(TaskEvent.OnDateSelected(datePickerState.selectedDateMillis!!)) },
+                        onDismiss = { onEvent(TaskEvent.OnDatePickerClick(false)) },
+                    )
+                }
+
                 AgendaTypeIndicator(
                     color = Green,
                     agendaType = stringResource(R.string.task),
@@ -181,8 +219,8 @@ internal fun TaskScreen(
                     label = stringResource(R.string.at),
                     time = taskUiState.time,
                     date = taskUiState.date,
-                    onTimeClick = { /*TODO*/ },
-                    onDateClick = { /*TODO*/ },
+                    onTimeClick = { onEvent(TaskEvent.OnTimePickerClick(true)) },
+                    onDateClick = { onEvent(TaskEvent.OnDatePickerClick(true)) },
                     isReadOnly = !taskUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )

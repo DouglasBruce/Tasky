@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -35,9 +33,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDayPicker
+import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyDropdownMenuItem
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
@@ -174,21 +171,21 @@ internal fun AgendaScreen(
                         text = stringResource(R.string.event),
                         onClick = {
                             onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
-                            onAddEventClick(agendaUiState.getDateMilli(agendaUiState.displayDate))
+                            onAddEventClick(DateUtils.getDateMilli(agendaUiState.displayDate))
                         },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.task),
                         onClick = {
                             onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
-                            onAddTaskClick(agendaUiState.getDateMilli(agendaUiState.displayDate))
+                            onAddTaskClick(DateUtils.getDateMilli(agendaUiState.displayDate))
                         },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.reminder),
                         onClick = {
                             onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false))
-                            onAddReminderClick(agendaUiState.getDateMilli(agendaUiState.displayDate))
+                            onAddReminderClick(DateUtils.getDateMilli(agendaUiState.displayDate))
                         },
                     )
                 }
@@ -222,31 +219,14 @@ internal fun AgendaScreen(
             ) {
                 if (agendaUiState.showDatePicker) {
                     val datePickerState = rememberDatePickerState(
-                        initialSelectedDateMillis = agendaUiState.getDateMilli(agendaUiState.selectedDate)
+                        initialSelectedDateMillis = DateUtils.getDateMilli(agendaUiState.selectedDate)
                     )
-                    val confirmEnabled by
-                    remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
 
-                    DatePickerDialog(
-                        onDismissRequest = { onEvent(AgendaEvent.OnDatePickerClick(false)) },
-                        confirmButton = {
-                            TextButton(
-                                onClick = { onEvent(AgendaEvent.OnDateSelected(datePickerState.selectedDateMillis!!)) },
-                                enabled = confirmEnabled
-                            ) {
-                                Text(stringResource(R.string.ok))
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = { onEvent(AgendaEvent.OnDatePickerClick(false)) }
-                            ) {
-                                Text(stringResource(R.string.cancel))
-                            }
-                        }
-                    ) {
-                        DatePicker(state = datePickerState)
-                    }
+                    TaskyDatePicker(
+                        datePickerState = datePickerState,
+                        onOkClick = { onEvent(AgendaEvent.OnDateSelected(datePickerState.selectedDateMillis!!)) },
+                        onDismiss = { onEvent(AgendaEvent.OnDatePickerClick(false)) },
+                    )
                 }
 
                 val today = rememberSaveable { LocalDate.now() }
