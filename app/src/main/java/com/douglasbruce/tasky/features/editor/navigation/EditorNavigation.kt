@@ -12,7 +12,7 @@ import com.douglasbruce.tasky.features.editor.EditorRoute
 const val editorNavigationRoute = "editor"
 
 @VisibleForTesting
-internal const val editorTypeArg = "editorType"
+internal const val editorIsTitleArg = "editorIsTitleArg"
 
 @VisibleForTesting
 internal const val editorKeyArg = "editorKey"
@@ -20,10 +20,10 @@ internal const val editorKeyArg = "editorKey"
 @VisibleForTesting
 internal const val editorValueArg = "editorValue"
 
-internal class EditorArgs(val editorType: Boolean, val editorKey: String, val editorValue: String) {
+internal class EditorArgs(val editorIsTitle: Boolean, val editorKey: String, val editorValue: String) {
     constructor(savedStateHandle: SavedStateHandle) :
             this(
-                checkNotNull(savedStateHandle[editorTypeArg]),
+                checkNotNull(savedStateHandle[editorIsTitleArg]),
                 checkNotNull(savedStateHandle[editorKeyArg]),
                 checkNotNull(savedStateHandle[editorValueArg])
             )
@@ -40,9 +40,9 @@ fun NavGraphBuilder.editorScreen(
     onSaveClick: (String, String) -> Unit,
 ) {
     composable(
-        route = "$editorNavigationRoute/{$editorTypeArg}/{$editorKeyArg}/{$editorValueArg}",
+        route = "$editorNavigationRoute/{$editorIsTitleArg}/{$editorKeyArg}/{$editorValueArg}",
         arguments = listOf(
-            navArgument(editorTypeArg) {
+            navArgument(editorIsTitleArg) {
                 type = NavType.BoolType
             },
             navArgument(editorKeyArg) {

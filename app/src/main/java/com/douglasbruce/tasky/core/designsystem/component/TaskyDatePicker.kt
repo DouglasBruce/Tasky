@@ -52,6 +52,7 @@ fun TaskyDatePicker(
             state = datePickerState,
             colors = DatePickerDefaults.colors(
                 todayDateBorderColor = LinkBlue,
+                todayContentColor = LinkBlue,
                 selectedDayContainerColor = Orange,
                 selectedDayContentColor = DarkGray,
             ),

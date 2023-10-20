@@ -5,16 +5,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-sealed class DateUtils {
+object DateUtils {
+    fun getDateMilli(date: LocalDate): Long {
+        return date.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+    }
 
-    companion object {
-        fun getDateMilli(date: LocalDate): Long {
-            return date.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
-        }
-
-        fun getLocalDate(dateMilli: Long): LocalDate {
-            return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateMilli), ZoneId.of("UTC"))
-                .toLocalDate()
-        }
+    fun getLocalDate(dateMilli: Long): LocalDate {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateMilli), ZoneId.of("UTC"))
+            .toLocalDate()
     }
 }

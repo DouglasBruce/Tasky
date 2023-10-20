@@ -38,7 +38,7 @@ import com.douglasbruce.tasky.features.editor.form.EditorState
 @Composable
 internal fun EditorRoute(
     onBackClick: () -> Unit,
-    onSaveClick: (String, String) -> Unit,
+    onSaveClick: (key: String, value: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EditorViewModel = hiltViewModel(),
 ) {
@@ -55,7 +55,7 @@ internal fun EditorRoute(
 @Composable
 internal fun EditorScreen(
     onBackClick: () -> Unit,
-    onSaveClick: (String, String) -> Unit,
+    onSaveClick: (key: String, value: String) -> Unit,
     editorUiState: EditorState,
     onEvent: (EditorEvent) -> Unit,
     modifier: Modifier = Modifier,

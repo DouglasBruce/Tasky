@@ -64,4 +64,8 @@
     <string name="change_date">Change date</string>
     <string name="edit_title">EDIT TITLE</string>
     <string name="edit_description">EDIT DESCRIPTION</string>
+    <string name="select_time">Select time</string>
+    <string name="enter_time">Enter time</string>
+    <string name="switch_text_input">Switch to Text Input</string>
+    <string name="switch_touch_input">Switch to Touch Input</string>
 </resources>
