@@ -24,7 +24,7 @@ class EditorViewModel @Inject constructor(
             EditorState(
                 key = editorArgs.editorKey,
                 value = editorArgs.editorValue,
-                isTitleEditor = editorArgs.editorType,
+                isTitleEditor = editorArgs.editorIsTitle,
             )
         )
     }

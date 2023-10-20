@@ -151,12 +151,12 @@ private fun TimePickerContent(
 private fun TimePickerTitle(displayMode: DisplayMode, modifier: Modifier = Modifier) {
     when (displayMode) {
         DisplayMode.Picker -> Text(
-            text = "Select time",
+            text = stringResource(R.string.select_time),
             modifier = modifier
         )
 
         DisplayMode.Input -> Text(
-            text = "Enter time",
+            text = stringResource(R.string.enter_time),
             modifier = modifier
         )
     }
@@ -172,14 +172,14 @@ private fun DisplayModeToggleButton(
         IconButton(onClick = { onDisplayModeChange(DisplayMode.Input) }) {
             Icon(
                 imageVector = Icons.Outlined.Keyboard,
-                contentDescription = "Switch to Text Input"
+                contentDescription = stringResource(R.string.switch_text_input),
             )
         }
     } else {
         IconButton(onClick = { onDisplayModeChange(DisplayMode.Picker) }) {
             Icon(
                 imageVector = Icons.Outlined.Schedule,
-                contentDescription = "Switch to Touch Input"
+                contentDescription = stringResource(R.string.switch_touch_input),
             )
         }
     }
