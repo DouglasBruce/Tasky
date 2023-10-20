@@ -13,7 +13,11 @@ data class EventState(
     val isEditing: Boolean = id.isNullOrBlank(),
     val fromDate: LocalDate = LocalDate.now(),
     val fromTime: LocalTime = LocalTime.now(),
-    val toDate: LocalDate = LocalDate.now(),
-    val toTime: LocalTime = LocalTime.now(),
+    val toDate: LocalDate = fromDate,
+    val toTime: LocalTime = fromTime.plusMinutes(30),
     val isNew: Boolean = id.isNullOrBlank(),
+    val showTimePicker: Boolean = false,
+    val showDatePicker: Boolean = false,
+    val isEditingToTime: Boolean = false,
+    val isEditingToDate: Boolean = false,
 ) : Parcelable

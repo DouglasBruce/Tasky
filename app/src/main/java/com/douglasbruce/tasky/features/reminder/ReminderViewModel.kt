@@ -10,6 +10,7 @@ import com.douglasbruce.tasky.features.reminder.form.ReminderEvent
 import com.douglasbruce.tasky.features.reminder.form.ReminderState
 import com.douglasbruce.tasky.features.reminder.navigation.ReminderArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalTime
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
@@ -38,6 +39,31 @@ class ReminderViewModel @Inject constructor(
 
             is ReminderEvent.OnEditorSave -> {
                 state = state.copy(title = event.title, description = event.description)
+            }
+
+            is ReminderEvent.OnTimePickerClick -> {
+                state = state.copy(showTimePicker = event.show)
+            }
+
+            is ReminderEvent.OnTimeSelected -> {
+                val localTime: LocalTime = LocalTime.of(event.hour, event.minute)
+                state = state.copy(
+                    time = localTime,
+                    showTimePicker = false,
+                )
+            }
+
+            is ReminderEvent.OnDatePickerClick -> {
+                state = state.copy(showDatePicker = event.show)
+            }
+
+            is ReminderEvent.OnDateSelected -> {
+                val localDate = DateUtils.getLocalDate(event.dateMillis)
+
+                state = state.copy(
+                    date = localDate,
+                    showDatePicker = false,
+                )
             }
         }
     }

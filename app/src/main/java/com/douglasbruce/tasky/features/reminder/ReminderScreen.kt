@@ -21,6 +21,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -30,13 +32,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDateTime
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
 import com.douglasbruce.tasky.core.designsystem.component.AgendaReminder
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
+import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
+import com.douglasbruce.tasky.core.designsystem.component.TaskyTimePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
@@ -159,6 +164,38 @@ internal fun ReminderScreen(
                 val reminderDesc =
                     if (reminderUiState.description.isNullOrBlank()) stringResource(R.string.reminder_description) else reminderUiState.description
 
+                if (reminderUiState.showTimePicker) {
+                    val timePickerState = rememberTimePickerState(
+                        initialHour = reminderUiState.time.hour,
+                        initialMinute = reminderUiState.time.minute
+                    )
+
+                    TaskyTimePicker(
+                        timePickerState = timePickerState,
+                        onOkClick = {
+                            onEvent(
+                                ReminderEvent.OnTimeSelected(
+                                    timePickerState.hour,
+                                    timePickerState.minute
+                                )
+                            )
+                        },
+                        onDismiss = { onEvent(ReminderEvent.OnTimePickerClick(false)) },
+                    )
+                }
+
+                if (reminderUiState.showDatePicker) {
+                    val datePickerState = rememberDatePickerState(
+                        initialSelectedDateMillis = DateUtils.getDateMilli(reminderUiState.date)
+                    )
+
+                    TaskyDatePicker(
+                        datePickerState = datePickerState,
+                        onOkClick = { onEvent(ReminderEvent.OnDateSelected(datePickerState.selectedDateMillis!!)) },
+                        onDismiss = { onEvent(ReminderEvent.OnDatePickerClick(false)) },
+                    )
+                }
+
                 AgendaTypeIndicator(
                     color = LightBlueVariant,
                     borderColor = Gray,
@@ -183,8 +220,8 @@ internal fun ReminderScreen(
                     label = stringResource(R.string.at),
                     time = reminderUiState.time,
                     date = reminderUiState.date,
-                    onTimeClick = { /*TODO*/ },
-                    onDateClick = { /*TODO*/ },
+                    onTimeClick = { onEvent(ReminderEvent.OnTimePickerClick(true)) },
+                    onDateClick = { onEvent(ReminderEvent.OnDatePickerClick(true)) },
                     isReadOnly = !reminderUiState.isEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
