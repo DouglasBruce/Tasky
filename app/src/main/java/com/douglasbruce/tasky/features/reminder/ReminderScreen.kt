@@ -43,6 +43,7 @@ import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTimePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
+import com.douglasbruce.tasky.core.designsystem.component.rememberAgendaReminderState
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
@@ -113,6 +114,7 @@ internal fun ReminderScreen(
                             )
                         }
                     }
+
                     else -> {
                         {
                             IconButton(onClick = { onEvent(ReminderEvent.ToggleEditMode) }) {
@@ -163,6 +165,9 @@ internal fun ReminderScreen(
                     if (reminderUiState.title.isNullOrBlank()) stringResource(R.string.new_reminder) else reminderUiState.title
                 val reminderDesc =
                     if (reminderUiState.description.isNullOrBlank()) stringResource(R.string.reminder_description) else reminderUiState.description
+                val agendaReminderState = rememberAgendaReminderState(
+                    initialSelectedNotificationType = reminderUiState.notificationType
+                )
 
                 if (reminderUiState.showTimePicker) {
                     val timePickerState = rememberTimePickerState(
@@ -227,7 +232,14 @@ internal fun ReminderScreen(
                 )
                 Divider(color = LightBlue)
                 AgendaReminder(
-                    onClick = { /*TODO*/ },
+                    agendaReminderState = agendaReminderState,
+                    onSelectionClick = {
+                        onEvent(
+                            ReminderEvent.OnNotificationTypeSelection(
+                                agendaReminderState.selectedNotificationType.value
+                            )
+                        )
+                    },
                     isReadOnly = !reminderUiState.isEditing,
                 )
                 Divider(color = LightBlue)

@@ -65,6 +65,12 @@ class ReminderViewModel @Inject constructor(
                     showDatePicker = false,
                 )
             }
+
+            is ReminderEvent.OnNotificationTypeSelection -> {
+                state = state.copy(
+                    notificationType = event.notificationType
+                )
+            }
         }
     }
 }

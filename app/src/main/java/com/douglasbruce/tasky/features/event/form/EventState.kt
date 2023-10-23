@@ -1,6 +1,7 @@
 package com.douglasbruce.tasky.features.event.form
 
 import android.os.Parcelable
+import com.douglasbruce.tasky.core.model.NotificationType
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.LocalTime
@@ -16,6 +17,7 @@ data class EventState(
     val toDate: LocalDate = fromDate,
     val toTime: LocalTime = fromTime.plusMinutes(30),
     val isNew: Boolean = id.isNullOrBlank(),
+    val notificationType: NotificationType = NotificationType.THIRTY_MINUTES,
     val showTimePicker: Boolean = false,
     val showDatePicker: Boolean = false,
     val isEditingToTime: Boolean = false,
