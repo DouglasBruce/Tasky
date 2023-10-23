@@ -1,5 +1,7 @@
 package com.douglasbruce.tasky.features.event.form
 
+import com.douglasbruce.tasky.core.model.NotificationType
+
 sealed class EventFormEvent {
     data object ToggleEditMode : EventFormEvent()
     data class OnEditorSave(val title: String, val description: String) : EventFormEvent()
@@ -9,4 +11,5 @@ sealed class EventFormEvent {
     data class OnTimeSelected(val hour: Int, val minute: Int) : EventFormEvent()
     data class OnDatePickerClick(val isToDate: Boolean) : EventFormEvent()
     data class OnDateSelected(val dateMillis: Long) : EventFormEvent()
+    data class OnNotificationTypeSelection(val notificationType: NotificationType) : EventFormEvent()
 }

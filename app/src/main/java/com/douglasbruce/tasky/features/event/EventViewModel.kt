@@ -113,6 +113,12 @@ class EventViewModel @Inject constructor(
                     )
                 }
             }
+
+            is EventFormEvent.OnNotificationTypeSelection -> {
+                state = state.copy(
+                    notificationType = event.notificationType
+                )
+            }
         }
     }
 }
