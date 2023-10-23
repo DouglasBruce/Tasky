@@ -1,6 +1,7 @@
 package com.douglasbruce.tasky.features.task.form
 
 import android.os.Parcelable
+import com.douglasbruce.tasky.core.model.NotificationType
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.LocalTime
@@ -14,6 +15,7 @@ data class TaskState(
     val date: LocalDate = LocalDate.now(),
     val time: LocalTime = LocalTime.now(),
     val isNew: Boolean = id.isNullOrBlank(),
+    val notificationType: NotificationType = NotificationType.THIRTY_MINUTES,
     val showTimePicker: Boolean = false,
     val showDatePicker: Boolean = false,
 ) : Parcelable
