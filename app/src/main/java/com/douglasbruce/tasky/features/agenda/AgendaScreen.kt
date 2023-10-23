@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -133,6 +134,7 @@ internal fun AgendaScreen(
                         DropdownMenu(
                             expanded = agendaUiState.showAccountOptions,
                             onDismissRequest = { onEvent(AgendaEvent.OnAccountOptionsClick(false)) },
+                            offset = DpOffset(0.dp, 4.dp)
                         ) {
                             TaskyDropdownMenuItem(
                                 text = stringResource(R.string.logout),
@@ -166,6 +168,7 @@ internal fun AgendaScreen(
                 DropdownMenu(
                     expanded = agendaUiState.showCreateAgendaOptions,
                     onDismissRequest = { onEvent(AgendaEvent.OnCreateAgendaOptionsClick(false)) },
+                    offset = DpOffset(0.dp, 4.dp)
                 ) {
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.event),

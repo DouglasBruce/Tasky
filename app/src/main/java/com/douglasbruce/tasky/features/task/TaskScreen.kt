@@ -43,6 +43,7 @@ import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTimePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
+import com.douglasbruce.tasky.core.designsystem.component.rememberAgendaReminderState
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Green
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
@@ -163,6 +164,9 @@ internal fun TaskScreen(
                     if (taskUiState.title.isNullOrBlank()) stringResource(R.string.new_task) else taskUiState.title
                 val taskDesc =
                     if (taskUiState.description.isNullOrBlank()) stringResource(R.string.task_description) else taskUiState.description
+                val agendaReminderState = rememberAgendaReminderState(
+                    initialSelectedNotificationType = taskUiState.notificationType
+                )
 
                 if (taskUiState.showTimePicker) {
                     val timePickerState = rememberTimePickerState(
@@ -226,7 +230,14 @@ internal fun TaskScreen(
                 )
                 Divider(color = LightBlue)
                 AgendaReminder(
-                    onClick = { /*TODO*/ },
+                    agendaReminderState = agendaReminderState,
+                    onSelectionClick = {
+                        onEvent(
+                            TaskEvent.OnNotificationTypeSelection(
+                                agendaReminderState.selectedNotificationType.value
+                            )
+                        )
+                    },
                     isReadOnly = !taskUiState.isEditing,
                 )
                 Divider(color = LightBlue)

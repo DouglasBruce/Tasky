@@ -65,6 +65,12 @@ class TaskViewModel @Inject constructor(
                     showDatePicker = false,
                 )
             }
+
+            is TaskEvent.OnNotificationTypeSelection -> {
+                state = state.copy(
+                    notificationType = event.notificationType
+                )
+            }
         }
     }
 }
