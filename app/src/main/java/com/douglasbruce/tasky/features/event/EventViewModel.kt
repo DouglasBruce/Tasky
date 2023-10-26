@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.douglasbruce.tasky.core.common.utils.DateUtils
+import com.douglasbruce.tasky.core.model.AgendaPhoto
 import com.douglasbruce.tasky.features.event.form.EventFormEvent
 import com.douglasbruce.tasky.features.event.form.EventState
 import com.douglasbruce.tasky.features.event.navigation.EventArgs
@@ -70,11 +71,15 @@ class EventViewModel @Inject constructor(
                     val truncatedLocalTime = localTime.truncatedTo(ChronoUnit.MINUTES)
                     val truncatedToTime = state.toTime.truncatedTo(ChronoUnit.MINUTES)
 
-                    val toTime = if (truncatedLocalTime == truncatedToTime || truncatedLocalTime.isAfter(truncatedToTime)) {
-                        localTime.plusMinutes(30)
-                    } else {
-                        state.toTime
-                    }
+                    val toTime =
+                        if (truncatedLocalTime == truncatedToTime || truncatedLocalTime.isAfter(
+                                truncatedToTime
+                            )
+                        ) {
+                            localTime.plusMinutes(30)
+                        } else {
+                            state.toTime
+                        }
 
                     state.copy(
                         fromTime = localTime,
@@ -118,6 +123,33 @@ class EventViewModel @Inject constructor(
                 state = state.copy(
                     notificationType = event.notificationType
                 )
+            }
+
+            is EventFormEvent.OnVisitorFilterTypeSelection -> {
+                state = state.copy(
+                    visitorFilterType = event.visitorFilterType
+                )
+            }
+
+            is EventFormEvent.OnAddPhotoClick -> {
+                val localPhotos = mutableListOf<AgendaPhoto>()
+                event.uris.forEach { uri ->
+                    val local = AgendaPhoto.Local(uri = uri)
+                    localPhotos.add(local)
+                }
+
+                state = state.copy(
+                    photos = state.photos + localPhotos
+                )
+            }
+
+            is EventFormEvent.OnRemovePhotoClick -> {
+                val photo = state.photos.find { it.url() == event.location }
+                if (photo != null) {
+                    state = state.copy(
+                        photos = state.photos - photo
+                    )
+                }
             }
         }
     }

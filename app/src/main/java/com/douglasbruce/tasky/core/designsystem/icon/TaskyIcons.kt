@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Notifications
 
@@ -31,4 +32,5 @@ object TaskyIcons {
     val NotificationsOutlined = Icons.Outlined.Notifications
     val EditOutlined = Icons.Outlined.Edit
     val ArrowDropDown = Icons.Filled.ArrowDropDown
+    val DeleteOutlined = Icons.Outlined.Delete
 }
