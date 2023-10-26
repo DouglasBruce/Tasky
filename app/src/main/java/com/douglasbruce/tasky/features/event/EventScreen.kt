@@ -2,7 +2,7 @@ package com.douglasbruce.tasky.features.event
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,18 +28,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.utils.DateUtils
@@ -47,11 +47,13 @@ import com.douglasbruce.tasky.core.designsystem.component.AgendaDescription
 import com.douglasbruce.tasky.core.designsystem.component.AgendaReminder
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTitle
 import com.douglasbruce.tasky.core.designsystem.component.AgendaTypeIndicator
+import com.douglasbruce.tasky.core.designsystem.component.PhotoSelector
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
 import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTextButton
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTimePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyTopAppBarTextButton
+import com.douglasbruce.tasky.core.designsystem.component.VisitorFilters
 import com.douglasbruce.tasky.core.designsystem.component.rememberAgendaReminderState
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
@@ -68,8 +70,10 @@ import java.time.format.DateTimeFormatter
 internal fun EventRoute(
     eventTitle: String,
     eventDescription: String,
+    removePhotoLocation: String,
     onBackClick: () -> Unit,
     onEditorClick: (Boolean, String, String) -> Unit,
+    onPhotoViewerClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EventViewModel = hiltViewModel(),
 ) {
@@ -82,9 +86,14 @@ internal fun EventRoute(
         )
     }
 
+    LaunchedEffect(removePhotoLocation) {
+        viewModel.onEvent(EventFormEvent.OnRemovePhotoClick(removePhotoLocation))
+    }
+
     EventScreen(
         onBackClick = onBackClick,
         onEditorClick = onEditorClick,
+        onPhotoViewerClick = onPhotoViewerClick,
         eventUiState = viewModel.state,
         onEvent = viewModel::onEvent,
         modifier = modifier.fillMaxSize(),
@@ -96,6 +105,7 @@ internal fun EventRoute(
 internal fun EventScreen(
     onBackClick: () -> Unit,
     onEditorClick: (Boolean, String, String) -> Unit,
+    onPhotoViewerClick: (String) -> Unit,
     eventUiState: EventState,
     onEvent: (EventFormEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -242,32 +252,15 @@ internal fun EventScreen(
                     isReadOnly = !eventUiState.isEditing,
                     onClick = { onEditorClick(false, "event_desc", eventDesc) }
                 )
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .background(color = LightBlueVariant)
-                        .clickable { }
-                ) {
-                    Icon(
-                        imageVector = TaskyIcons.Add,
-                        contentDescription = null,
-                        tint = Gray
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.add_photos),
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 18.sp,
-                            fontWeight = FontWeight(600),
-                            color = Gray,
-                        )
-                    )
-                }
+                Spacer(Modifier.height(8.dp))
+                PhotoSelector(
+                    photos = eventUiState.photos,
+                    onPhotoClick = { onPhotoViewerClick(it.url()) },
+                    onPhotosSelected = {
+                        onEvent(EventFormEvent.OnAddPhotoClick(it))
+                    },
+                )
+                Spacer(Modifier.height(8.dp))
                 Divider(color = LightBlue)
                 AgendaDateTime(
                     label = stringResource(R.string.from),
@@ -301,6 +294,37 @@ internal fun EventScreen(
                     isReadOnly = !eventUiState.isEditing,
                 )
                 Divider(color = LightBlue)
+                Spacer(Modifier.height(16.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(stringResource(R.string.visitors))
+                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(LightBlueVariant)
+                            .clickable { /*TODO*/ },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = TaskyIcons.Add,
+                            contentDescription = stringResource(R.string.add_visitors),
+                            tint = Gray,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+                VisitorFilters(
+                    onClick = { onEvent(EventFormEvent.OnVisitorFilterTypeSelection(it)) },
+                    selectedFilterType = eventUiState.visitorFilterType,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
                 Spacer(Modifier.weight(1f))
                 if (!eventUiState.isNew) {
                     TaskyTextButton(
@@ -320,6 +344,7 @@ fun EventPreview() {
         EventScreen(
             onBackClick = {},
             onEditorClick = { _: Boolean, _: String, _: String -> },
+            onPhotoViewerClick = {},
             eventUiState = EventState(),
             onEvent = {},
         )

@@ -12,6 +12,8 @@ import com.douglasbruce.tasky.features.event.navigation.eventScreen
 import com.douglasbruce.tasky.features.event.navigation.navigateToNewEvent
 import com.douglasbruce.tasky.features.login.navigation.loginGraph
 import com.douglasbruce.tasky.features.login.navigation.loginGraphRoute
+import com.douglasbruce.tasky.features.photoviewer.navigation.navigateToPhotoViewer
+import com.douglasbruce.tasky.features.photoviewer.navigation.photoViewerScreen
 import com.douglasbruce.tasky.features.register.navigation.navigateToRegister
 import com.douglasbruce.tasky.features.register.navigation.registerScreen
 import com.douglasbruce.tasky.features.reminder.navigation.navigateToNewReminder
@@ -49,6 +51,7 @@ fun TaskyNavHost(
                 eventScreen(
                     onBackClick = navController::popBackStack,
                     onEditorClick = navController::navigateToEditor,
+                    onPhotoViewerClick = navController::navigateToPhotoViewer
                 )
                 taskScreen(
                     onBackClick = navController::popBackStack,
@@ -62,6 +65,16 @@ fun TaskyNavHost(
                     onBackClick = navController::popBackStack,
                     onSaveClick = { key: String, value: String ->
                         navController.previousBackStackEntry?.savedStateHandle?.set(key, value)
+                        navController.popBackStack()
+                    }
+                )
+                photoViewerScreen(
+                    onBackClick = navController::popBackStack,
+                    onRemovePhotoClick = { location: String ->
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "remove_photo",
+                            location
+                        )
                         navController.popBackStack()
                     }
                 )

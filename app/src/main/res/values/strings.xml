@@ -68,4 +68,12 @@
     <string name="enter_time">Enter time</string>
     <string name="switch_text_input">Switch to Text Input</string>
     <string name="switch_touch_input">Switch to Touch Input</string>
+    <string name="all">All</string>
+    <string name="going">Going</string>
+    <string name="not_going">Not going</string>
+    <string name="visitors">Visitors</string>
+    <string name="add_visitors">Add visitors</string>
+    <string name="photos">Photos</string>
+    <string name="photo">Photo</string>
+    <string name="remove_photo">Remove photo</string>
 </resources>
