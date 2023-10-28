@@ -101,8 +101,14 @@ dependencies {
 
     // Dagger - Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-work:1.0.0")
     implementation("com.google.dagger:hilt-android:2.48.1")
     ksp("com.google.dagger:hilt-android-compiler:2.48.1")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
+    ksp("androidx.room:room-compiler:2.6.0")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -117,6 +123,9 @@ dependencies {
     implementation("io.coil-kt:coil:2.4.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("io.coil-kt:coil-svg:2.4.0")
+
+    //WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.google.truth:truth:1.1.5")
