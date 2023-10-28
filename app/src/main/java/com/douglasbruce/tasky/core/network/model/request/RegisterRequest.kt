@@ -1,8 +1,10 @@
-package com.douglasbruce.tasky.core.network.model
+package com.douglasbruce.tasky.core.network.model.request
 
 import com.squareup.moshi.Json
 
-data class LoginRequest(
+data class RegisterRequest(
+    @field:Json(name = "fullName")
+    val fullName: String,
     @field:Json(name = "email")
     val email: String,
     @field:Json(name = "password")

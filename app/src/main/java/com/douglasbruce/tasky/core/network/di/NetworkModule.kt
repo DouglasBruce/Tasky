@@ -44,6 +44,7 @@ object NetworkModule {
         )
         .addInterceptor(ApiKeyInterceptor())
         .addInterceptor(JwtInterceptor(userDataPreferences))
+        .connectTimeout(1, TimeUnit.MINUTES)
         .readTimeout(1, TimeUnit.MINUTES)
         .callTimeout(1, TimeUnit.MINUTES)
         .writeTimeout(1, TimeUnit.MINUTES)
