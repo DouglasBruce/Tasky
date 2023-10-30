@@ -23,12 +23,12 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Query
 
-internal interface RetrofitTaskyNetworkApi {
+interface RetrofitTaskyNetworkApi {
     @POST("/login")
-    suspend fun login(@Body body: LoginRequest): NetworkUser
+    suspend fun login(@Body request: LoginRequest): NetworkUser
 
     @POST("/register")
-    suspend fun register(@Body body: RegisterRequest)
+    suspend fun register(@Body request: RegisterRequest)
 
     @GET("/authenticate")
     suspend fun authenticate()

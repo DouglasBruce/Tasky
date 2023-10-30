@@ -5,7 +5,6 @@ import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.auth.asAuthResult
 import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.common.utils.UiText
-import com.douglasbruce.tasky.core.network.TaskyNetworkDataSource
 import com.douglasbruce.tasky.core.network.model.NetworkAgenda
 import com.douglasbruce.tasky.core.network.model.NetworkAttendeeCheck
 import com.douglasbruce.tasky.core.network.model.NetworkEvent
@@ -35,7 +34,7 @@ private const val TASKY_BASE_URL = BuildConfig.BACKEND_URL
 class RetrofitTaskyNetwork @Inject constructor(
     moshi: Moshi,
     okHttpCallFactory: Call.Factory,
-) : TaskyNetworkDataSource {
+) : RetrofitTaskyNetworkApi {
 
     private val networkApi =
         Retrofit.Builder()
@@ -45,20 +44,11 @@ class RetrofitTaskyNetwork @Inject constructor(
             .build()
             .create(RetrofitTaskyNetworkApi::class.java)
 
-    override suspend fun login(email: String, password: String): NetworkUser {
-        val request = LoginRequest(
-            email = email,
-            password = password
-        )
+    override suspend fun login(request: LoginRequest): NetworkUser {
         return networkApi.login(request)
     }
 
-    override suspend fun register(fullName: String, email: String, password: String) {
-        val request = RegisterRequest(
-            fullName = fullName,
-            email = email,
-            password = password
-        )
+    override suspend fun register(request: RegisterRequest) {
         networkApi.register(request)
     }
 
