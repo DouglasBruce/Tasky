@@ -19,11 +19,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.douglasbruce.tasky.R
-import com.douglasbruce.tasky.core.designsystem.component.DynamicAsyncImage
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 
@@ -87,10 +90,15 @@ internal fun PhotoViewerScreen(
                     )
                 ),
         ) {
-            DynamicAsyncImage(
-                imageUrl = photoUiState.url,
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(photoUiState.url)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = stringResource(R.string.photo),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
