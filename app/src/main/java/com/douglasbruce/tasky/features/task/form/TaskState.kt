@@ -16,6 +16,7 @@ data class TaskState(
     val time: LocalTime = LocalTime.now(),
     val isNew: Boolean = id.isNullOrBlank(),
     val notificationType: NotificationType = NotificationType.THIRTY_MINUTES,
+    val isDone: Boolean = false,
     val showTimePicker: Boolean = false,
     val showDatePicker: Boolean = false,
 ) : Parcelable

@@ -10,4 +10,5 @@ sealed class TaskEvent {
     data class OnDatePickerClick(val show: Boolean) : TaskEvent()
     data class OnDateSelected(val dateMillis: Long) : TaskEvent()
     data class OnNotificationTypeSelection(val notificationType: NotificationType) : TaskEvent()
+    data object OnSaveClick : TaskEvent()
 }

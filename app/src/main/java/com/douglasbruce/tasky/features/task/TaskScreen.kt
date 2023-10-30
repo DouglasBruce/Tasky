@@ -108,7 +108,7 @@ internal fun TaskScreen(
                         {
                             TaskyTopAppBarTextButton(
                                 text = stringResource(R.string.save),
-                                onClick = { /*TODO*/ },
+                                onClick = { onEvent(TaskEvent.OnSaveClick) },
                                 color = White,
                             )
                         }

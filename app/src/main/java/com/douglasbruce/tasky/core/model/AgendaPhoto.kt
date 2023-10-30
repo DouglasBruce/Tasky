@@ -11,7 +11,7 @@ sealed interface AgendaPhoto: Parcelable {
     @Parcelize
     data class Remote(
         val key: String,
-        val photoUrl: String,
+        val photoUri: String,
     ): AgendaPhoto, Parcelable
 
     @Parcelize
@@ -27,9 +27,9 @@ sealed interface AgendaPhoto: Parcelable {
         }
     }
 
-    fun url(): String {
+    fun uri(): String {
         return when (this) {
-            is Remote -> photoUrl
+            is Remote -> photoUri
             is Local -> uri.toString()
         }
     }
