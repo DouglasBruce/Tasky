@@ -1,13 +1,12 @@
 package com.douglasbruce.tasky.core.network.model
 
-import com.douglasbruce.tasky.core.model.AgendaItem
 import com.squareup.moshi.Json
 
 data class NetworkAgenda(
     @field:Json(name = "events")
-    val events: List<AgendaItem.Event>,
+    val events: List<NetworkEvent>,
     @field:Json(name = "tasks")
-    val tasks: List<AgendaItem.Task>,
+    val tasks: List<NetworkTask>,
     @field:Json(name = "reminders")
-    val reminders: List<AgendaItem.Reminder>,
+    val reminders: List<NetworkReminder>,
 )

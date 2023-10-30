@@ -76,4 +76,7 @@
     <string name="photos">Photos</string>
     <string name="photo">Photo</string>
     <string name="remove_photo">Remove photo</string>
+    <string name="event_not_found">Event not found</string>
+    <string name="task_not_found">Task not found</string>
+    <string name="reminder_not_found">Reminder not found</string>
 </resources>
