@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -48,14 +51,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.designsystem.component.AgendaDayPicker
+import com.douglasbruce.tasky.core.designsystem.component.AgendaEventCard
+import com.douglasbruce.tasky.core.designsystem.component.AgendaReminderCard
+import com.douglasbruce.tasky.core.designsystem.component.AgendaTaskCard
 import com.douglasbruce.tasky.core.designsystem.component.TaskyDatePicker
 import com.douglasbruce.tasky.core.designsystem.component.TaskyDropdownMenuItem
+import com.douglasbruce.tasky.core.designsystem.component.TimeNeedle
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlue
 import com.douglasbruce.tasky.core.designsystem.theme.LightGrayBlue
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
+import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
 import com.douglasbruce.tasky.features.agenda.form.AgendaState
 import java.time.LocalDate
@@ -218,7 +226,7 @@ internal fun AgendaScreen(
                         color = MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
                     )
-                    .padding(12.dp),
+                    .padding(12.dp), //TODO: See if removing bottom padding is a better design?
             ) {
                 if (agendaUiState.showDatePicker) {
                     val datePickerState = rememberDatePickerState(
@@ -257,6 +265,53 @@ internal fun AgendaScreen(
                         color = Black,
                     )
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //TODO: Wrap in swipe to refresh or create refresh button
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    item {
+                        if (agendaUiState.itemBeforeTimeNeedle == null && agendaUiState.items.isNotEmpty()) {
+                            TimeNeedle(modifier = Modifier.fillMaxWidth())
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                    items(agendaUiState.items) { item ->
+                        when (item) {
+                            is AgendaItem.Event -> AgendaEventCard(
+                                title = item.eventTitle.ifBlank { stringResource(R.string.new_event) },
+                                content = if (item.eventDescription.isNullOrBlank()) stringResource(
+                                    R.string.event_description
+                                ) else item.eventDescription,
+                                dateTime = DateUtils.formatDates(item.from, item.to),
+                            )
+
+                            is AgendaItem.Task -> AgendaTaskCard(
+                                title = item.taskTitle.ifBlank { stringResource(R.string.new_task) },
+                                content = if (item.taskDescription.isNullOrBlank()) stringResource(
+                                    R.string.task_description
+                                ) else item.taskDescription,
+                                dateTime = DateUtils.formatDate(item.time),
+                                isDone = item.isDone,
+                                onLeadingIconClick = { /*TODO*/ },
+                            )
+
+                            is AgendaItem.Reminder -> AgendaReminderCard(
+                                title = item.reminderTitle.ifBlank { stringResource(R.string.new_reminder) },
+                                content = if (item.reminderDescription.isNullOrBlank()) stringResource(
+                                    R.string.reminder_description
+                                ) else item.reminderDescription,
+                                dateTime = DateUtils.formatDate(item.time),
+                            )
+                        }
+                        if (item == agendaUiState.itemBeforeTimeNeedle) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            TimeNeedle(modifier = Modifier.fillMaxWidth())
+                            Spacer(modifier = Modifier.height(4.dp))
+                        } else {
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
             }
         }
     }
