@@ -1,6 +1,7 @@
 package com.douglasbruce.tasky.features.agenda.form
 
 import android.os.Parcelable
+import com.douglasbruce.tasky.core.model.AgendaItem
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
@@ -10,7 +11,8 @@ data class AgendaState(
     val selectedDay: Int = 0,
     val displayDate: LocalDate = selectedDate.plusDays(selectedDay.toLong()),
     val initials: String = "",
-    val agendaItems: List<String> = emptyList(),
+    val items: List<AgendaItem> = emptyList(),
+    val itemBeforeTimeNeedle: AgendaItem? = null,
     val showCreateAgendaOptions: Boolean = false,
     val showSelectedAgendaOptions: Boolean = false,
     val showAccountOptions: Boolean = false,
