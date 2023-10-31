@@ -46,6 +46,7 @@ import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.Gray
 import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.LightGrayBlue
+import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaPhoto
 
 @Composable
@@ -55,7 +56,7 @@ fun PhotoSelector(
     onPhotosSelected: (List<Uri>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val maxItems = 10 - photos.size
+    val maxItems = AgendaItem.Event.MAX_PHOTO_AMOUNT - photos.size
     val photoPickerLauncher = when(maxItems > 1) {
         true -> {
             rememberLauncherForActivityResult(

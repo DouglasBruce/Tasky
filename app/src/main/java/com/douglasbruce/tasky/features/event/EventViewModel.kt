@@ -144,12 +144,9 @@ class EventViewModel @Inject constructor(
             }
 
             is EventFormEvent.OnRemovePhotoClick -> {
-                val photo = state.photos.find { it.url() == event.location }
-                if (photo != null) {
-                    state = state.copy(
-                        photos = state.photos - photo
-                    )
-                }
+                state = state.copy(
+                    photos = state.photos.filter { it.uri() != event.location }
+                )
             }
         }
     }
