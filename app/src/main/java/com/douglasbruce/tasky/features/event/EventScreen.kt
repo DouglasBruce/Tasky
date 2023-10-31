@@ -255,7 +255,7 @@ internal fun EventScreen(
                 Spacer(Modifier.height(8.dp))
                 PhotoSelector(
                     photos = eventUiState.photos,
-                    onPhotoClick = { onPhotoViewerClick(it.url()) },
+                    onPhotoClick = { onPhotoViewerClick(it.uri()) },
                     onPhotosSelected = {
                         onEvent(EventFormEvent.OnAddPhotoClick(it))
                     },

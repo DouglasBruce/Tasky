@@ -13,4 +13,9 @@ class MoshiSerializer @Inject constructor(
         val jsonAdapter: JsonAdapter<T> = moshi.adapter(type)
         return jsonAdapter.fromJson(json)
     }
+
+    override fun <T> toJson(data: T, type: Class<T>): String? {
+        val jsonAdapter: JsonAdapter<T> = moshi.adapter(type)
+        return jsonAdapter.toJson(data)
+    }
 }
