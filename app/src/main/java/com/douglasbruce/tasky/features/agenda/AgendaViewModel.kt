@@ -15,8 +15,9 @@ import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
 import com.douglasbruce.tasky.features.agenda.form.AgendaState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import java.time.LocalTime
 import javax.inject.Inject
@@ -86,17 +87,15 @@ class AgendaViewModel @Inject constructor(
     }
 
     private fun getAgendaForSelectedDate() {
-        viewModelScope.launch {
-            agendaRepository.getAgendaForDate(
-                state.selectedDate.plusDays(state.selectedDay.toLong())
-            ).collect { agendaItems ->
-                val item = getItemBeforeTimeNeedle(agendaItems)
-                state = state.copy(
-                    items = agendaItems.sortedBy { it.sortDate },
-                    itemBeforeTimeNeedle = item
-                )
-            }
-        }
+        agendaRepository.getAgendaForDate(
+            state.selectedDate.plusDays(state.selectedDay.toLong())
+        ).onEach { agendaItems ->
+            val item = getItemBeforeTimeNeedle(agendaItems)
+            state = state.copy(
+                items = agendaItems.sortedBy { it.sortDate },
+                itemBeforeTimeNeedle = item
+            )
+        }.launchIn(viewModelScope)
     }
 
     private fun getItemBeforeTimeNeedle(

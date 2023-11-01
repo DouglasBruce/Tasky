@@ -1,45 +1,47 @@
 package com.douglasbruce.tasky.features.photoviewer.navigation
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.douglasbruce.tasky.features.photoviewer.PhotoViewerRoute
-import java.net.URLDecoder
 import java.net.URLEncoder
 
 const val photoViewerNavigationRoute = "photo-viewer"
 private val urlCharacterEncoding = Charsets.UTF_8.name()
 
 @VisibleForTesting
-internal const val photoViewerUrlArg = "photoViewerUrl"
+internal const val photoViewerKeyArg = "photoViewerKey"
 
-internal class PhotoViewerArgs(val url: String) {
-    constructor(savedStateHandle: SavedStateHandle) :
-            this(URLDecoder.decode(checkNotNull(savedStateHandle[photoViewerUrlArg]), urlCharacterEncoding))
-}
+@VisibleForTesting
+internal const val photoViewerUriArg = "photoViewerUri"
 
-fun NavController.navigateToPhotoViewer(url: String) {
-    val encodedUrl = URLEncoder.encode(url, urlCharacterEncoding)
-    this.navigate("$photoViewerNavigationRoute/$encodedUrl") {
+fun NavController.navigateToPhotoViewer(key: String, uri: String) {
+    val encodedUri = URLEncoder.encode(uri, urlCharacterEncoding)
+    this.navigate("$photoViewerNavigationRoute/$key/$encodedUri") {
         launchSingleTop = true
     }
 }
 
 fun NavGraphBuilder.photoViewerScreen(
     onBackClick: () -> Unit,
-    onRemovePhotoClick: (String) -> Unit
+    onRemovePhotoClick: (String) -> Unit,
 ) {
     composable(
-        route = "$photoViewerNavigationRoute/{$photoViewerUrlArg}",
+        route = "$photoViewerNavigationRoute/{$photoViewerKeyArg}/{$photoViewerUriArg}",
         arguments = listOf(
-            navArgument(photoViewerUrlArg) { type = NavType.StringType },
+            navArgument(photoViewerKeyArg) { type = NavType.StringType },
+            navArgument(photoViewerUriArg) { type = NavType.StringType },
         ),
     ) {
+        it.savedStateHandle[photoViewerKeyArg] = it.arguments?.getString(photoViewerKeyArg, "")
+        it.savedStateHandle[photoViewerUriArg] = it.arguments?.getString(photoViewerUriArg, "")
+
         PhotoViewerRoute(
+            key = it.savedStateHandle.get<String>(photoViewerKeyArg)!!,
+            uri = it.savedStateHandle.get<String>(photoViewerUriArg)!!,
             onBackClick = onBackClick,
             onRemovePhotoClick = onRemovePhotoClick,
         )

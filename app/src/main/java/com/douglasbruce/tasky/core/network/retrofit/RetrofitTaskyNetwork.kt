@@ -3,8 +3,8 @@ package com.douglasbruce.tasky.core.network.retrofit
 import com.douglasbruce.tasky.BuildConfig
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.auth.asAuthResult
-import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.common.utils.UiText
+import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.network.model.NetworkAgenda
 import com.douglasbruce.tasky.core.network.model.NetworkAttendeeCheck
 import com.douglasbruce.tasky.core.network.model.NetworkEvent
@@ -136,7 +136,7 @@ class RetrofitTaskyNetwork @Inject constructor(
 }
 
 suspend inline fun <T> authenticatedRetrofitCall(
-    serializer: MoshiSerializer,
+    serializer: JsonSerializer,
     crossinline doCall: suspend () -> AuthResult<T>
 ): AuthResult<T> {
     return try {

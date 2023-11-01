@@ -64,6 +64,7 @@ import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.designsystem.theme.White
 import com.douglasbruce.tasky.features.event.form.EventFormEvent
 import com.douglasbruce.tasky.features.event.form.EventState
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -72,8 +73,8 @@ internal fun EventRoute(
     eventDescription: String,
     removePhotoLocation: String,
     onBackClick: () -> Unit,
-    onEditorClick: (Boolean, String, String) -> Unit,
-    onPhotoViewerClick: (String) -> Unit,
+    onEditorClick: (isTitle: Boolean, key: String, value: String) -> Unit,
+    onPhotoViewerClick: (key: String, uri: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EventViewModel = hiltViewModel(),
 ) {
@@ -104,8 +105,8 @@ internal fun EventRoute(
 @Composable
 internal fun EventScreen(
     onBackClick: () -> Unit,
-    onEditorClick: (Boolean, String, String) -> Unit,
-    onPhotoViewerClick: (String) -> Unit,
+    onEditorClick: (isTitle: Boolean, key: String, value: String) -> Unit,
+    onPhotoViewerClick: (key: String, uri: String) -> Unit,
     eventUiState: EventState,
     onEvent: (EventFormEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -219,11 +220,17 @@ internal fun EventScreen(
                 if (eventUiState.showDatePicker) {
                     val datePickerState = if (eventUiState.isEditingToDate) {
                         rememberDatePickerState(
-                            initialSelectedDateMillis = DateUtils.getDateMilli(eventUiState.toDate)
+                            initialSelectedDateMillis = DateUtils.getDateMilli(
+                                eventUiState.toDate,
+                                ZoneId.of("UTC")
+                            )
                         )
                     } else {
                         rememberDatePickerState(
-                            initialSelectedDateMillis = DateUtils.getDateMilli(eventUiState.fromDate)
+                            initialSelectedDateMillis = DateUtils.getDateMilli(
+                                eventUiState.fromDate,
+                                ZoneId.of("UTC")
+                            )
                         )
                     }
 
@@ -255,7 +262,7 @@ internal fun EventScreen(
                 Spacer(Modifier.height(8.dp))
                 PhotoSelector(
                     photos = eventUiState.photos,
-                    onPhotoClick = { onPhotoViewerClick(it.uri()) },
+                    onPhotoClick = { onPhotoViewerClick(it.key(), it.uri()) },
                     onPhotosSelected = {
                         onEvent(EventFormEvent.OnAddPhotoClick(it))
                     },
@@ -344,7 +351,7 @@ fun EventPreview() {
         EventScreen(
             onBackClick = {},
             onEditorClick = { _: Boolean, _: String, _: String -> },
-            onPhotoViewerClick = {},
+            onPhotoViewerClick = { _: String, _: String -> },
             eventUiState = EventState(),
             onEvent = {},
         )

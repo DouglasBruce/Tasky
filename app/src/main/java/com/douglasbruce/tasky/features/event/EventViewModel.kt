@@ -145,7 +145,7 @@ class EventViewModel @Inject constructor(
 
             is EventFormEvent.OnRemovePhotoClick -> {
                 state = state.copy(
-                    photos = state.photos.filter { it.uri() != event.location }
+                    photos = state.photos.filter { it.key() != event.key }
                 )
             }
         }

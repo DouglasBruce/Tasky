@@ -76,7 +76,7 @@ fun TaskyNavHost(
                             location
                         )
                         navController.popBackStack()
-                    }
+                    },
                 )
             }
         )

@@ -16,5 +16,5 @@ sealed class EventFormEvent {
     data class OnNotificationTypeSelection(val notificationType: NotificationType) : EventFormEvent()
     data class OnVisitorFilterTypeSelection(val visitorFilterType: VisitorFilterType) : EventFormEvent()
     data class OnAddPhotoClick(val uris: List<Uri>) : EventFormEvent()
-    data class OnRemovePhotoClick(val location: String) : EventFormEvent()
+    data class OnRemovePhotoClick(val key: String) : EventFormEvent()
 }

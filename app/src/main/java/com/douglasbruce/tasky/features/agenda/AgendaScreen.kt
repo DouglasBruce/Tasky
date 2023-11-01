@@ -67,6 +67,7 @@ import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
 import com.douglasbruce.tasky.features.agenda.form.AgendaState
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -230,7 +231,11 @@ internal fun AgendaScreen(
             ) {
                 if (agendaUiState.showDatePicker) {
                     val datePickerState = rememberDatePickerState(
-                        initialSelectedDateMillis = DateUtils.getDateMilli(agendaUiState.selectedDate)
+                        initialSelectedDateMillis = DateUtils.getDateMilli(
+                            agendaUiState.selectedDate.plusDays(
+                                agendaUiState.selectedDay.toLong()
+                            ), ZoneId.of("UTC")
+                        )
                     )
 
                     TaskyDatePicker(

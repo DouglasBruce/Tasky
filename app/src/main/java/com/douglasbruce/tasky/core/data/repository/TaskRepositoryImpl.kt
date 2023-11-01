@@ -2,13 +2,13 @@ package com.douglasbruce.tasky.core.data.repository
 
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.auth.AuthResult
-import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.TaskDao
 import com.douglasbruce.tasky.core.domain.mapper.toCreateTaskRequest
 import com.douglasbruce.tasky.core.domain.mapper.toTask
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateTaskRequest
 import com.douglasbruce.tasky.core.domain.repository.TaskRepository
+import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class TaskRepositoryImpl @Inject constructor(
     private val taskyNetwork: RetrofitTaskyNetwork,
     private val dao: TaskDao,
-    private val serializer: MoshiSerializer,
+    private val serializer: JsonSerializer,
 ) : TaskRepository {
 
     override suspend fun getTaskById(taskId: String): AuthResult<AgendaItem.Task> {
