@@ -15,13 +15,13 @@ fun AgendaItem.Task.toTaskEntity(): TaskEntity {
     val utcRemindAtTime = this.remindAt.withZoneSameInstant(ZoneId.of("UTC"))
 
     return TaskEntity(
-        id = this.id,
-        title = this.title,
+        id = this.taskId,
+        title = this.taskTitle,
         description = this.taskDescription ?: "",
         time = utcTime.toEpochSecond() * 1000,
         remindAt = utcRemindAtTime.toEpochSecond() * 1000,
         isDone = this.isDone,
-        notificationType = this.notificationType
+        notificationType = this.taskNotificationType
     )
 }
 

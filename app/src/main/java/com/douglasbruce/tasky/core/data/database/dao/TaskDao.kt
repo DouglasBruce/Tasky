@@ -13,11 +13,7 @@ interface TaskDao {
     suspend fun upsertTask(task: TaskEntity)
 
     @Transaction
-    suspend fun upsertAllTasks(tasks: List<TaskEntity>) {
-        tasks.forEach {
-            upsertTask(it)
-        }
-    }
+    suspend fun upsertAllTasks(tasks: List<TaskEntity>)
 
     @Query(
         value = """
@@ -25,7 +21,7 @@ interface TaskDao {
             WHERE id = :taskId
         """,
     )
-    suspend fun getTaskById(taskId: String): TaskEntity
+    suspend fun getTaskById(taskId: String): TaskEntity?
 
     @Query(
         value = """

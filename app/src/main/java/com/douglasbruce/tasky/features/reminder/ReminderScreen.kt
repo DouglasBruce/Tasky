@@ -109,7 +109,7 @@ internal fun ReminderScreen(
                         {
                             TaskyTopAppBarTextButton(
                                 text = stringResource(R.string.save),
-                                onClick = { /*TODO*/ },
+                                onClick = { onEvent(ReminderEvent.OnSaveClick) },
                                 color = White,
                             )
                         }

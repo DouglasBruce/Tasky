@@ -3,8 +3,11 @@ package com.douglasbruce.tasky.core.data.repository
 import com.douglasbruce.tasky.core.data.database.dao.EventDao
 import com.douglasbruce.tasky.core.data.database.dao.ReminderDao
 import com.douglasbruce.tasky.core.data.database.dao.TaskDao
+import com.douglasbruce.tasky.core.data.database.model.ReminderEntity
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import com.douglasbruce.tasky.core.domain.mapper.toAgendaItems
+import com.douglasbruce.tasky.core.domain.mapper.toReminder
+import com.douglasbruce.tasky.core.domain.mapper.toReminderEntity
 import com.douglasbruce.tasky.core.domain.mapper.toTask
 import com.douglasbruce.tasky.core.domain.mapper.toTaskEntity
 import com.douglasbruce.tasky.core.domain.repository.AgendaRepository
@@ -35,11 +38,11 @@ class AgendaRepositoryImpl @Inject constructor(
             tasksDao.getTasksForDate(utcStartOfDate, utcEndOfDate),
             remindersDao.getRemindersForDate(utcStartOfDate, utcEndOfDate),
         ) { eventEntities, taskEntities, reminderEntities ->
-            //TODO: Create mappers for events and reminders
+            //TODO: Create mappers for events
             //val events = eventEntities.map { it.toEvent() }
             val tasks = taskEntities.map { it.toTask() }
-            //val reminders = reminderEntities.map { it.toReminder() }
-            (tasks).sortedBy { it.sortDate }
+            val reminders = reminderEntities.map { it.toReminder() }
+            (tasks + reminders).sortedBy { it.sortDate }
         }
     }
 
@@ -57,7 +60,10 @@ class AgendaRepositoryImpl @Inject constructor(
 //            agendaItems.filterIsInstance<AgendaItem.Event>()
         val fetchedTasks: List<TaskEntity> =
             agendaItems.filterIsInstance<AgendaItem.Task>().map { it.toTaskEntity() }
+        val fetchedReminders: List<ReminderEntity> =
+            agendaItems.filterIsInstance<AgendaItem.Reminder>().map { it.toReminderEntity() }
 
         tasksDao.upsertAllTasks(fetchedTasks)
+        remindersDao.upsertAllReminders(fetchedReminders)
     }
 }
