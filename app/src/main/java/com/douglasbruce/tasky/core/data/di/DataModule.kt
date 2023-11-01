@@ -5,6 +5,7 @@ import com.douglasbruce.tasky.core.data.auth.SessionManagerImpl
 import com.douglasbruce.tasky.core.data.datastore.TaskyPreferencesDataSource
 import com.douglasbruce.tasky.core.data.repository.AgendaRepositoryImpl
 import com.douglasbruce.tasky.core.data.repository.AuthRepositoryImpl
+import com.douglasbruce.tasky.core.data.repository.EventRepositoryImpl
 import com.douglasbruce.tasky.core.data.repository.OfflineFirstUserDataRepository
 import com.douglasbruce.tasky.core.data.repository.ReminderRepositoryImpl
 import com.douglasbruce.tasky.core.data.repository.TaskRepositoryImpl
@@ -13,6 +14,7 @@ import com.douglasbruce.tasky.core.domain.auth.SessionManager
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.repository.AgendaRepository
 import com.douglasbruce.tasky.core.domain.repository.AuthRepository
+import com.douglasbruce.tasky.core.domain.repository.EventRepository
 import com.douglasbruce.tasky.core.domain.repository.ReminderRepository
 import com.douglasbruce.tasky.core.domain.repository.TaskRepository
 import com.douglasbruce.tasky.core.domain.repository.UserDataRepository
@@ -59,8 +61,13 @@ interface DataModule {
 
     @Binds
     fun bindsAgendaRepository(
-        agendaRepositoryImpl: AgendaRepositoryImpl
+        agendaRepositoryImpl: AgendaRepositoryImpl,
     ): AgendaRepository
+
+    @Binds
+    fun bindsEventRepository(
+        eventRepository: EventRepositoryImpl,
+    ): EventRepository
 
     @Binds
     fun bindsTaskRepository(
@@ -69,6 +76,6 @@ interface DataModule {
 
     @Binds
     fun bindsReminderRepository(
-        reminderRepository: ReminderRepositoryImpl
+        reminderRepository: ReminderRepositoryImpl,
     ): ReminderRepository
 }

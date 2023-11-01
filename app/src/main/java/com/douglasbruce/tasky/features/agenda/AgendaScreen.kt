@@ -227,7 +227,7 @@ internal fun AgendaScreen(
                         color = MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
                     )
-                    .padding(12.dp), //TODO: See if removing bottom padding is a better design?
+                    .padding(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 0.dp),
             ) {
                 if (agendaUiState.showDatePicker) {
                     val datePickerState = rememberDatePickerState(
@@ -256,31 +256,31 @@ internal fun AgendaScreen(
                     onClick = { onEvent(AgendaEvent.OnDayClick(it)) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = when (agendaUiState.displayDate) {
-                        yesterday -> stringResource(R.string.yesterday)
-                        today -> stringResource(R.string.today)
-                        tomorrow -> stringResource(R.string.tomorrow)
-                        else -> agendaUiState.displayDate.format(dateFormatter)
-                    },
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        lineHeight = 16.sp,
-                        fontWeight = FontWeight(700),
-                        color = Black,
-                    )
-                )
-                Spacer(modifier = Modifier.height(16.dp))
 
                 //TODO: Wrap in swipe to refresh or create refresh button
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
+                        Text(
+                            text = when (agendaUiState.displayDate) {
+                                yesterday -> stringResource(R.string.yesterday)
+                                today -> stringResource(R.string.today)
+                                tomorrow -> stringResource(R.string.tomorrow)
+                                else -> agendaUiState.displayDate.format(dateFormatter)
+                            },
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                lineHeight = 16.sp,
+                                fontWeight = FontWeight(700),
+                                color = Black,
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                         if (agendaUiState.itemBeforeTimeNeedle == null && agendaUiState.items.isNotEmpty()) {
                             TimeNeedle(modifier = Modifier.fillMaxWidth())
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
-                    items(agendaUiState.items) { item ->
+                    items(agendaUiState.items, { item -> item.id }) { item ->
                         when (item) {
                             is AgendaItem.Event -> AgendaEventCard(
                                 title = item.eventTitle.ifBlank { stringResource(R.string.new_event) },
@@ -315,6 +315,9 @@ internal fun AgendaScreen(
                         } else {
                             Spacer(modifier = Modifier.height(16.dp))
                         }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(72.dp))
                     }
                 }
             }

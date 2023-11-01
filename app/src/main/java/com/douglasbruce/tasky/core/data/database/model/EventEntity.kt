@@ -17,5 +17,6 @@ data class EventEntity(
     val to: Long,
     val remindAt: Long,
     val host: String,
-    val notificationType: NotificationType
+    val notificationType: NotificationType,
+    val isUserEventCreator: Boolean
 )

@@ -12,7 +12,6 @@ import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
-import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -55,6 +54,6 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getFutureTasks(): List<AgendaItem.Task> {
-        return dao.getFutureTasks(ZonedDateTime.now().toEpochSecond() * 1000).map { it.toTask() }
+        return dao.getFutureTasks().map { it.toTask() }
     }
 }

@@ -130,7 +130,7 @@ internal fun EventScreen(
                         {
                             TaskyTopAppBarTextButton(
                                 text = stringResource(R.string.save),
-                                onClick = { /*TODO*/ },
+                                onClick = { onEvent(EventFormEvent.OnSaveClick) },
                                 color = White,
                             )
                         }

@@ -2,17 +2,18 @@ package com.douglasbruce.tasky.core.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.ReminderEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @Dao
 interface ReminderDao {
     @Upsert
     suspend fun upsertReminder(reminder: ReminderEntity)
 
-    @Transaction
+    @Upsert
     suspend fun upsertAllReminders(reminders: List<ReminderEntity>)
 
     @Query(
@@ -38,7 +39,10 @@ interface ReminderDao {
             WHERE time >= :startingDate
         """
     )
-    suspend fun getFutureReminders(startingDate: Long): List<ReminderEntity>
+    suspend fun getFutureReminders(
+        startingDate: Long = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC"))
+            .toEpochSecond() * 1000,
+    ): List<ReminderEntity>
 
     @Query(
         value = """

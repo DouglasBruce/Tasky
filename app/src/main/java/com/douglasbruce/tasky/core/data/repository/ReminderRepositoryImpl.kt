@@ -12,7 +12,6 @@ import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
-import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class ReminderRepositoryImpl @Inject constructor(
@@ -29,7 +28,7 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getFutureReminders(): List<AgendaItem.Reminder> {
-        return dao.getFutureReminders(ZonedDateTime.now().toEpochSecond() * 1000).map { it.toReminder() }
+        return dao.getFutureReminders().map { it.toReminder() }
     }
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
