@@ -3,9 +3,12 @@ package com.douglasbruce.tasky.core.data.repository
 import com.douglasbruce.tasky.core.data.database.dao.EventDao
 import com.douglasbruce.tasky.core.data.database.dao.ReminderDao
 import com.douglasbruce.tasky.core.data.database.dao.TaskDao
+import com.douglasbruce.tasky.core.data.database.model.EventEntity
 import com.douglasbruce.tasky.core.data.database.model.ReminderEntity
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import com.douglasbruce.tasky.core.domain.mapper.toAgendaItems
+import com.douglasbruce.tasky.core.domain.mapper.toEvent
+import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
 import com.douglasbruce.tasky.core.domain.mapper.toReminder
 import com.douglasbruce.tasky.core.domain.mapper.toReminderEntity
 import com.douglasbruce.tasky.core.domain.mapper.toTask
@@ -34,15 +37,14 @@ class AgendaRepositoryImpl @Inject constructor(
             .toEpochMilli()
 
         return combine(
-            eventsDao.getEventsForDate(utcStartOfDate),
+            eventsDao.getEventsForDate(utcStartOfDate, utcEndOfDate),
             tasksDao.getTasksForDate(utcStartOfDate, utcEndOfDate),
             remindersDao.getRemindersForDate(utcStartOfDate, utcEndOfDate),
         ) { eventEntities, taskEntities, reminderEntities ->
-            //TODO: Create mappers for events
-            //val events = eventEntities.map { it.toEvent() }
+            val events = eventEntities.map { it.toEvent() }
             val tasks = taskEntities.map { it.toTask() }
             val reminders = reminderEntities.map { it.toReminder() }
-            (tasks + reminders).sortedBy { it.sortDate }
+            (events + tasks + reminders).sortedBy { it.sortDate }
         }
     }
 
@@ -56,13 +58,14 @@ class AgendaRepositoryImpl @Inject constructor(
             time = utcDateTime.toEpochSecond() * 1000
         ).toAgendaItems()
 
-//        val fetchedEvents: List<AgendaItem.Event> =
-//            agendaItems.filterIsInstance<AgendaItem.Event>()
+        val fetchedEvents: List<EventEntity> =
+            agendaItems.filterIsInstance<AgendaItem.Event>().map { it.toEventEntity() }
         val fetchedTasks: List<TaskEntity> =
             agendaItems.filterIsInstance<AgendaItem.Task>().map { it.toTaskEntity() }
         val fetchedReminders: List<ReminderEntity> =
             agendaItems.filterIsInstance<AgendaItem.Reminder>().map { it.toReminderEntity() }
 
+        eventsDao.upsertAllEvents(fetchedEvents)
         tasksDao.upsertAllTasks(fetchedTasks)
         remindersDao.upsertAllReminders(fetchedReminders)
     }

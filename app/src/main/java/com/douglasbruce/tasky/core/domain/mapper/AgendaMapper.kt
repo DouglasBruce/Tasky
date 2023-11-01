@@ -4,5 +4,8 @@ import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.network.model.NetworkAgenda
 
 fun NetworkAgenda.toAgendaItems(): List<AgendaItem> {
-    return this.tasks.map { it.toTask() } //TODO: Update to handle events and reminders
+    val events = this.events.map { it.toEvent() }
+    val tasks = this.tasks.map { it.toTask() }
+    val reminders = this.reminders.map { it.toReminder() }
+    return (events + tasks + reminders)
 }

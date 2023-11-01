@@ -2,17 +2,18 @@ package com.douglasbruce.tasky.core.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @Dao
 interface TaskDao {
     @Upsert
     suspend fun upsertTask(task: TaskEntity)
 
-    @Transaction
+    @Upsert
     suspend fun upsertAllTasks(tasks: List<TaskEntity>)
 
     @Query(
@@ -38,7 +39,10 @@ interface TaskDao {
             WHERE time >= :startingDate
         """
     )
-    suspend fun getFutureTasks(startingDate: Long): List<TaskEntity>
+    suspend fun getFutureTasks(
+        startingDate: Long = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC"))
+            .toEpochSecond() * 1000,
+    ): List<TaskEntity>
 
     @Query(
         value = """

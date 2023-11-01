@@ -22,6 +22,8 @@ data class EventState(
     val isNew: Boolean = id.isNullOrBlank(),
     val notificationType: NotificationType = NotificationType.THIRTY_MINUTES,
     val visitorFilterType: VisitorFilterType = VisitorFilterType.ALL,
+    val host: String? = null,
+    val isUserEventCreator: Boolean = false,
     val showTimePicker: Boolean = false,
     val showDatePicker: Boolean = false,
     val isEditingToTime: Boolean = false,
