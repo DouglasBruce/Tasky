@@ -1,8 +1,8 @@
 package com.douglasbruce.tasky.core.data.repository
 
 import com.douglasbruce.tasky.core.common.auth.AuthResult
-import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.domain.repository.AuthRepository
+import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.network.model.request.LoginRequest
 import com.douglasbruce.tasky.core.network.model.request.RegisterRequest
 import com.douglasbruce.tasky.core.network.model.toEntity
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val taskyNetwork: RetrofitTaskyNetwork,
-    private val serializer: MoshiSerializer,
+    private val serializer: JsonSerializer,
 ) : AuthRepository {
     override suspend fun login(email: String, password: String) =
         authenticatedRetrofitCall(serializer) {

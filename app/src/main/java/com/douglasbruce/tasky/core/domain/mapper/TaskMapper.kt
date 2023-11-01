@@ -11,12 +11,15 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 fun AgendaItem.Task.toTaskEntity(): TaskEntity {
+    val utcTime = this.time.withZoneSameInstant(ZoneId.of("UTC"))
+    val utcRemindAtTime = this.remindAt.withZoneSameInstant(ZoneId.of("UTC"))
+
     return TaskEntity(
         id = this.id,
         title = this.title,
         description = this.taskDescription ?: "",
-        time = this.time.toEpochSecond(),
-        remindAt = this.remindAtTime.toEpochSecond(),
+        time = utcTime.toEpochSecond() * 1000,
+        remindAt = utcRemindAtTime.toEpochSecond() * 1000,
         isDone = this.isDone,
         notificationType = this.notificationType
     )
@@ -49,23 +52,29 @@ fun NetworkTask.toTask(): AgendaItem.Task {
 }
 
 fun AgendaItem.Task.toCreateTaskRequest(): CreateTaskRequest {
+    val utcTime = this.time.withZoneSameInstant(ZoneId.of("UTC"))
+    val utcRemindAtTime = this.remindAt.withZoneSameInstant(ZoneId.of("UTC"))
+
     return CreateTaskRequest(
         id = this.taskId,
         title = this.taskTitle,
         description = this.taskDescription ?: "",
-        time = this.time.toEpochSecond() * 1000,
-        remindAt = this.remindAtTime.toEpochSecond() * 1000,
+        time = utcTime.toEpochSecond() * 1000,
+        remindAt = utcRemindAtTime.toEpochSecond() * 1000,
         isDone = this.isDone
     )
 }
 
 fun AgendaItem.Task.toUpdateTaskRequest(): UpdateTaskRequest {
+    val utcTime = this.time.withZoneSameInstant(ZoneId.of("UTC"))
+    val utcRemindAtTime = this.remindAt.withZoneSameInstant(ZoneId.of("UTC"))
+
     return UpdateTaskRequest(
         id = this.taskId,
         title = this.taskTitle,
         description = this.taskDescription ?: "",
-        time = this.time.toEpochSecond() * 1000,
-        remindAt = this.remindAtTime.toEpochSecond() * 1000,
+        time = utcTime.toEpochSecond() * 1000,
+        remindAt = utcRemindAtTime.toEpochSecond() * 1000,
         isDone = this.isDone
     )
 }

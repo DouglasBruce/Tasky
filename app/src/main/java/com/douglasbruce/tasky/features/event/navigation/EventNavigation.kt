@@ -47,8 +47,8 @@ fun NavController.navigateToEvent(eventId: String) {
 
 fun NavGraphBuilder.eventScreen(
     onBackClick: () -> Unit,
-    onEditorClick: (Boolean, String, String) -> Unit,
-    onPhotoViewerClick: (String) -> Unit,
+    onEditorClick: (isTitle: Boolean, key: String, value: String) -> Unit,
+    onPhotoViewerClick: (key: String, uri: String) -> Unit,
 ) {
     composable(
         route = "$eventNavigationRoute/{$eventToDateArg}/{$eventFromDateArg}?$eventIdArg={$eventIdArg}",

@@ -23,24 +23,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.designsystem.component.TaskyCenterAlignedTopAppBar
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
+import java.util.UUID
 
 @Composable
 internal fun PhotoViewerRoute(
+    key: String,
+    uri: String,
     onBackClick: () -> Unit,
     onRemovePhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PhotoViewerViewModel = hiltViewModel(),
 ) {
     PhotoViewerScreen(
+        key = key,
+        uri = uri,
         onBackClick = onBackClick,
         onRemovePhotoClick = onRemovePhotoClick,
-        photoUiState = viewModel.state,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -48,9 +50,10 @@ internal fun PhotoViewerRoute(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun PhotoViewerScreen(
+    key: String,
+    uri: String,
     onBackClick: () -> Unit,
     onRemovePhotoClick: (String) -> Unit,
-    photoUiState: PhotoViewerState,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -61,7 +64,7 @@ internal fun PhotoViewerScreen(
                 navigationIconContentDescription = stringResource(R.string.cancel),
                 onNavigationClick = onBackClick,
                 actions = {
-                    IconButton(onClick = { onRemovePhotoClick(photoUiState.url) }) {
+                    IconButton(onClick = { onRemovePhotoClick(key) }) {
                         Icon(
                             imageVector = TaskyIcons.DeleteOutlined,
                             contentDescription = stringResource(R.string.remove_photo)
@@ -92,7 +95,7 @@ internal fun PhotoViewerScreen(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(photoUiState.url)
+                    .data(uri)
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.ic_launcher_foreground),
@@ -108,8 +111,9 @@ internal fun PhotoViewerScreen(
 @Composable
 fun PhotoViewerScreenPreview() {
     PhotoViewerScreen(
+        key = UUID.randomUUID().toString(),
+        uri = "",
         onBackClick = {},
         onRemovePhotoClick = {},
-        photoUiState = PhotoViewerState("")
     )
 }

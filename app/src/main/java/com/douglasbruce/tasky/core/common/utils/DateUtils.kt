@@ -8,12 +8,12 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 object DateUtils {
-    fun getDateMilli(date: LocalDate): Long {
-        return date.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+    fun getDateMilli(date: LocalDate, zone: ZoneId = ZoneId.systemDefault()): Long {
+        return date.atStartOfDay(zone).toInstant().toEpochMilli()
     }
 
     fun getLocalDate(dateMilli: Long): LocalDate {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateMilli), ZoneId.of("UTC"))
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateMilli), ZoneId.systemDefault())
             .toLocalDate()
     }
 
