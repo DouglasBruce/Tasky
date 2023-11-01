@@ -10,4 +10,5 @@ sealed class ReminderEvent {
     data class OnDatePickerClick(val show: Boolean) : ReminderEvent()
     data class OnDateSelected(val dateMillis: Long) : ReminderEvent()
     data class OnNotificationTypeSelection(val notificationType: NotificationType) : ReminderEvent()
+    data object OnSaveClick : ReminderEvent()
 }
