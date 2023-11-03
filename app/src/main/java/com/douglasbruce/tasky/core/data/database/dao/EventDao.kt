@@ -36,12 +36,11 @@ interface EventDao {
     @Query(
         value = """
             SELECT * FROM events
-            WHERE 'from' >= :startingDate
+            WHERE `from` >= :startingDate
         """
     )
     suspend fun getFutureEvents(
-        startingDate: Long = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC"))
-            .toEpochSecond() * 1000,
+        startingDate: Long = ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond() * 1000,
     ): List<EventEntity>
 
     @Query(

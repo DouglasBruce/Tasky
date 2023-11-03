@@ -10,6 +10,9 @@ import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.formatter.NameFormatter
 import com.douglasbruce.tasky.core.domain.repository.AgendaRepository
+import com.douglasbruce.tasky.core.domain.repository.EventRepository
+import com.douglasbruce.tasky.core.domain.repository.ReminderRepository
+import com.douglasbruce.tasky.core.domain.repository.TaskRepository
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
 import com.douglasbruce.tasky.features.agenda.form.AgendaState
@@ -18,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.LocalTime
 import javax.inject.Inject
@@ -28,7 +32,10 @@ class AgendaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     nameFormatter: NameFormatter,
     private val userDataPreferences: UserDataPreferences,
-    private val agendaRepository: AgendaRepository
+    private val agendaRepository: AgendaRepository,
+    private val eventRepository: EventRepository,
+    private val taskRepository: TaskRepository,
+    private val reminderRepository: ReminderRepository,
 ) : ViewModel() {
 
     var state by savedStateHandle.saveable {
@@ -82,6 +89,31 @@ class AgendaViewModel @Inject constructor(
                     displayDate = state.selectedDate.plusDays(event.day.toLong())
                 )
                 getAgendaForSelectedDate()
+            }
+
+            is AgendaEvent.ToggleTaskDoneClick -> {
+                val task = event.task.copy(isDone = !event.task.isDone)
+                viewModelScope.launch {
+                    taskRepository.updateTask(task)
+                }
+            }
+
+            is AgendaEvent.OnDeleteEventClick -> {
+                viewModelScope.launch {
+                    eventRepository.deleteEventById(event.eventId)
+                }
+            }
+
+            is AgendaEvent.OnDeleteTaskClick -> {
+                viewModelScope.launch {
+                    taskRepository.deleteTaskById(event.taskId)
+                }
+            }
+
+            is AgendaEvent.OnDeleteReminderClick -> {
+                viewModelScope.launch {
+                    reminderRepository.deleteReminderById(event.reminderId)
+                }
             }
         }
     }

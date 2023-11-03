@@ -246,7 +246,7 @@ internal fun ReminderScreen(
                 Spacer(Modifier.weight(1f))
                 if (!reminderUiState.isNew) {
                     TaskyTextButton(
-                        text = stringResource(R.string.delete_reminder),
+                        text = stringResource(R.string.delete_reminder).uppercase(),
                         onClick = { /*TODO*/ },
                     )
                 }

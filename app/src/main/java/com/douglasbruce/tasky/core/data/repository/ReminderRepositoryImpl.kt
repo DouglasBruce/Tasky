@@ -6,6 +6,7 @@ import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.ReminderDao
 import com.douglasbruce.tasky.core.domain.mapper.toCreateReminderRequest
 import com.douglasbruce.tasky.core.domain.mapper.toReminder
+import com.douglasbruce.tasky.core.domain.mapper.toReminderEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateReminderRequest
 import com.douglasbruce.tasky.core.domain.repository.ReminderRepository
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
@@ -32,7 +33,8 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
-        //TODO: Create local
+        dao.upsertReminder(reminder.toReminderEntity())
+
         return authenticatedRetrofitCall(serializer) {
             taskyNetwork.createReminder(reminder.toCreateReminderRequest())
             AuthResult.Success(Unit)
@@ -40,7 +42,8 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
-        //TODO: Update local
+        dao.upsertReminder(reminder.toReminderEntity())
+
         return authenticatedRetrofitCall(serializer) {
             taskyNetwork.updateReminder(reminder.toUpdateReminderRequest())
             AuthResult.Success(Unit)

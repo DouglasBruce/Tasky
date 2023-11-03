@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -16,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,6 +53,9 @@ fun AgendaTaskCard(
     dateTime: String,
     isDone: Boolean,
     onLeadingIconClick: () -> Unit,
+    onOpenOptionClick: () -> Unit,
+    onEditOptionClick: () -> Unit,
+    onDeleteOptionClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     InteractiveAgendaCard(
@@ -62,6 +67,11 @@ fun AgendaTaskCard(
         dateTime = dateTime,
         isDone = isDone,
         onLeadingIconClick = onLeadingIconClick,
+        onOpenOptionClick = onOpenOptionClick,
+        onEditOptionClick = onEditOptionClick,
+        onDeleteOptionClick = onDeleteOptionClick,
+        dialogTitle = stringResource(R.string.delete_task),
+        message = stringResource(R.string.delete_task_confirmation),
         modifier = modifier,
     )
 }
@@ -71,6 +81,9 @@ fun AgendaEventCard(
     title: String,
     content: String,
     dateTime: String,
+    onOpenOptionClick: () -> Unit,
+    onEditOptionClick: () -> Unit,
+    onDeleteOptionClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NonInteractiveAgendaCard(
@@ -80,6 +93,11 @@ fun AgendaEventCard(
         title = title,
         content = content,
         dateTime = dateTime,
+        onOpenOptionClick = onOpenOptionClick,
+        onEditOptionClick = onEditOptionClick,
+        onDeleteOptionClick = onDeleteOptionClick,
+        dialogTitle = stringResource(R.string.delete_event),
+        message = stringResource(R.string.delete_event_confirmation),
         modifier = modifier,
     )
 }
@@ -89,6 +107,9 @@ fun AgendaReminderCard(
     title: String,
     content: String,
     dateTime: String,
+    onOpenOptionClick: () -> Unit,
+    onEditOptionClick: () -> Unit,
+    onDeleteOptionClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NonInteractiveAgendaCard(
@@ -98,6 +119,11 @@ fun AgendaReminderCard(
         title = title,
         content = content,
         dateTime = dateTime,
+        onOpenOptionClick = onOpenOptionClick,
+        onEditOptionClick = onEditOptionClick,
+        onDeleteOptionClick = onDeleteOptionClick,
+        dialogTitle = stringResource(R.string.delete_reminder),
+        message = stringResource(R.string.delete_reminder_confirmation),
         modifier = modifier,
     )
 }
@@ -110,6 +136,11 @@ private fun NonInteractiveAgendaCard(
     title: String,
     content: String,
     dateTime: String,
+    onOpenOptionClick: () -> Unit,
+    onEditOptionClick: () -> Unit,
+    onDeleteOptionClick: () -> Unit,
+    dialogTitle: String,
+    message: String,
     modifier: Modifier = Modifier,
 ) {
     AgendaCard(
@@ -140,6 +171,11 @@ private fun NonInteractiveAgendaCard(
                 modifier = Modifier.weight(1f),
             )
         },
+        onOpenOptionClick = onOpenOptionClick,
+        onEditOptionClick = onEditOptionClick,
+        onDeleteOptionClick = onDeleteOptionClick,
+        dialogTitle = dialogTitle,
+        message = message,
         modifier = modifier,
     )
 }
@@ -153,6 +189,11 @@ private fun InteractiveAgendaCard(
     content: String,
     dateTime: String,
     onLeadingIconClick: () -> Unit,
+    onOpenOptionClick: () -> Unit,
+    onEditOptionClick: () -> Unit,
+    onDeleteOptionClick: () -> Unit,
+    dialogTitle: String,
+    message: String,
     modifier: Modifier = Modifier,
     isDone: Boolean = false,
 ) {
@@ -199,6 +240,11 @@ private fun InteractiveAgendaCard(
                 modifier = Modifier.weight(1f),
             )
         },
+        onOpenOptionClick = onOpenOptionClick,
+        onEditOptionClick = onEditOptionClick,
+        onDeleteOptionClick = onDeleteOptionClick,
+        dialogTitle = dialogTitle,
+        message = message,
         modifier = modifier,
     )
 }
@@ -212,11 +258,38 @@ private fun AgendaCard(
     content: String,
     dateTime: String,
     leadingIcon: @Composable () -> Unit,
+    onOpenOptionClick: () -> Unit,
+    onEditOptionClick: () -> Unit,
+    onDeleteOptionClick: () -> Unit,
+    dialogTitle: String,
+    message: String,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember {
         mutableStateOf(false)
     }
+    var showDeleteConfirmation by remember {
+        mutableStateOf(false)
+    }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { onDeleteOptionClick() }) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            title = { Text(dialogTitle) },
+            text = { Text(message) }
+        )
+    }
+
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -252,15 +325,24 @@ private fun AgendaCard(
                 ) {
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.open),
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            expanded = false
+                            onOpenOptionClick()
+                        },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.edit),
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            expanded = false
+                            onEditOptionClick()
+                        },
                     )
                     TaskyDropdownMenuItem(
                         text = stringResource(R.string.delete),
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            expanded = false
+                            showDeleteConfirmation = true
+                        },
                     )
                 }
             }
@@ -322,6 +404,9 @@ fun AgendaTaskCardPreview() {
             dateTime = "Mar 5, 10:00",
             isDone = true,
             onLeadingIconClick = {},
+            onOpenOptionClick = {},
+            onEditOptionClick = {},
+            onDeleteOptionClick = {}
         )
     }
 }
@@ -334,6 +419,9 @@ fun AgendaEventCardPreview() {
             title = "Lorem ipsum dolor sit amet, consectetur",
             content = "This is an event",
             dateTime = "Mar 5, 10:30 - Mar 5, 11:00",
+            onOpenOptionClick = {},
+            onEditOptionClick = {},
+            onDeleteOptionClick = {}
         )
     }
 }
@@ -346,6 +434,9 @@ fun AgendaReminderCardPreview() {
             title = "Reminder",
             content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit",
             dateTime = "Mar 5, 11:30",
+            onOpenOptionClick = {},
+            onEditOptionClick = {},
+            onDeleteOptionClick = {}
         )
     }
 }

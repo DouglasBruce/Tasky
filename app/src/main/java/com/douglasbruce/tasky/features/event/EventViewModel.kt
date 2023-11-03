@@ -17,10 +17,10 @@ import com.douglasbruce.tasky.features.event.form.EventFormEvent
 import com.douglasbruce.tasky.features.event.form.EventState
 import com.douglasbruce.tasky.features.event.navigation.EventArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -31,13 +31,12 @@ import javax.inject.Inject
 @HiltViewModel
 class EventViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    userDataPreferences: UserDataPreferences,
     private val eventRepository: EventRepository,
-    private val userDataPreferences: UserDataPreferences,
 ) : ViewModel() {
 
     private val eventArgs: EventArgs = EventArgs(savedStateHandle)
-    private val localUserId: String
-        get() = runBlocking { userDataPreferences.userData.map { it.userId }.first() }
+    private val localUserId: Flow<String> = userDataPreferences.userData.map { it.userId }
 
     var state by savedStateHandle.saveable {
         mutableStateOf(
@@ -166,32 +165,34 @@ class EventViewModel @Inject constructor(
             }
 
             is EventFormEvent.OnSaveClick -> {
-                val eventItem = AgendaItem.Event(
-                    eventId = state.id ?: UUID.randomUUID().toString(),
-                    eventTitle = state.title ?: "",
-                    eventDescription = state.description,
-                    from = ZonedDateTime.of(
-                        state.fromDate,
-                        state.fromTime,
-                        ZonedDateTime.now().zone
-                    ),
-                    to = ZonedDateTime.of(
-                        state.toDate,
-                        state.toTime,
-                        ZonedDateTime.now().zone
-                    ),
-                    remindAtTime = NotificationType.notificationTypeToZonedDateTime(
-                        state.fromDate,
-                        state.fromTime,
-                        state.notificationType
-                    ),
-                    eventNotificationType = state.notificationType,
-                    host = if (state.isNew) localUserId else state.host,
-                    isUserEventCreator = if (state.isNew) true else state.isUserEventCreator,
-                    photos = state.photos
-                )
-
                 viewModelScope.launch {
+                    val userId = localUserId.first()
+
+                    val eventItem = AgendaItem.Event(
+                        eventId = state.id ?: UUID.randomUUID().toString(),
+                        eventTitle = state.title ?: "",
+                        eventDescription = state.description,
+                        from = ZonedDateTime.of(
+                            state.fromDate,
+                            state.fromTime,
+                            ZonedDateTime.now().zone
+                        ),
+                        to = ZonedDateTime.of(
+                            state.toDate,
+                            state.toTime,
+                            ZonedDateTime.now().zone
+                        ),
+                        remindAtTime = NotificationType.notificationTypeToZonedDateTime(
+                            state.fromDate,
+                            state.fromTime,
+                            state.notificationType
+                        ),
+                        eventNotificationType = state.notificationType,
+                        host = if (state.isNew) userId else state.host,
+                        isUserEventCreator = if (state.isNew) true else state.isUserEventCreator,
+                        photos = state.photos
+                    )
+
                     val result = when (state.isNew) {
                         true -> eventRepository.createEvent(eventItem)
                         false -> eventRepository.updateEvent(eventItem, emptyList())

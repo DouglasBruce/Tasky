@@ -6,6 +6,7 @@ import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.TaskDao
 import com.douglasbruce.tasky.core.domain.mapper.toCreateTaskRequest
 import com.douglasbruce.tasky.core.domain.mapper.toTask
+import com.douglasbruce.tasky.core.domain.mapper.toTaskEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateTaskRequest
 import com.douglasbruce.tasky.core.domain.repository.TaskRepository
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
@@ -29,7 +30,8 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createTask(task: AgendaItem.Task): AuthResult<Unit> {
-        //TODO: Create local
+        dao.upsertTask(task.toTaskEntity())
+
         return authenticatedRetrofitCall(serializer) {
             taskyNetwork.createTask(task.toCreateTaskRequest())
             AuthResult.Success(Unit)
@@ -37,7 +39,8 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateTask(task: AgendaItem.Task): AuthResult<Unit> {
-        //TODO: Update local
+        dao.upsertTask(task.toTaskEntity())
+
         return authenticatedRetrofitCall(serializer) {
             taskyNetwork.updateTask(task.toUpdateTaskRequest())
             AuthResult.Success(Unit)

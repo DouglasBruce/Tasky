@@ -244,7 +244,7 @@ internal fun TaskScreen(
                 Spacer(Modifier.weight(1f))
                 if (!taskUiState.isNew) {
                     TaskyTextButton(
-                        text = stringResource(R.string.delete_task),
+                        text = stringResource(R.string.delete_task).uppercase(),
                         onClick = { /*TODO*/ },
                     )
                 }
