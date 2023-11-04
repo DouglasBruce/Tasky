@@ -7,6 +7,6 @@ interface EventRepository {
     suspend fun getEventById(eventId: String): AuthResult<AgendaItem.Event>
     suspend fun createEvent(event: AgendaItem.Event): AuthResult<Unit>
     suspend fun updateEvent(event: AgendaItem.Event, deletedRemotePhotoKeys: List<String>): AuthResult<Unit>
-    suspend fun deleteEvent(eventId: String): AuthResult<Unit>
+    suspend fun deleteEventById(eventId: String): AuthResult<Unit>
     suspend fun getFutureEvents(): List<AgendaItem.Event>
 }

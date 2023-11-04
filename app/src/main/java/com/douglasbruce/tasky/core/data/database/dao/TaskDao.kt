@@ -40,8 +40,7 @@ interface TaskDao {
         """
     )
     suspend fun getFutureTasks(
-        startingDate: Long = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC"))
-            .toEpochSecond() * 1000,
+        startingDate: Long = ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond() * 1000,
     ): List<TaskEntity>
 
     @Query(

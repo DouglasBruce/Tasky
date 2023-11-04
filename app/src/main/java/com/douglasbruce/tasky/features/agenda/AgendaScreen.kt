@@ -288,6 +288,9 @@ internal fun AgendaScreen(
                                     R.string.event_description
                                 ) else item.eventDescription,
                                 dateTime = DateUtils.formatDates(item.from, item.to),
+                                onOpenOptionClick = { /*TODO*/ },
+                                onEditOptionClick = { /*TODO*/ },
+                                onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteEventClick(item.eventId)) }
                             )
 
                             is AgendaItem.Task -> AgendaTaskCard(
@@ -297,7 +300,10 @@ internal fun AgendaScreen(
                                 ) else item.taskDescription,
                                 dateTime = DateUtils.formatDate(item.time),
                                 isDone = item.isDone,
-                                onLeadingIconClick = { /*TODO*/ },
+                                onLeadingIconClick = { onEvent(AgendaEvent.ToggleTaskDoneClick(item)) },
+                                onOpenOptionClick = { /*TODO*/ },
+                                onEditOptionClick = { /*TODO*/ },
+                                onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteTaskClick(item.taskId)) }
                             )
 
                             is AgendaItem.Reminder -> AgendaReminderCard(
@@ -306,6 +312,9 @@ internal fun AgendaScreen(
                                     R.string.reminder_description
                                 ) else item.reminderDescription,
                                 dateTime = DateUtils.formatDate(item.time),
+                                onOpenOptionClick = { /*TODO*/ },
+                                onEditOptionClick = { /*TODO*/ },
+                                onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteReminderClick(item.reminderId)) }
                             )
                         }
                         if (item == agendaUiState.itemBeforeTimeNeedle) {

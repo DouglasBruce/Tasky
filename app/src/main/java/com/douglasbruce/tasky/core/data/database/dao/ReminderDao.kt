@@ -40,8 +40,7 @@ interface ReminderDao {
         """
     )
     suspend fun getFutureReminders(
-        startingDate: Long = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC"))
-            .toEpochSecond() * 1000,
+        startingDate: Long = ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond() * 1000,
     ): List<ReminderEntity>
 
     @Query(

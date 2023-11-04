@@ -335,7 +335,7 @@ internal fun EventScreen(
                 Spacer(Modifier.weight(1f))
                 if (!eventUiState.isNew) {
                     TaskyTextButton(
-                        text = stringResource(R.string.delete_event),
+                        text = stringResource(R.string.delete_event).uppercase(),
                         onClick = { /*TODO*/ },
                     )
                 }

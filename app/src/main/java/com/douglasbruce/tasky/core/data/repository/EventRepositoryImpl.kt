@@ -7,6 +7,7 @@ import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.EventDao
 import com.douglasbruce.tasky.core.domain.mapper.toCreateEventRequest
 import com.douglasbruce.tasky.core.domain.mapper.toEvent
+import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateEventRequest
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
 import com.douglasbruce.tasky.core.model.AgendaItem
@@ -32,7 +33,8 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createEvent(event: AgendaItem.Event): AuthResult<Unit> {
-        //TODO: Update local
+        dao.upsertEvent(event.toEventEntity())
+
         val requestJson =
             serializer.toJson(event.toCreateEventRequest(), CreateEventRequest::class.java)
 
@@ -52,7 +54,8 @@ class EventRepositoryImpl @Inject constructor(
         event: AgendaItem.Event,
         deletedRemotePhotoKeys: List<String>,
     ): AuthResult<Unit> {
-        //TODO: Update local
+        dao.upsertEvent(event.toEventEntity())
+
         val requestJson = serializer.toJson(
             event.toUpdateEventRequest(
                 deletedPhotoKeys = deletedRemotePhotoKeys,
@@ -72,7 +75,7 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteEvent(eventId: String): AuthResult<Unit> {
+    override suspend fun deleteEventById(eventId: String): AuthResult<Unit> {
         val result = authenticatedRetrofitCall(serializer) {
             dao.deleteEventById(eventId)
             taskyNetwork.deleteEvent(eventId)
