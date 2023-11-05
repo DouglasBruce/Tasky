@@ -64,7 +64,7 @@ android {
 // Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.24.4"
+        artifact = "com.google.protobuf:protoc:3.25.0"
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -97,7 +97,7 @@ dependencies {
 
     // Proto Datastore
     implementation("androidx.datastore:datastore:1.0.0")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:3.24.4")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.25.0")
 
     // Dagger - Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
@@ -120,9 +120,9 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
 
     //Coil
-    implementation("io.coil-kt:coil:2.4.0")
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("io.coil-kt:coil-svg:2.4.0")
+    implementation("io.coil-kt:coil:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-svg:2.5.0")
 
     //WorkManager
     implementation("androidx.work:work-runtime-ktx:2.8.1")

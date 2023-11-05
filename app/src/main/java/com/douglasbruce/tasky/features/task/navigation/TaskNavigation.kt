@@ -17,19 +17,26 @@ internal const val taskIdArg = "taskId"
 @VisibleForTesting
 internal const val taskDateArg = "taskDate"
 
-internal class TaskArgs(val taskId: String?, val taskDateMilli: Long) {
+@VisibleForTesting
+internal const val taskIsEditingArg = "taskIsEditing"
+
+internal class TaskArgs(val taskId: String?, val taskDateMilli: Long, val taskIsEditing: Boolean) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(savedStateHandle[taskIdArg], checkNotNull(savedStateHandle[taskDateArg]))
+            this(
+                savedStateHandle[taskIdArg],
+                checkNotNull(savedStateHandle[taskDateArg]),
+                checkNotNull(savedStateHandle[taskIsEditingArg])
+            )
 }
 
 fun NavController.navigateToNewTask(dateMilli: Long) {
-    this.navigate("$taskNavigationRoute/$dateMilli") {
+    this.navigate("$taskNavigationRoute/$dateMilli/true") {
         launchSingleTop = true
     }
 }
 
-fun NavController.navigateToTask(taskId: String) {
-    this.navigate("$taskNavigationRoute/$taskId") {
+fun NavController.navigateToTask(dateMilli: Long, taskId: String, isEditing: Boolean) {
+    this.navigate("$taskNavigationRoute/$dateMilli/$isEditing?$taskIdArg=$taskId") {
         launchSingleTop = true
     }
 }
@@ -39,10 +46,14 @@ fun NavGraphBuilder.taskScreen(
     onEditorClick: (Boolean, String, String) -> Unit,
 ) {
     composable(
-        route = "$taskNavigationRoute/{$taskDateArg}?$taskIdArg={$taskIdArg}",
+        route = "$taskNavigationRoute/{$taskDateArg}/{$taskIsEditingArg}?$taskIdArg={$taskIdArg}",
         arguments = listOf(
             navArgument(taskDateArg) {
                 type = NavType.LongType
+            },
+            navArgument(taskIsEditingArg) {
+                type = NavType.BoolType
+                defaultValue = false
             },
             navArgument(taskIdArg) {
                 type = NavType.StringType

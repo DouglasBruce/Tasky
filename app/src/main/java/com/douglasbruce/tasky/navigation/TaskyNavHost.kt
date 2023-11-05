@@ -19,6 +19,7 @@ import com.douglasbruce.tasky.features.register.navigation.registerScreen
 import com.douglasbruce.tasky.features.reminder.navigation.navigateToNewReminder
 import com.douglasbruce.tasky.features.reminder.navigation.reminderScreen
 import com.douglasbruce.tasky.features.task.navigation.navigateToNewTask
+import com.douglasbruce.tasky.features.task.navigation.navigateToTask
 import com.douglasbruce.tasky.features.task.navigation.taskScreen
 
 @Composable
@@ -46,6 +47,7 @@ fun TaskyNavHost(
             onLogoutClick = onLogoutClick,
             onAddEventClick = navController::navigateToNewEvent,
             onAddTaskClick = navController::navigateToNewTask,
+            onOpenTaskClick = navController::navigateToTask,
             onAddReminderClick = navController::navigateToNewReminder,
             nestedGraphs = {
                 eventScreen(
