@@ -34,11 +34,18 @@ class TaskViewModel @Inject constructor(
         mutableStateOf(
             TaskState(
                 id = taskArgs.taskId,
-                date = DateUtils.getLocalDate(taskArgs.taskDateMilli)
+                date = DateUtils.getLocalDate(taskArgs.taskDateMilli),
+                isEditing = taskArgs.taskIsEditing
             )
         )
     }
         private set
+
+    init {
+        state.id?.let { id ->
+            getTask(id)
+        }
+    }
 
     fun onEvent(event: TaskEvent) {
         when (event) {
@@ -47,7 +54,14 @@ class TaskViewModel @Inject constructor(
             }
 
             is TaskEvent.OnEditorSave -> {
-                state = state.copy(title = event.title, description = event.description)
+                if (state.isLoading) {
+                    return
+                }
+
+                val title = event.title.ifBlank { state.title }
+                val desc = event.description.ifBlank { state.description }
+
+                state = state.copy(title = title, description = desc)
             }
 
             is TaskEvent.OnTimePickerClick -> {
@@ -101,7 +115,7 @@ class TaskViewModel @Inject constructor(
                 )
 
                 viewModelScope.launch {
-                    val result = when(state.isNew) {
+                    val result = when (state.isNew) {
                         true -> taskRepository.createTask(task)
                         false -> taskRepository.updateTask(task)
                     }
@@ -112,6 +126,33 @@ class TaskViewModel @Inject constructor(
                         //TODO: Report errors
                     }
                     //TODO: Logout if unauthorized
+                }
+            }
+        }
+    }
+
+    private fun getTask(id: String) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            when (val result = taskRepository.getTaskById(id)) {
+                is AuthResult.Success -> {
+                    result.data?.let { task ->
+                        state = state.copy(
+                            title = task.taskTitle,
+                            description = task.taskDescription,
+                            time = task.time.toLocalTime(),
+                            date = task.time.toLocalDate(),
+                            isDone = task.isDone,
+                            notificationType = task.taskNotificationType,
+                            isLoading = false,
+                        )
+                    }
+                }
+                is AuthResult.Unauthorized -> { /*TODO: Logout*/ }
+                is AuthResult.Error -> {
+                    /*TODO: Display message*/
+                    state = state.copy(isLoading = false)
                 }
             }
         }

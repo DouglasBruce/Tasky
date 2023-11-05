@@ -19,6 +19,7 @@ fun NavGraphBuilder.agendaGraph(
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
     onAddTaskClick: (Long) -> Unit,
+    onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
     nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
@@ -31,6 +32,7 @@ fun NavGraphBuilder.agendaGraph(
                 onLogoutClick = onLogoutClick,
                 onAddEventClick = onAddEventClick,
                 onAddTaskClick = onAddTaskClick,
+                onOpenTaskClick = onOpenTaskClick,
                 onAddReminderClick = onAddReminderClick,
             )
         }

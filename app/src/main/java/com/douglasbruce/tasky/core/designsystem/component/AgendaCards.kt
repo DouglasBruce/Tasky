@@ -1,6 +1,7 @@
 package com.douglasbruce.tasky.core.designsystem.component
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -295,7 +296,7 @@ private fun AgendaCard(
         colors = CardDefaults.cardColors(
             containerColor = cardColor
         ),
-        modifier = modifier,
+        modifier = modifier.clickable(onClick = { onOpenOptionClick() }),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

@@ -75,6 +75,7 @@ internal fun AgendaRoute(
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
     onAddTaskClick: (Long) -> Unit,
+    onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AgendaViewModel = hiltViewModel(),
@@ -85,6 +86,7 @@ internal fun AgendaRoute(
         onLogoutClick = onLogoutClick,
         onAddEventClick = onAddEventClick,
         onAddTaskClick = onAddTaskClick,
+        onOpenTaskClick = onOpenTaskClick,
         onAddReminderClick = onAddReminderClick,
         modifier = modifier.fillMaxSize(),
     )
@@ -98,6 +100,7 @@ internal fun AgendaScreen(
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
     onAddTaskClick: (Long) -> Unit,
+    onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -301,8 +304,20 @@ internal fun AgendaScreen(
                                 dateTime = DateUtils.formatDate(item.time),
                                 isDone = item.isDone,
                                 onLeadingIconClick = { onEvent(AgendaEvent.ToggleTaskDoneClick(item)) },
-                                onOpenOptionClick = { /*TODO*/ },
-                                onEditOptionClick = { /*TODO*/ },
+                                onOpenOptionClick = {
+                                    onOpenTaskClick(
+                                        DateUtils.getDateMilli(item.time.toLocalDate()),
+                                        item.taskId,
+                                        false
+                                    )
+                                },
+                                onEditOptionClick = {
+                                    onOpenTaskClick(
+                                        DateUtils.getDateMilli(item.time.toLocalDate()),
+                                        item.taskId,
+                                        true
+                                    )
+                                },
                                 onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteTaskClick(item.taskId)) }
                             )
 
@@ -314,7 +329,13 @@ internal fun AgendaScreen(
                                 dateTime = DateUtils.formatDate(item.time),
                                 onOpenOptionClick = { /*TODO*/ },
                                 onEditOptionClick = { /*TODO*/ },
-                                onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteReminderClick(item.reminderId)) }
+                                onDeleteOptionClick = {
+                                    onEvent(
+                                        AgendaEvent.OnDeleteReminderClick(
+                                            item.reminderId
+                                        )
+                                    )
+                                }
                             )
                         }
                         if (item == agendaUiState.itemBeforeTimeNeedle) {
@@ -344,6 +365,7 @@ fun AgendaPreview() {
             onLogoutClick = {},
             onAddEventClick = {},
             onAddTaskClick = {},
+            onOpenTaskClick = { _: Long, _: String, _: Boolean -> },
             onAddReminderClick = {},
         )
     }
