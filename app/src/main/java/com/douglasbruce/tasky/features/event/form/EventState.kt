@@ -28,4 +28,5 @@ data class EventState(
     val showDatePicker: Boolean = false,
     val isEditingToTime: Boolean = false,
     val isEditingToDate: Boolean = false,
+    val isLoading: Boolean = false,
 ) : Parcelable

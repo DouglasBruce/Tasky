@@ -17,19 +17,30 @@ internal const val reminderIdArg = "reminderId"
 @VisibleForTesting
 internal const val reminderDateArg = "reminderDate"
 
-internal class ReminderArgs(val reminderId: String?, val reminderDateMilli: Long) {
+@VisibleForTesting
+internal const val reminderIsEditingArg = "reminderIsEditing"
+
+internal class ReminderArgs(
+    val reminderId: String?,
+    val reminderDateMilli: Long,
+    val reminderIsEditing: Boolean,
+) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(savedStateHandle[reminderIdArg], checkNotNull(savedStateHandle[reminderDateArg]))
+            this(
+                savedStateHandle[reminderIdArg],
+                checkNotNull(savedStateHandle[reminderDateArg]),
+                checkNotNull(savedStateHandle[reminderIsEditingArg])
+            )
 }
 
 fun NavController.navigateToNewReminder(dateMilli: Long) {
-    this.navigate("$reminderNavigationRoute/$dateMilli") {
+    this.navigate("$reminderNavigationRoute/$dateMilli/true") {
         launchSingleTop = true
     }
 }
 
-fun NavController.navigateToReminder(reminderId: String) {
-    this.navigate("$reminderNavigationRoute/$reminderId") {
+fun NavController.navigateToReminder(dateMilli: Long, reminderId: String, isEditing: Boolean) {
+    this.navigate("$reminderNavigationRoute/$dateMilli/$isEditing?$reminderIdArg=$reminderId") {
         launchSingleTop = true
     }
 }
@@ -39,10 +50,14 @@ fun NavGraphBuilder.reminderScreen(
     onEditorClick: (Boolean, String, String) -> Unit,
 ) {
     composable(
-        route = "$reminderNavigationRoute/{$reminderDateArg}?$reminderIdArg={$reminderIdArg}",
+        route = "$reminderNavigationRoute/{$reminderDateArg}/{$reminderIsEditingArg}?$reminderIdArg={$reminderIdArg}",
         arguments = listOf(
             navArgument(reminderDateArg) {
                 type = NavType.LongType
+            },
+            navArgument(reminderIsEditingArg) {
+                type = NavType.BoolType
+                defaultValue = false
             },
             navArgument(reminderIdArg) {
                 type = NavType.StringType

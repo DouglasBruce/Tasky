@@ -149,7 +149,10 @@ class TaskViewModel @Inject constructor(
                         )
                     }
                 }
-                is AuthResult.Unauthorized -> { /*TODO: Logout*/ }
+
+                is AuthResult.Unauthorized -> { /*TODO: Logout*/
+                }
+
                 is AuthResult.Error -> {
                     /*TODO: Display message*/
                     state = state.copy(isLoading = false)

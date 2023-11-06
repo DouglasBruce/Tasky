@@ -74,9 +74,11 @@ import java.time.format.DateTimeFormatter
 internal fun AgendaRoute(
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
+    onOpenEventClick: (toDate: Long, fromDate: Long, id: String, isEditing: Boolean) -> Unit,
     onAddTaskClick: (Long) -> Unit,
     onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
+    onOpenReminderClick: (Long, String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AgendaViewModel = hiltViewModel(),
 ) {
@@ -85,9 +87,11 @@ internal fun AgendaRoute(
         onEvent = viewModel::onEvent,
         onLogoutClick = onLogoutClick,
         onAddEventClick = onAddEventClick,
+        onOpenEventClick = onOpenEventClick,
         onAddTaskClick = onAddTaskClick,
         onOpenTaskClick = onOpenTaskClick,
         onAddReminderClick = onAddReminderClick,
+        onOpenReminderClick = onOpenReminderClick,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -99,9 +103,11 @@ internal fun AgendaScreen(
     onEvent: (AgendaEvent) -> Unit,
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
+    onOpenEventClick: (toDate: Long, fromDate: Long, id: String, isEditing: Boolean) -> Unit,
     onAddTaskClick: (Long) -> Unit,
     onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
+    onOpenReminderClick: (Long, String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -291,8 +297,22 @@ internal fun AgendaScreen(
                                     R.string.event_description
                                 ) else item.eventDescription,
                                 dateTime = DateUtils.formatDates(item.from, item.to),
-                                onOpenOptionClick = { /*TODO*/ },
-                                onEditOptionClick = { /*TODO*/ },
+                                onOpenOptionClick = {
+                                    onOpenEventClick(
+                                        DateUtils.getDateMilli(item.to.toLocalDate()),
+                                        DateUtils.getDateMilli(item.from.toLocalDate()),
+                                        item.eventId,
+                                        false
+                                    )
+                                },
+                                onEditOptionClick = {
+                                    onOpenEventClick(
+                                        DateUtils.getDateMilli(item.to.toLocalDate()),
+                                        DateUtils.getDateMilli(item.from.toLocalDate()),
+                                        item.eventId,
+                                        true
+                                    )
+                                },
                                 onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteEventClick(item.eventId)) }
                             )
 
@@ -327,8 +347,20 @@ internal fun AgendaScreen(
                                     R.string.reminder_description
                                 ) else item.reminderDescription,
                                 dateTime = DateUtils.formatDate(item.time),
-                                onOpenOptionClick = { /*TODO*/ },
-                                onEditOptionClick = { /*TODO*/ },
+                                onOpenOptionClick = {
+                                    onOpenReminderClick(
+                                        DateUtils.getDateMilli(item.time.toLocalDate()),
+                                        item.reminderId,
+                                        false
+                                    )
+                                },
+                                onEditOptionClick = {
+                                    onOpenReminderClick(
+                                        DateUtils.getDateMilli(item.time.toLocalDate()),
+                                        item.reminderId,
+                                        true
+                                    )
+                                },
                                 onDeleteOptionClick = {
                                     onEvent(
                                         AgendaEvent.OnDeleteReminderClick(
@@ -364,9 +396,11 @@ fun AgendaPreview() {
             onEvent = {},
             onLogoutClick = {},
             onAddEventClick = {},
+            onOpenEventClick = { _: Long, _: Long, _: String, _: Boolean -> },
             onAddTaskClick = {},
             onOpenTaskClick = { _: Long, _: String, _: Boolean -> },
             onAddReminderClick = {},
+            onOpenReminderClick = { _: Long, _: String, _: Boolean -> },
         )
     }
 }

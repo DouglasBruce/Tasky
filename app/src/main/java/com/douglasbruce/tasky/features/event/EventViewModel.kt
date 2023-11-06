@@ -44,10 +44,17 @@ class EventViewModel @Inject constructor(
                 id = eventArgs.eventId,
                 fromDate = DateUtils.getLocalDate(eventArgs.eventFromDateMilli),
                 toDate = DateUtils.getLocalDate(eventArgs.eventToDateMilli),
+                isEditing = eventArgs.eventIsEditing,
             )
         )
     }
         private set
+
+    init {
+        state.id?.let { id ->
+            getEvent(id)
+        }
+    }
 
     fun onEvent(event: EventFormEvent) {
         when (event) {
@@ -56,7 +63,14 @@ class EventViewModel @Inject constructor(
             }
 
             is EventFormEvent.OnEditorSave -> {
-                state = state.copy(title = event.title, description = event.description)
+                if (state.isLoading) {
+                    return
+                }
+
+                val title = event.title.ifBlank { state.title }
+                val desc = event.description.ifBlank { state.description }
+
+                state = state.copy(title = title, description = desc)
             }
 
             is EventFormEvent.OnHideTimePicker -> {
@@ -204,6 +218,40 @@ class EventViewModel @Inject constructor(
                         //TODO: Report errors
                     }
                     //TODO: Logout if unauthorized
+                }
+            }
+        }
+    }
+
+    private fun getEvent(id: String) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            when (val result = eventRepository.getEventById(id)) {
+                is AuthResult.Success -> {
+                    result.data?.let { event ->
+                        // TODO: Handle attendees
+                        state = state.copy(
+                            title = event.eventTitle,
+                            description = event.eventDescription,
+                            toTime = event.to.toLocalTime(),
+                            toDate = event.to.toLocalDate(),
+                            fromTime = event.from.toLocalTime(),
+                            fromDate = event.from.toLocalDate(),
+                            notificationType = event.eventNotificationType,
+                            photos = event.photos,
+                            isUserEventCreator = event.isUserEventCreator,
+                            isLoading = false,
+                        )
+                    }
+                }
+
+                is AuthResult.Unauthorized -> { /*TODO: Logout*/
+                }
+
+                is AuthResult.Error -> {
+                    /*TODO: Display message*/
+                    state = state.copy(isLoading = false)
                 }
             }
         }

@@ -20,27 +20,32 @@ internal const val eventFromDateArg = "eventFromDate"
 @VisibleForTesting
 internal const val eventToDateArg = "eventToDate"
 
+@VisibleForTesting
+internal const val eventIsEditingArg = "eventIsEditing"
+
 internal class EventArgs(
     val eventId: String?,
     val eventToDateMilli: Long,
-    val eventFromDateMilli: Long
+    val eventFromDateMilli: Long,
+    val eventIsEditing: Boolean,
 ) {
     constructor(savedStateHandle: SavedStateHandle) :
             this(
                 savedStateHandle[eventIdArg],
                 checkNotNull(savedStateHandle[eventToDateArg]),
-                checkNotNull(savedStateHandle[eventFromDateArg])
+                checkNotNull(savedStateHandle[eventFromDateArg]),
+                checkNotNull(savedStateHandle[eventIsEditingArg])
             )
 }
 
 fun NavController.navigateToNewEvent(dateMilli: Long) {
-    this.navigate("$eventNavigationRoute/$dateMilli/$dateMilli") {
+    this.navigate("$eventNavigationRoute/$dateMilli/$dateMilli/true") {
         launchSingleTop = true
     }
 }
 
-fun NavController.navigateToEvent(eventId: String) {
-    this.navigate("$eventNavigationRoute/$eventId") {
+fun NavController.navigateToEvent(toDateMilli: Long, fromDateMilli: Long, eventId: String, isEditing: Boolean) {
+    this.navigate("$eventNavigationRoute/$toDateMilli/$fromDateMilli/$isEditing?$eventIdArg=$eventId") {
         launchSingleTop = true
     }
 }
@@ -51,13 +56,17 @@ fun NavGraphBuilder.eventScreen(
     onPhotoViewerClick: (key: String, uri: String) -> Unit,
 ) {
     composable(
-        route = "$eventNavigationRoute/{$eventToDateArg}/{$eventFromDateArg}?$eventIdArg={$eventIdArg}",
+        route = "$eventNavigationRoute/{$eventToDateArg}/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}",
         arguments = listOf(
             navArgument(eventToDateArg) {
                 type = NavType.LongType
             },
             navArgument(eventFromDateArg) {
                 type = NavType.LongType
+            },
+            navArgument(eventIsEditingArg) {
+                type = NavType.BoolType
+                defaultValue = false
             },
             navArgument(eventIdArg) {
                 type = NavType.StringType
