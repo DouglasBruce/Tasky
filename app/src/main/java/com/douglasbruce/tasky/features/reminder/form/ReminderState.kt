@@ -18,4 +18,5 @@ data class ReminderState(
     val notificationType: NotificationType = NotificationType.THIRTY_MINUTES,
     val showTimePicker: Boolean = false,
     val showDatePicker: Boolean = false,
+    val isLoading: Boolean = false,
 ) : Parcelable

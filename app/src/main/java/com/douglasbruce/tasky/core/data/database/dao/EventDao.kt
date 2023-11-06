@@ -22,7 +22,7 @@ interface EventDao {
             WHERE id = :eventId
         """,
     )
-    fun getEventById(eventId: String): EventEntity?
+    suspend fun getEventById(eventId: String): EventEntity?
 
     @Query(
         value = """
