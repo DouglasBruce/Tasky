@@ -29,4 +29,6 @@ data class EventState(
     val isEditingToTime: Boolean = false,
     val isEditingToDate: Boolean = false,
     val isLoading: Boolean = false,
+    val logout: Boolean = false,
+    val saved: Boolean = false,
 ) : Parcelable
