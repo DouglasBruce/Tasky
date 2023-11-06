@@ -212,12 +212,19 @@ class EventViewModel @Inject constructor(
                         false -> eventRepository.updateEvent(eventItem, emptyList())
                     }
 
-                    if (result is AuthResult.Success) {
-                        //TODO: Navigate back to agenda screen
-                    } else if (result is AuthResult.Error) {
-                        //TODO: Report errors
+                    when (result) {
+                        is AuthResult.Success -> {
+                            state = state.copy(saved = true)
+                        }
+
+                        is AuthResult.Error -> {
+                            //TODO: Report errors
+                        }
+
+                        is AuthResult.Unauthorized -> {
+                            state = state.copy(logout = true)
+                        }
                     }
-                    //TODO: Logout if unauthorized
                 }
             }
         }
@@ -246,7 +253,8 @@ class EventViewModel @Inject constructor(
                     }
                 }
 
-                is AuthResult.Unauthorized -> { /*TODO: Logout*/
+                is AuthResult.Unauthorized -> {
+                    state = state.copy(logout = true)
                 }
 
                 is AuthResult.Error -> {

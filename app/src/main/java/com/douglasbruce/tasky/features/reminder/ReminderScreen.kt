@@ -59,6 +59,7 @@ internal fun ReminderRoute(
     reminderDescription: String,
     onBackClick: () -> Unit,
     onEditorClick: (Boolean, String, String) -> Unit,
+    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReminderViewModel = hiltViewModel(),
 ) {
@@ -69,6 +70,18 @@ internal fun ReminderRoute(
                 reminderDescription
             )
         )
+    }
+
+    LaunchedEffect(viewModel.state.saved) {
+        if (viewModel.state.saved) {
+            onBackClick()
+        }
+    }
+
+    LaunchedEffect(viewModel.state.logout) {
+        if (viewModel.state.logout) {
+            onLogoutClick()
+        }
     }
 
     ReminderScreen(

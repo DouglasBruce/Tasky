@@ -58,6 +58,7 @@ internal fun TaskRoute(
     taskDescription: String,
     onBackClick: () -> Unit,
     onEditorClick: (Boolean, String, String) -> Unit,
+    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TaskViewModel = hiltViewModel(),
 ) {
@@ -68,6 +69,18 @@ internal fun TaskRoute(
                 taskDescription
             )
         )
+    }
+
+    LaunchedEffect(viewModel.state.saved) {
+        if (viewModel.state.saved) {
+            onBackClick()
+        }
+    }
+
+    LaunchedEffect(viewModel.state.logout) {
+        if (viewModel.state.logout) {
+            onLogoutClick()
+        }
     }
 
     TaskScreen(

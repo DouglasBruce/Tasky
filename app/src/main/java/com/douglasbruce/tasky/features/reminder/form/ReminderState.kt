@@ -19,4 +19,6 @@ data class ReminderState(
     val showTimePicker: Boolean = false,
     val showDatePicker: Boolean = false,
     val isLoading: Boolean = false,
+    val logout: Boolean = false,
+    val saved: Boolean = false,
 ) : Parcelable
