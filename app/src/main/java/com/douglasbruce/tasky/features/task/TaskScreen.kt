@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,6 +22,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -74,8 +77,8 @@ internal fun TaskRoute(
         )
     }
 
-    LaunchedEffect(viewModel.state.saved) {
-        if (viewModel.state.saved) {
+    LaunchedEffect(viewModel.state.closeScreen) {
+        if (viewModel.state.closeScreen) {
             onBackClick()
         }
     }
@@ -120,6 +123,29 @@ internal fun TaskScreen(
         taskUiState.isNew -> stringResource(R.string.create_task)
         taskUiState.isEditing -> stringResource(R.string.edit_task)
         else -> taskUiState.date.format(titleDateFormatter)
+    }
+
+    if (taskUiState.showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { onEvent(TaskEvent.ToggleDeleteConfirmationClick(false)) },
+            dismissButton = {
+                TextButton(onClick = { onEvent(TaskEvent.ToggleDeleteConfirmationClick(false)) }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(TaskEvent.ToggleDeleteConfirmationClick(false))
+                        onEvent(TaskEvent.OnDeleteTaskClick)
+                    }
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            title = { Text(stringResource(R.string.delete_task)) },
+            text = { Text(stringResource(R.string.delete_task_confirmation)) }
+        )
     }
 
     Scaffold(
@@ -262,7 +288,7 @@ internal fun TaskScreen(
                 if (!taskUiState.isNew) {
                     TaskyTextButton(
                         text = stringResource(R.string.delete_task).uppercase(),
-                        onClick = { /*TODO*/ },
+                        onClick = { onEvent(TaskEvent.ToggleDeleteConfirmationClick(true)) },
                     )
                 }
             }

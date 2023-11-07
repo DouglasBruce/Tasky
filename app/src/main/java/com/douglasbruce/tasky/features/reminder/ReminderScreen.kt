@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,6 +22,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -75,8 +78,8 @@ internal fun ReminderRoute(
         )
     }
 
-    LaunchedEffect(viewModel.state.saved) {
-        if (viewModel.state.saved) {
+    LaunchedEffect(viewModel.state.closeScreen) {
+        if (viewModel.state.closeScreen) {
             onBackClick()
         }
     }
@@ -121,6 +124,29 @@ internal fun ReminderScreen(
         reminderUiState.isNew -> stringResource(R.string.create_reminder)
         reminderUiState.isEditing -> stringResource(R.string.edit_reminder)
         else -> reminderUiState.date.format(titleDateFormatter)
+    }
+
+    if (reminderUiState.showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { onEvent(ReminderEvent.ToggleDeleteConfirmationClick(false)) },
+            dismissButton = {
+                TextButton(onClick = { onEvent(ReminderEvent.ToggleDeleteConfirmationClick(false)) }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(ReminderEvent.ToggleDeleteConfirmationClick(false))
+                        onEvent(ReminderEvent.OnDeleteReminderClick)
+                    }
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            title = { Text(stringResource(R.string.delete_reminder)) },
+            text = { Text(stringResource(R.string.delete_reminder_confirmation)) }
+        )
     }
 
     Scaffold(
@@ -264,7 +290,7 @@ internal fun ReminderScreen(
                 if (!reminderUiState.isNew) {
                     TaskyTextButton(
                         text = stringResource(R.string.delete_reminder).uppercase(),
-                        onClick = { /*TODO*/ },
+                        onClick = { onEvent(ReminderEvent.ToggleDeleteConfirmationClick(true)) },
                     )
                 }
             }

@@ -22,4 +22,6 @@ sealed class EventFormEvent {
     data class OnAddPhotoClick(val uris: List<Uri>) : EventFormEvent()
     data class OnRemovePhotoClick(val key: String) : EventFormEvent()
     data object OnSaveClick : EventFormEvent()
+    data class ToggleDeleteConfirmationClick(val show: Boolean) : EventFormEvent()
+    data object OnDeleteEventClick : EventFormEvent()
 }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberDatePickerState
@@ -94,8 +96,8 @@ internal fun EventRoute(
         viewModel.onEvent(EventFormEvent.OnRemovePhotoClick(removePhotoLocation))
     }
 
-    LaunchedEffect(viewModel.state.saved) {
-        if (viewModel.state.saved) {
+    LaunchedEffect(viewModel.state.closeScreen) {
+        if (viewModel.state.closeScreen) {
             onBackClick()
         }
     }
@@ -142,6 +144,29 @@ internal fun EventScreen(
         eventUiState.isNew -> stringResource(R.string.create_event)
         eventUiState.isEditing -> stringResource(R.string.edit_event)
         else -> eventUiState.fromDate.format(titleDateFormatter)
+    }
+
+    if (eventUiState.showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { onEvent(EventFormEvent.ToggleDeleteConfirmationClick(false)) },
+            dismissButton = {
+                TextButton(onClick = { onEvent(EventFormEvent.ToggleDeleteConfirmationClick(false)) }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(EventFormEvent.ToggleDeleteConfirmationClick(false))
+                        onEvent(EventFormEvent.OnDeleteEventClick)
+                    }
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            title = { Text(stringResource(R.string.delete_event)) },
+            text = { Text(stringResource(R.string.delete_event_confirmation)) }
+        )
     }
 
     Scaffold(
@@ -353,7 +378,7 @@ internal fun EventScreen(
                 if (!eventUiState.isNew) {
                     TaskyTextButton(
                         text = stringResource(R.string.delete_event).uppercase(),
-                        onClick = { /*TODO*/ },
+                        onClick = { onEvent(EventFormEvent.ToggleDeleteConfirmationClick(true)) },
                     )
                 }
             }
