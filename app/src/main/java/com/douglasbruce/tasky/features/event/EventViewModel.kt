@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.DateUtils
+import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
 import com.douglasbruce.tasky.core.model.AgendaItem
@@ -17,9 +18,11 @@ import com.douglasbruce.tasky.features.event.form.EventFormEvent
 import com.douglasbruce.tasky.features.event.form.EventState
 import com.douglasbruce.tasky.features.event.navigation.EventArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.ZonedDateTime
@@ -37,6 +40,9 @@ class EventViewModel @Inject constructor(
 
     private val eventArgs: EventArgs = EventArgs(savedStateHandle)
     private val localUserId: Flow<String> = userDataPreferences.userData.map { it.userId }
+
+    private val infoChannel = Channel<UiText>()
+    val infoMessages = infoChannel.receiveAsFlow()
 
     var state by savedStateHandle.saveable {
         mutableStateOf(
@@ -218,7 +224,9 @@ class EventViewModel @Inject constructor(
                         }
 
                         is AuthResult.Error -> {
-                            //TODO: Report errors
+                            result.message?.let {
+                                infoChannel.send(result.message)
+                            }
                         }
 
                         is AuthResult.Unauthorized -> {
@@ -258,7 +266,9 @@ class EventViewModel @Inject constructor(
                 }
 
                 is AuthResult.Error -> {
-                    /*TODO: Display message*/
+                    result.message?.let {
+                        infoChannel.send(result.message)
+                    }
                     state = state.copy(isLoading = false)
                 }
             }
