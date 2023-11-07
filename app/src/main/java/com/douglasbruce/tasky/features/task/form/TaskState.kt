@@ -21,5 +21,6 @@ data class TaskState(
     val showDatePicker: Boolean = false,
     val isLoading: Boolean = false,
     val logout: Boolean = false,
-    val saved: Boolean = false,
+    val closeScreen: Boolean = false,
+    val showDeleteConfirmation: Boolean = false,
 ) : Parcelable

@@ -127,7 +127,7 @@ class ReminderViewModel @Inject constructor(
 
                     when (result) {
                         is AuthResult.Success -> {
-                            state = state.copy(saved = true)
+                            state = state.copy(closeScreen = true)
                         }
 
                         is AuthResult.Error -> {
@@ -138,6 +138,30 @@ class ReminderViewModel @Inject constructor(
 
                         is AuthResult.Unauthorized -> {
                             state = state.copy(logout = true)
+                        }
+                    }
+                }
+            }
+
+            is ReminderEvent.ToggleDeleteConfirmationClick -> {
+                state = state.copy(showDeleteConfirmation = event.show)
+            }
+
+            is ReminderEvent.OnDeleteReminderClick -> {
+                state.id?.let { id ->
+                    viewModelScope.launch {
+                        state = when (reminderRepository.deleteReminderById(id)) {
+                            is AuthResult.Success -> {
+                                state.copy(closeScreen = true)
+                            }
+
+                            is AuthResult.Unauthorized -> {
+                                state.copy(logout = true)
+                            }
+
+                            is AuthResult.Error -> {
+                                state.copy(closeScreen = true)
+                            }
                         }
                     }
                 }

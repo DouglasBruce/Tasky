@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.formatter.NameFormatter
@@ -100,19 +101,28 @@ class AgendaViewModel @Inject constructor(
 
             is AgendaEvent.OnDeleteEventClick -> {
                 viewModelScope.launch {
-                    eventRepository.deleteEventById(event.eventId)
+                    val result = eventRepository.deleteEventById(event.eventId)
+                    if (result is AuthResult.Unauthorized) {
+                        state = state.copy(logout = true)
+                    }
                 }
             }
 
             is AgendaEvent.OnDeleteTaskClick -> {
                 viewModelScope.launch {
-                    taskRepository.deleteTaskById(event.taskId)
+                    val result = taskRepository.deleteTaskById(event.taskId)
+                    if (result is AuthResult.Unauthorized) {
+                        state = state.copy(logout = true)
+                    }
                 }
             }
 
             is AgendaEvent.OnDeleteReminderClick -> {
                 viewModelScope.launch {
-                    reminderRepository.deleteReminderById(event.reminderId)
+                    val result = reminderRepository.deleteReminderById(event.reminderId)
+                    if (result is AuthResult.Unauthorized) {
+                        state = state.copy(logout = true)
+                    }
                 }
             }
         }

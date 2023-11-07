@@ -128,7 +128,7 @@ class TaskViewModel @Inject constructor(
 
                     when (result) {
                         is AuthResult.Success -> {
-                            state = state.copy(saved = true)
+                            state = state.copy(closeScreen = true)
                         }
 
                         is AuthResult.Error -> {
@@ -139,6 +139,30 @@ class TaskViewModel @Inject constructor(
 
                         is AuthResult.Unauthorized -> {
                             state = state.copy(logout = true)
+                        }
+                    }
+                }
+            }
+
+            is TaskEvent.ToggleDeleteConfirmationClick -> {
+                state = state.copy(showDeleteConfirmation = event.show)
+            }
+
+            is TaskEvent.OnDeleteTaskClick -> {
+                state.id?.let { id ->
+                    viewModelScope.launch {
+                        state = when (taskRepository.deleteTaskById(id)) {
+                            is AuthResult.Success -> {
+                                state.copy(closeScreen = true)
+                            }
+
+                            is AuthResult.Unauthorized -> {
+                                state.copy(logout = true)
+                            }
+
+                            is AuthResult.Error -> {
+                                state.copy(closeScreen = true)
+                            }
                         }
                     }
                 }

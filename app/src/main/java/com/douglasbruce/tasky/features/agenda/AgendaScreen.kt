@@ -36,6 +36,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,6 +83,12 @@ internal fun AgendaRoute(
     modifier: Modifier = Modifier,
     viewModel: AgendaViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(viewModel.state.logout) {
+        if (viewModel.state.logout) {
+            onLogoutClick()
+        }
+    }
+
     AgendaScreen(
         agendaUiState = viewModel.state,
         onEvent = viewModel::onEvent,
