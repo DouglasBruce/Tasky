@@ -33,22 +33,23 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(userDataPreferences: UserDataPreferences): Call.Factory = OkHttpClient.Builder()
-        .addInterceptor(
-            HttpLoggingInterceptor()
-                .apply {
-                    if (BuildConfig.DEBUG) {
-                        setLevel(HttpLoggingInterceptor.Level.BODY)
-                    }
-                },
-        )
-        .addInterceptor(ApiKeyInterceptor())
-        .addInterceptor(JwtInterceptor(userDataPreferences))
-        .connectTimeout(1, TimeUnit.MINUTES)
-        .readTimeout(1, TimeUnit.MINUTES)
-        .callTimeout(1, TimeUnit.MINUTES)
-        .writeTimeout(1, TimeUnit.MINUTES)
-        .build()
+    fun okHttpCallFactory(userDataPreferences: UserDataPreferences): Call.Factory =
+        OkHttpClient.Builder()
+            .addInterceptor(
+                HttpLoggingInterceptor()
+                    .apply {
+                        if (BuildConfig.DEBUG) {
+                            setLevel(HttpLoggingInterceptor.Level.BODY)
+                        }
+                    },
+            )
+            .addInterceptor(ApiKeyInterceptor())
+            .addInterceptor(JwtInterceptor(userDataPreferences))
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(1, TimeUnit.MINUTES)
+            .callTimeout(1, TimeUnit.MINUTES)
+            .writeTimeout(1, TimeUnit.MINUTES)
+            .build()
 
     @Provides
     @Singleton

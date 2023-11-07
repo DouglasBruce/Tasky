@@ -9,7 +9,7 @@ import okhttp3.Response
 import javax.inject.Inject
 
 class JwtInterceptor @Inject constructor(
-    private val userDataPreferences: UserDataPreferences
+    private val userDataPreferences: UserDataPreferences,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {

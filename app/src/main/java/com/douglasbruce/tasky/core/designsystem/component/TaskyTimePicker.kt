@@ -166,7 +166,7 @@ private fun TimePickerTitle(displayMode: DisplayMode, modifier: Modifier = Modif
 @Composable
 private fun DisplayModeToggleButton(
     displayMode: DisplayMode,
-    onDisplayModeChange: (DisplayMode) -> Unit
+    onDisplayModeChange: (DisplayMode) -> Unit,
 ) {
     if (displayMode == DisplayMode.Picker) {
         IconButton(onClick = { onDisplayModeChange(DisplayMode.Input) }) {

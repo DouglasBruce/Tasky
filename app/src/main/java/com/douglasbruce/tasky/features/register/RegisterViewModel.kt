@@ -28,7 +28,7 @@ class RegisterViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val nameValidator: NameValidator,
     private val emailValidator: EmailValidator,
-    private val passwordValidator: PasswordValidator
+    private val passwordValidator: PasswordValidator,
 ) : ViewModel() {
 
     var state by savedStateHandle.saveable {

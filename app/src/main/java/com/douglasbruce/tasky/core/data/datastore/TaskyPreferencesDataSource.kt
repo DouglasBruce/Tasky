@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class TaskyPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
-): UserDataPreferences {
+) : UserDataPreferences {
 
     override val userData = userPreferences.data
         .map {

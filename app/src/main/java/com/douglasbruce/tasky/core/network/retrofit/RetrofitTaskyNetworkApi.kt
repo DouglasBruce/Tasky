@@ -39,7 +39,7 @@ interface RetrofitTaskyNetworkApi {
     @GET("/agenda")
     suspend fun getAgenda(
         @Query("timezone") timeZone: String,
-        @Query("time") time: Long
+        @Query("time") time: Long,
     ): NetworkAgenda
 
     @POST("/syncAgenda")

@@ -18,13 +18,15 @@ import com.douglasbruce.tasky.core.designsystem.theme.Black
 fun TimeNeedle(modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.height(12.dp).drawBehind {
-            drawCircle(
-                color = Black,
-                radius = 6.dp.toPx(),
-                center = Offset(6.dp.toPx(), center.y)
-            )
-        },
+        modifier = modifier
+            .height(12.dp)
+            .drawBehind {
+                drawCircle(
+                    color = Black,
+                    radius = 6.dp.toPx(),
+                    center = Offset(6.dp.toPx(), center.y)
+                )
+            },
     ) {
         Divider(
             modifier = Modifier.padding(start = 2.dp),

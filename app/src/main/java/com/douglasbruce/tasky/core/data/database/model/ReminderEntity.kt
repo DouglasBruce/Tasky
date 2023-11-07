@@ -15,5 +15,5 @@ data class ReminderEntity(
     val description: String,
     val time: Long,
     val remindAt: Long,
-    val notificationType: NotificationType
+    val notificationType: NotificationType,
 )

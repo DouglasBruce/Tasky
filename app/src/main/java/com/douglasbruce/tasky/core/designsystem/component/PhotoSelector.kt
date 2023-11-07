@@ -54,16 +54,17 @@ fun PhotoSelector(
     photos: List<AgendaPhoto>,
     onPhotoClick: (AgendaPhoto) -> Unit,
     onPhotosSelected: (List<Uri>) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val maxItems = AgendaItem.Event.MAX_PHOTO_AMOUNT - photos.size
-    val photoPickerLauncher = when(maxItems > 1) {
+    val photoPickerLauncher = when (maxItems > 1) {
         true -> {
             rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxItems),
                 onResult = { uris -> onPhotosSelected(uris) }
             )
         }
+
         false -> {
             rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.PickVisualMedia(),
@@ -98,7 +99,7 @@ fun PhotoSelector(
 @Composable
 private fun EmptyPhotoPicker(
     onAddPhoto: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -132,7 +133,7 @@ private fun PhotoViewer(
     photos: List<AgendaPhoto>,
     onPhotoClick: (AgendaPhoto) -> Unit,
     onAddPhoto: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,

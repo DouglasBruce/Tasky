@@ -14,7 +14,7 @@ import com.douglasbruce.tasky.core.model.VisitorFilterType
 fun VisitorFilters(
     onClick: (VisitorFilterType) -> Unit,
     selectedFilterType: VisitorFilterType,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val filterTypes = VisitorFilterType.values()
 

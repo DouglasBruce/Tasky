@@ -12,13 +12,16 @@ const val agendaGraphRoute = "agenda_graph"
 const val agendaNavigationRoute = "agenda"
 
 fun NavController.navigateToAgendaGraph() {
-    this.navigate(agendaGraphRoute, NavOptions.Builder().setPopUpTo(loginGraphRoute, inclusive = true).build())
+    this.navigate(
+        agendaGraphRoute,
+        NavOptions.Builder().setPopUpTo(loginGraphRoute, inclusive = true).build()
+    )
 }
 
 fun NavGraphBuilder.agendaGraph(
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
-    onOpenEventClick: (toDate: Long, fromDate: Long, id: String, isEditing: Boolean) -> Unit,
+    onOpenEventClick: (fromDate: Long, id: String, isEditing: Boolean) -> Unit,
     onAddTaskClick: (Long) -> Unit,
     onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,

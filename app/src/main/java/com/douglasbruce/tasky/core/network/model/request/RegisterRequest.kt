@@ -8,5 +8,5 @@ data class RegisterRequest(
     @field:Json(name = "email")
     val email: String,
     @field:Json(name = "password")
-    val password: String
+    val password: String,
 )

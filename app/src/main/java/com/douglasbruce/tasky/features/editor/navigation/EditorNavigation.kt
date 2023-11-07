@@ -20,7 +20,11 @@ internal const val editorKeyArg = "editorKey"
 @VisibleForTesting
 internal const val editorValueArg = "editorValue"
 
-internal class EditorArgs(val editorIsTitle: Boolean, val editorKey: String, val editorValue: String) {
+internal class EditorArgs(
+    val editorIsTitle: Boolean,
+    val editorKey: String,
+    val editorValue: String,
+) {
     constructor(savedStateHandle: SavedStateHandle) :
             this(
                 checkNotNull(savedStateHandle[editorIsTitleArg]),

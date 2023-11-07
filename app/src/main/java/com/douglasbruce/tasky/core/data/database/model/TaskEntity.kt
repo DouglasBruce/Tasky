@@ -16,5 +16,5 @@ data class TaskEntity(
     val time: Long,
     val remindAt: Long,
     val isDone: Boolean,
-    val notificationType: NotificationType
+    val notificationType: NotificationType,
 )

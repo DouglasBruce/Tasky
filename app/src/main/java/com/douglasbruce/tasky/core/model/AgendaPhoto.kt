@@ -6,19 +6,19 @@ import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 @Parcelize
-sealed interface AgendaPhoto: Parcelable {
+sealed interface AgendaPhoto : Parcelable {
 
     @Parcelize
     data class Remote(
         val key: String,
         val photoUri: String,
-    ): AgendaPhoto, Parcelable
+    ) : AgendaPhoto, Parcelable
 
     @Parcelize
     data class Local(
         val key: String = UUID.randomUUID().toString(),
         val uri: Uri,
-    ): AgendaPhoto, Parcelable
+    ) : AgendaPhoto, Parcelable
 
     fun key(): String {
         return when (this) {

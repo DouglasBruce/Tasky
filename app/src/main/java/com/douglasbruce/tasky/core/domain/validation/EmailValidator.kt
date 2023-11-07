@@ -3,7 +3,7 @@ package com.douglasbruce.tasky.core.domain.validation
 import javax.inject.Inject
 
 class EmailValidator @Inject constructor(
-    private val matcher: EmailMatcher
+    private val matcher: EmailMatcher,
 ) {
 
     fun validate(email: String): ValidationResult {

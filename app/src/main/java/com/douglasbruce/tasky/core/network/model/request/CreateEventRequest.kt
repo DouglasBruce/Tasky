@@ -16,5 +16,5 @@ data class CreateEventRequest(
     @field:Json(name = "remindAt")
     val remindAt: Long,
     @field:Json(name = "attendeeIds")
-    val attendeeIds: List<String>
+    val attendeeIds: List<String>,
 )

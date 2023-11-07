@@ -12,7 +12,10 @@ const val loginGraphRoute = "login_graph"
 const val loginNavigationRoute = "login"
 
 fun NavController.navigateToLoginGraph() {
-    this.navigate(loginGraphRoute, NavOptions.Builder().setPopUpTo(agendaGraphRoute, inclusive = true).build())
+    this.navigate(
+        loginGraphRoute,
+        NavOptions.Builder().setPopUpTo(agendaGraphRoute, inclusive = true).build()
+    )
 }
 
 fun NavGraphBuilder.loginGraph(
@@ -26,7 +29,7 @@ fun NavGraphBuilder.loginGraph(
     ) {
         composable(route = loginNavigationRoute) {
             LoginRoute(
-                onLoginClick= onLoginClick,
+                onLoginClick = onLoginClick,
                 onSignUpClick = onSignUpClick,
             )
         }

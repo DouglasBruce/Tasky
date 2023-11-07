@@ -6,7 +6,7 @@ import com.squareup.moshi.Moshi
 import javax.inject.Inject
 
 class MoshiSerializer @Inject constructor(
-    private val moshi: Moshi
+    private val moshi: Moshi,
 ) : JsonSerializer {
 
     override fun <T> fromJson(json: String, type: Class<T>): T? {
