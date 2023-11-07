@@ -5,6 +5,7 @@ import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.EventDao
+import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.mapper.toCreateEventRequest
 import com.douglasbruce.tasky.core.domain.mapper.toEvent
 import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
@@ -15,14 +16,20 @@ import com.douglasbruce.tasky.core.network.model.request.CreateEventRequest
 import com.douglasbruce.tasky.core.network.model.request.UpdateEventRequest
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
+    userDataPreferences: UserDataPreferences,
     private val taskyNetwork: RetrofitTaskyNetwork,
     private val dao: EventDao,
     private val serializer: MoshiSerializer,
 ) : EventRepository {
+
+    private val localUserId: Flow<String> = userDataPreferences.userData.map { it.userId }
 
     override suspend fun getEventById(eventId: String): AuthResult<AgendaItem.Event> {
         return authenticatedRetrofitCall(serializer) {
@@ -54,12 +61,14 @@ class EventRepositoryImpl @Inject constructor(
         event: AgendaItem.Event,
         deletedRemotePhotoKeys: List<String>,
     ): AuthResult<Unit> {
+        val userId = localUserId.first()
+
         dao.upsertEvent(event.toEventEntity())
 
         val requestJson = serializer.toJson(
             event.toUpdateEventRequest(
                 deletedPhotoKeys = deletedRemotePhotoKeys,
-                isGoing = true //TODO: Update to reflect real state
+                isGoing = event.getAttendee(userId)?.isGoing == true
             ), UpdateEventRequest::class.java
         )
 

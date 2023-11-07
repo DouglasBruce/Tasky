@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -48,8 +49,8 @@ class EventViewModel @Inject constructor(
         mutableStateOf(
             EventState(
                 id = eventArgs.eventId,
-                fromDate = DateUtils.getLocalDate(eventArgs.eventFromDateMilli),
-                toDate = DateUtils.getLocalDate(eventArgs.eventToDateMilli),
+                fromDate = if (eventArgs.eventId == null) DateUtils.getLocalDate(eventArgs.eventFromDateMilli) else LocalDate.now(),
+                toDate = if (eventArgs.eventId == null) DateUtils.getLocalDate(eventArgs.eventFromDateMilli) else LocalDate.now(),
                 isEditing = eventArgs.eventIsEditing,
             )
         )
@@ -210,7 +211,8 @@ class EventViewModel @Inject constructor(
                         eventNotificationType = state.notificationType,
                         host = if (state.isNew) userId else state.host,
                         isUserEventCreator = if (state.isNew) true else state.isUserEventCreator,
-                        photos = state.photos
+                        photos = state.photos,
+                        attendees = state.attendees
                     )
 
                     val result = when (state.isNew) {
@@ -269,7 +271,6 @@ class EventViewModel @Inject constructor(
             when (val result = eventRepository.getEventById(id)) {
                 is AuthResult.Success -> {
                     result.data?.let { event ->
-                        // TODO: Handle attendees
                         state = state.copy(
                             title = event.eventTitle,
                             description = event.eventDescription,
@@ -279,6 +280,7 @@ class EventViewModel @Inject constructor(
                             fromDate = event.from.toLocalDate(),
                             notificationType = event.eventNotificationType,
                             photos = event.photos,
+                            attendees = event.attendees,
                             isUserEventCreator = event.isUserEventCreator,
                             isLoading = false,
                         )
