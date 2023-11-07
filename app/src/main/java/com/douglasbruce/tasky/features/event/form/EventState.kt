@@ -2,6 +2,7 @@ package com.douglasbruce.tasky.features.event.form
 
 import android.os.Parcelable
 import com.douglasbruce.tasky.core.model.AgendaPhoto
+import com.douglasbruce.tasky.core.model.Attendee
 import com.douglasbruce.tasky.core.model.NotificationType
 import com.douglasbruce.tasky.core.model.VisitorFilterType
 import kotlinx.parcelize.Parcelize
@@ -15,6 +16,7 @@ data class EventState(
     val description: String? = null,
     val isEditing: Boolean = id.isNullOrBlank(),
     val photos: List<AgendaPhoto> = emptyList(),
+    val attendees: List<Attendee> = emptyList(),
     val fromDate: LocalDate = LocalDate.now(),
     val fromTime: LocalTime = LocalTime.now(),
     val toDate: LocalDate = fromDate,

@@ -20,7 +20,7 @@ data class NetworkEvent(
     @field:Json(name = "isUserEventCreator")
     val isUserEventCreator: Boolean,
     @field:Json(name = "attendees")
-    val attendees: List<NetworkAttendee>,
+    val attendees: List<NetworkEventAttendee>,
     @field:Json(name = "photos")
     val photos: List<NetworkPhoto>,
 )

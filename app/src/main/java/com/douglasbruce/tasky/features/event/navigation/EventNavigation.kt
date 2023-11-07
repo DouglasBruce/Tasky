@@ -18,34 +18,29 @@ internal const val eventIdArg = "eventId"
 internal const val eventFromDateArg = "eventFromDate"
 
 @VisibleForTesting
-internal const val eventToDateArg = "eventToDate"
-
-@VisibleForTesting
 internal const val eventIsEditingArg = "eventIsEditing"
 
 internal class EventArgs(
     val eventId: String?,
-    val eventToDateMilli: Long,
     val eventFromDateMilli: Long,
     val eventIsEditing: Boolean,
 ) {
     constructor(savedStateHandle: SavedStateHandle) :
             this(
                 savedStateHandle[eventIdArg],
-                checkNotNull(savedStateHandle[eventToDateArg]),
                 checkNotNull(savedStateHandle[eventFromDateArg]),
                 checkNotNull(savedStateHandle[eventIsEditingArg])
             )
 }
 
 fun NavController.navigateToNewEvent(dateMilli: Long) {
-    this.navigate("$eventNavigationRoute/$dateMilli/$dateMilli/true") {
+    this.navigate("$eventNavigationRoute/$dateMilli/true") {
         launchSingleTop = true
     }
 }
 
-fun NavController.navigateToEvent(toDateMilli: Long, fromDateMilli: Long, eventId: String, isEditing: Boolean) {
-    this.navigate("$eventNavigationRoute/$toDateMilli/$fromDateMilli/$isEditing?$eventIdArg=$eventId") {
+fun NavController.navigateToEvent(fromDateMilli: Long, eventId: String, isEditing: Boolean) {
+    this.navigate("$eventNavigationRoute/$fromDateMilli/$isEditing?$eventIdArg=$eventId") {
         launchSingleTop = true
     }
 }
@@ -57,11 +52,8 @@ fun NavGraphBuilder.eventScreen(
     onLogoutClick: () -> Unit,
 ) {
     composable(
-        route = "$eventNavigationRoute/{$eventToDateArg}/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}",
+        route = "$eventNavigationRoute/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}",
         arguments = listOf(
-            navArgument(eventToDateArg) {
-                type = NavType.LongType
-            },
             navArgument(eventFromDateArg) {
                 type = NavType.LongType
             },
