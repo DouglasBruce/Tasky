@@ -26,7 +26,7 @@ fun VisitorFilter(
     text: String,
     selected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val backgroundColor = if (selected) Black else LightBlueVariant
     val textColor = if (selected) White else DarkGray

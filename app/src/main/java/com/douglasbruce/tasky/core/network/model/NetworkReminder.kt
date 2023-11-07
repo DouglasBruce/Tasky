@@ -12,5 +12,5 @@ data class NetworkReminder(
     @field:Json(name = "time")
     val time: Long,
     @field:Json(name = "remindAt")
-    val remindAt: Long
+    val remindAt: Long,
 )

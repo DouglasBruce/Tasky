@@ -24,7 +24,7 @@ private val lightColorScheme = lightColorScheme(
 
 @Composable
 fun TaskyTheme(
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val view = LocalView.current
     if (!view.isInEditMode) {

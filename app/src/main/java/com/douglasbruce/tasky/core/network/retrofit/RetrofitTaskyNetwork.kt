@@ -78,14 +78,14 @@ class RetrofitTaskyNetwork @Inject constructor(
 
     override suspend fun createEvent(
         createEventRequest: MultipartBody.Part,
-        photos: List<MultipartBody.Part>
+        photos: List<MultipartBody.Part>,
     ): NetworkEvent {
         return networkApi.createEvent(createEventRequest, photos)
     }
 
     override suspend fun updateEvent(
         updateEventRequest: MultipartBody.Part,
-        photos: List<MultipartBody.Part>
+        photos: List<MultipartBody.Part>,
     ): NetworkEvent {
         return networkApi.updateEvent(updateEventRequest, photos)
     }
@@ -137,7 +137,7 @@ class RetrofitTaskyNetwork @Inject constructor(
 
 suspend inline fun <T> authenticatedRetrofitCall(
     serializer: JsonSerializer,
-    crossinline doCall: suspend () -> AuthResult<T>
+    crossinline doCall: suspend () -> AuthResult<T>,
 ): AuthResult<T> {
     return try {
         doCall()

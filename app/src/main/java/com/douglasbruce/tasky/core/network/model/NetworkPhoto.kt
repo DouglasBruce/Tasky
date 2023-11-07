@@ -6,5 +6,5 @@ data class NetworkPhoto(
     @field:Json(name = "key")
     val key: String,
     @field:Json(name = "url")
-    val url: String
+    val url: String,
 )

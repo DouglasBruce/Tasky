@@ -4,10 +4,10 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-  <path
-      android:pathData="M0,0h108v108h-108z"
-      android:fillColor="@color/ic_launcher_background_tint"/>
-  <path
-      android:pathData="M58.03,40.88L50.77,74.75H43.19L50.66,39.84H50.03C44.45,39.84 40.14,42.01 40.14,50.49C40.14,53.18 40.83,53.6 40.88,54.08C37.25,54.08 35.25,52.76 35.25,48.96C35.25,41.95 40.2,35.25 53.19,35.25C59.55,35.25 61.5,36.46 66.65,36.46C68.73,36.47 70.8,36.09 72.75,35.35C72.65,39.94 70.38,42.05 66.18,42.05C63.6,42.03 60.87,41.52 58.03,40.88Z"
-      android:fillColor="@color/ic_launcher_foreground_tint"/>
+    <path
+        android:pathData="M0,0h108v108h-108z"
+        android:fillColor="@color/ic_launcher_background_tint" />
+    <path
+        android:pathData="M58.03,40.88L50.77,74.75H43.19L50.66,39.84H50.03C44.45,39.84 40.14,42.01 40.14,50.49C40.14,53.18 40.83,53.6 40.88,54.08C37.25,54.08 35.25,52.76 35.25,48.96C35.25,41.95 40.2,35.25 53.19,35.25C59.55,35.25 61.5,36.46 66.65,36.46C68.73,36.47 70.8,36.09 72.75,35.35C72.65,39.94 70.38,42.05 66.18,42.05C63.6,42.03 60.87,41.52 58.03,40.88Z"
+        android:fillColor="@color/ic_launcher_foreground_tint" />
 </vector>

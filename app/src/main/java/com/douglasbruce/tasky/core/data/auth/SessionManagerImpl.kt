@@ -12,8 +12,8 @@ import javax.inject.Inject
 class SessionManagerImpl @Inject constructor(
     private val authRepository: AuthRepository,
     private val userDataPreferences: UserDataPreferences,
-    private val taskyDatabase: TaskyDatabase
-): SessionManager {
+    private val taskyDatabase: TaskyDatabase,
+) : SessionManager {
 
     override suspend fun logout() {
         withContext(Dispatchers.IO + NonCancellable) {

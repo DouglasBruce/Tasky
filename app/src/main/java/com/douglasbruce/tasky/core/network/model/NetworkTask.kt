@@ -14,5 +14,5 @@ data class NetworkTask(
     @field:Json(name = "remindAt")
     val remindAt: Long,
     @field:Json(name = "isDone")
-    val isDone: Boolean
+    val isDone: Boolean,
 )

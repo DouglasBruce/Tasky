@@ -14,5 +14,5 @@ data class NetworkAttendee(
     @field:Json(name = "isGoing")
     val isGoing: Boolean,
     @field:Json(name = "remindAt")
-    val remindAt: Long
+    val remindAt: Long,
 )

@@ -7,16 +7,16 @@ import androidx.compose.ui.res.stringResource
 import com.douglasbruce.tasky.R
 
 sealed class UiText {
-    data class DynamicString(val value: String): UiText()
+    data class DynamicString(val value: String) : UiText()
     data object UnknownError : UiText()
     class StringResource(
         @StringRes val resId: Int,
-        vararg val args: Any
-    ): UiText()
+        vararg val args: Any,
+    ) : UiText()
 
     @Composable
     fun asString(): String {
-        return when(this) {
+        return when (this) {
             is DynamicString -> value
             is StringResource -> stringResource(resId, *args)
             is UnknownError -> stringResource(R.string.something_went_wrong)
@@ -24,7 +24,7 @@ sealed class UiText {
     }
 
     fun asString(context: Context): String {
-        return when(this) {
+        return when (this) {
             is DynamicString -> value
             is StringResource -> context.getString(resId, *args)
             is UnknownError -> context.getString(R.string.something_went_wrong)

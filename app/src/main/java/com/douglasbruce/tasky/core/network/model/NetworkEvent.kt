@@ -22,5 +22,5 @@ data class NetworkEvent(
     @field:Json(name = "attendees")
     val attendees: List<NetworkAttendee>,
     @field:Json(name = "photos")
-    val photos: List<NetworkPhoto>
+    val photos: List<NetworkPhoto>,
 )

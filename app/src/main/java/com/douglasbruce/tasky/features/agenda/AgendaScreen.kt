@@ -74,7 +74,7 @@ import java.time.format.DateTimeFormatter
 internal fun AgendaRoute(
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
-    onOpenEventClick: (toDate: Long, fromDate: Long, id: String, isEditing: Boolean) -> Unit,
+    onOpenEventClick: (fromDate: Long, id: String, isEditing: Boolean) -> Unit,
     onAddTaskClick: (Long) -> Unit,
     onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
@@ -103,7 +103,7 @@ internal fun AgendaScreen(
     onEvent: (AgendaEvent) -> Unit,
     onLogoutClick: () -> Unit,
     onAddEventClick: (Long) -> Unit,
-    onOpenEventClick: (toDate: Long, fromDate: Long, id: String, isEditing: Boolean) -> Unit,
+    onOpenEventClick: (fromDate: Long, id: String, isEditing: Boolean) -> Unit,
     onAddTaskClick: (Long) -> Unit,
     onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
@@ -299,7 +299,6 @@ internal fun AgendaScreen(
                                 dateTime = DateUtils.formatDates(item.from, item.to),
                                 onOpenOptionClick = {
                                     onOpenEventClick(
-                                        DateUtils.getDateMilli(item.to.toLocalDate()),
                                         DateUtils.getDateMilli(item.from.toLocalDate()),
                                         item.eventId,
                                         false
@@ -307,7 +306,6 @@ internal fun AgendaScreen(
                                 },
                                 onEditOptionClick = {
                                     onOpenEventClick(
-                                        DateUtils.getDateMilli(item.to.toLocalDate()),
                                         DateUtils.getDateMilli(item.from.toLocalDate()),
                                         item.eventId,
                                         true
@@ -396,7 +394,7 @@ fun AgendaPreview() {
             onEvent = {},
             onLogoutClick = {},
             onAddEventClick = {},
-            onOpenEventClick = { _: Long, _: Long, _: String, _: Boolean -> },
+            onOpenEventClick = { _: Long, _: String, _: Boolean -> },
             onAddTaskClick = {},
             onOpenTaskClick = { _: Long, _: String, _: Boolean -> },
             onAddReminderClick = {},

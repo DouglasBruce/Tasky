@@ -24,7 +24,7 @@ import com.douglasbruce.tasky.core.data.database.util.NotificationTypeConverter
         ModifiedReminderEntity::class
     ],
     version = 1,
-    exportSchema = true
+    exportSchema = false
 )
 @TypeConverters(
     NotificationTypeConverter::class,

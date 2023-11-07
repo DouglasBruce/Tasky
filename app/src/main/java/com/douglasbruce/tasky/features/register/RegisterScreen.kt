@@ -102,6 +102,7 @@ internal fun RegisterScreen(
                 SnackbarResult.ActionPerformed -> {
                     onBackClick()
                 }
+
                 SnackbarResult.Dismissed -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
                 }

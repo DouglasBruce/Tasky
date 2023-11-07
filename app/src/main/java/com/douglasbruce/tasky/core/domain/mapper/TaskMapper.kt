@@ -32,14 +32,18 @@ fun TaskEntity.toTask(): AgendaItem.Task {
         taskDescription = this.description,
         time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.systemDefault()),
         isDone = this.isDone,
-        remindAtTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault()),
+        remindAtTime = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(this.remindAt),
+            ZoneId.systemDefault()
+        ),
         taskNotificationType = this.notificationType
     )
 }
 
 fun NetworkTask.toTask(): AgendaItem.Task {
     val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.systemDefault())
-    val remindAt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault())
+    val remindAt =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault())
     return AgendaItem.Task(
         taskId = this.id,
         taskTitle = this.title,

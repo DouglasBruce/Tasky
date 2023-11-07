@@ -20,5 +20,5 @@ data class UpdateEventRequest(
     @field:Json(name = "deletedPhotoKeys")
     val deletedPhotoKeys: List<String>,
     @field:Json(name = "isGoing")
-    val isGoing: Boolean
+    val isGoing: Boolean,
 )

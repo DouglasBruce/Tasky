@@ -30,14 +30,18 @@ fun ReminderEntity.toReminder(): AgendaItem.Reminder {
         reminderTitle = this.title,
         reminderDescription = this.description,
         time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.systemDefault()),
-        remindAtTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault()),
+        remindAtTime = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(this.remindAt),
+            ZoneId.systemDefault()
+        ),
         reminderNotificationType = this.notificationType
     )
 }
 
 fun NetworkReminder.toReminder(): AgendaItem.Reminder {
     val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.systemDefault())
-    val remindAt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault())
+    val remindAt =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault())
     return AgendaItem.Reminder(
         reminderId = this.id,
         reminderTitle = this.title,

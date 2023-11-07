@@ -13,4 +13,4 @@ data class LoginFormState(
     val passwordErrorType: ErrorType = ErrorType.NONE,
     val isPasswordValid: Boolean = false,
     val isPasswordVisible: Boolean = false,
-): Parcelable
+) : Parcelable

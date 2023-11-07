@@ -19,7 +19,7 @@ class ReminderRepositoryImpl @Inject constructor(
     private val taskyNetwork: RetrofitTaskyNetwork,
     private val dao: ReminderDao,
     private val serializer: JsonSerializer,
-): ReminderRepository {
+) : ReminderRepository {
     override suspend fun getReminderById(reminderId: String): AuthResult<AgendaItem.Reminder> {
         return authenticatedRetrofitCall(serializer) {
             dao.getReminderById(reminderId)?.toReminder()?.let {
