@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.DateUtils
+import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.domain.repository.ReminderRepository
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.NotificationType
@@ -15,6 +16,8 @@ import com.douglasbruce.tasky.features.reminder.form.ReminderEvent
 import com.douglasbruce.tasky.features.reminder.form.ReminderState
 import com.douglasbruce.tasky.features.reminder.navigation.ReminderArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.ZonedDateTime
@@ -29,6 +32,9 @@ class ReminderViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val reminderArgs: ReminderArgs = ReminderArgs(savedStateHandle)
+
+    private val infoChannel = Channel<UiText>()
+    val infoMessages = infoChannel.receiveAsFlow()
 
     var state by savedStateHandle.saveable {
         mutableStateOf(
@@ -125,7 +131,9 @@ class ReminderViewModel @Inject constructor(
                         }
 
                         is AuthResult.Error -> {
-                            //TODO: Report errors
+                            result.message?.let {
+                                infoChannel.send(result.message)
+                            }
                         }
 
                         is AuthResult.Unauthorized -> {
@@ -160,7 +168,9 @@ class ReminderViewModel @Inject constructor(
                 }
 
                 is AuthResult.Error -> {
-                    /*TODO: Display message*/
+                    result.message?.let {
+                        infoChannel.send(result.message)
+                    }
                     state = state.copy(isLoading = false)
                 }
             }
