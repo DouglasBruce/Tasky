@@ -48,7 +48,6 @@ fun NavController.navigateToReminder(dateMilli: Long, reminderId: String, isEdit
 fun NavGraphBuilder.reminderScreen(
     onBackClick: () -> Unit,
     onEditorClick: (Boolean, String, String) -> Unit,
-    onLogoutClick: () -> Unit,
 ) {
     composable(
         route = "$reminderNavigationRoute/{$reminderDateArg}/{$reminderIsEditingArg}?$reminderIdArg={$reminderIdArg}",
@@ -73,7 +72,6 @@ fun NavGraphBuilder.reminderScreen(
             reminderDescription = reminderDescription,
             onBackClick = onBackClick,
             onEditorClick = onEditorClick,
-            onLogoutClick = onLogoutClick,
         )
     }
 }

@@ -49,7 +49,6 @@ fun NavGraphBuilder.eventScreen(
     onBackClick: () -> Unit,
     onEditorClick: (isTitle: Boolean, key: String, value: String) -> Unit,
     onPhotoViewerClick: (key: String, uri: String) -> Unit,
-    onLogoutClick: () -> Unit,
 ) {
     composable(
         route = "$eventNavigationRoute/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}",
@@ -77,7 +76,6 @@ fun NavGraphBuilder.eventScreen(
             onBackClick = onBackClick,
             onEditorClick = onEditorClick,
             onPhotoViewerClick = onPhotoViewerClick,
-            onLogoutClick = onLogoutClick,
         )
     }
 }

@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -16,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
+import com.douglasbruce.tasky.core.network.interceptor.onLoggedOut
 import com.douglasbruce.tasky.features.agenda.navigation.agendaGraphRoute
 import com.douglasbruce.tasky.features.login.navigation.loginGraphRoute
 import com.douglasbruce.tasky.features.login.navigation.navigateToLoginGraph
@@ -55,6 +57,16 @@ fun TaskyApp(viewModel: MainActivityViewModel) {
         if (!isLoading) {
             val isAuthenticated by viewModel.isAuthenticated.collectAsStateWithLifecycle()
             val navController: NavHostController = rememberNavController()
+
+            LaunchedEffect(key1 = true) {
+                if (isAuthenticated) {
+                    onLoggedOut.collect {
+                        viewModel.logout()
+                        navController.navigateToLoginGraph()
+                    }
+                }
+            }
+
             TaskyNavHost(
                 onLogoutClick = {
                     viewModel.logout()

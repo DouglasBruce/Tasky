@@ -79,7 +79,6 @@ internal fun EventRoute(
     onBackClick: () -> Unit,
     onEditorClick: (isTitle: Boolean, key: String, value: String) -> Unit,
     onPhotoViewerClick: (key: String, uri: String) -> Unit,
-    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EventViewModel = hiltViewModel(),
 ) {
@@ -99,12 +98,6 @@ internal fun EventRoute(
     LaunchedEffect(viewModel.state.closeScreen) {
         if (viewModel.state.closeScreen) {
             onBackClick()
-        }
-    }
-
-    LaunchedEffect(viewModel.state.logout) {
-        if (viewModel.state.logout) {
-            onLogoutClick()
         }
     }
 

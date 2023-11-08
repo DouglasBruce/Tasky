@@ -137,9 +137,7 @@ class TaskViewModel @Inject constructor(
                             }
                         }
 
-                        is AuthResult.Unauthorized -> {
-                            state = state.copy(logout = true)
-                        }
+                        else -> {}
                     }
                 }
             }
@@ -151,18 +149,16 @@ class TaskViewModel @Inject constructor(
             is TaskEvent.OnDeleteTaskClick -> {
                 state.id?.let { id ->
                     viewModelScope.launch {
-                        state = when (taskRepository.deleteTaskById(id)) {
+                        when (taskRepository.deleteTaskById(id)) {
                             is AuthResult.Success -> {
-                                state.copy(closeScreen = true)
-                            }
-
-                            is AuthResult.Unauthorized -> {
-                                state.copy(logout = true)
+                                state = state.copy(closeScreen = true)
                             }
 
                             is AuthResult.Error -> {
-                                state.copy(closeScreen = true)
+                                state = state.copy(closeScreen = true)
                             }
+
+                            else -> {}
                         }
                     }
                 }
@@ -189,16 +185,14 @@ class TaskViewModel @Inject constructor(
                     }
                 }
 
-                is AuthResult.Unauthorized -> {
-                    state = state.copy(logout = true)
-                }
-
                 is AuthResult.Error -> {
                     result.message?.let {
                         infoChannel.send(result.message)
                     }
                     state = state.copy(isLoading = false)
                 }
+
+                else -> {}
             }
         }
     }

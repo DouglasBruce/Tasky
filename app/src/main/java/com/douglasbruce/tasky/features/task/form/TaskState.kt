@@ -20,7 +20,6 @@ data class TaskState(
     val showTimePicker: Boolean = false,
     val showDatePicker: Boolean = false,
     val isLoading: Boolean = false,
-    val logout: Boolean = false,
     val closeScreen: Boolean = false,
     val showDeleteConfirmation: Boolean = false,
 ) : Parcelable
