@@ -58,17 +58,14 @@ fun TaskyNavHost(
                     onBackClick = navController::popBackStack,
                     onEditorClick = navController::navigateToEditor,
                     onPhotoViewerClick = navController::navigateToPhotoViewer,
-                    onLogoutClick = onLogoutClick,
                 )
                 taskScreen(
                     onBackClick = navController::popBackStack,
                     onEditorClick = navController::navigateToEditor,
-                    onLogoutClick = onLogoutClick,
                 )
                 reminderScreen(
                     onBackClick = navController::popBackStack,
                     onEditorClick = navController::navigateToEditor,
-                    onLogoutClick = onLogoutClick,
                 )
                 editorScreen(
                     onBackClick = navController::popBackStack,

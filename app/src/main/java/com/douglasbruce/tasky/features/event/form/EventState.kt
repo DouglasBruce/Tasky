@@ -31,7 +31,6 @@ data class EventState(
     val isEditingToTime: Boolean = false,
     val isEditingToDate: Boolean = false,
     val isLoading: Boolean = false,
-    val logout: Boolean = false,
     val closeScreen: Boolean = false,
     val showDeleteConfirmation: Boolean = false,
 ) : Parcelable

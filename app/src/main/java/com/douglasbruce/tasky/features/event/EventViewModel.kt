@@ -231,9 +231,7 @@ class EventViewModel @Inject constructor(
                             }
                         }
 
-                        is AuthResult.Unauthorized -> {
-                            state = state.copy(logout = true)
-                        }
+                        else -> {}
                     }
                 }
             }
@@ -245,9 +243,13 @@ class EventViewModel @Inject constructor(
             is EventFormEvent.OnDeleteEventClick -> {
                 state.id?.let { id ->
                     viewModelScope.launch {
-                        state = when (eventRepository.deleteEventById(id)) {
+                        when (eventRepository.deleteEventById(id)) {
                             is AuthResult.Success -> {
-                                state.copy(closeScreen = true)
+                                state = state.copy(closeScreen = true)
+                            }
+
+                            is AuthResult.Error -> {
+                                state = state.copy(closeScreen = true)
                             }
 
                             is AuthResult.Unauthorized -> {
@@ -287,16 +289,14 @@ class EventViewModel @Inject constructor(
                     }
                 }
 
-                is AuthResult.Unauthorized -> {
-                    state = state.copy(logout = true)
-                }
-
                 is AuthResult.Error -> {
                     result.message?.let {
                         infoChannel.send(result.message)
                     }
                     state = state.copy(isLoading = false)
                 }
+
+                else -> {}
             }
         }
     }

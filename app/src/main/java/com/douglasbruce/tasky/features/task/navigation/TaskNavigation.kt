@@ -44,7 +44,6 @@ fun NavController.navigateToTask(dateMilli: Long, taskId: String, isEditing: Boo
 fun NavGraphBuilder.taskScreen(
     onBackClick: () -> Unit,
     onEditorClick: (Boolean, String, String) -> Unit,
-    onLogoutClick: () -> Unit,
 ) {
     composable(
         route = "$taskNavigationRoute/{$taskDateArg}/{$taskIsEditingArg}?$taskIdArg={$taskIdArg}",
@@ -69,7 +68,6 @@ fun NavGraphBuilder.taskScreen(
             taskDescription = taskDescription,
             onBackClick = onBackClick,
             onEditorClick = onEditorClick,
-            onLogoutClick = onLogoutClick,
         )
     }
 }
