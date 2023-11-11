@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -188,20 +189,21 @@ class EventViewModel @Inject constructor(
             is EventFormEvent.OnSaveClick -> {
                 viewModelScope.launch {
                     val userId = localUserId.first()
+                    val eventId = state.id ?: UUID.randomUUID().toString()
 
                     val eventItem = AgendaItem.Event(
-                        eventId = state.id ?: UUID.randomUUID().toString(),
+                        eventId = eventId,
                         eventTitle = state.title ?: "",
                         eventDescription = state.description,
                         from = ZonedDateTime.of(
                             state.fromDate,
                             state.fromTime,
-                            ZonedDateTime.now().zone
+                            ZoneId.systemDefault()
                         ),
                         to = ZonedDateTime.of(
                             state.toDate,
                             state.toTime,
-                            ZonedDateTime.now().zone
+                            ZoneId.systemDefault()
                         ),
                         remindAtTime = NotificationType.notificationTypeToZonedDateTime(
                             state.fromDate,

@@ -20,6 +20,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.UUID
 import javax.inject.Inject
@@ -109,7 +110,7 @@ class TaskViewModel @Inject constructor(
                     time = ZonedDateTime.of(
                         state.date,
                         state.time,
-                        ZonedDateTime.now().zone
+                        ZoneId.systemDefault()
                     ),
                     isDone = state.isDone,
                     remindAtTime = NotificationType.notificationTypeToZonedDateTime(

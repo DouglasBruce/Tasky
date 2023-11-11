@@ -5,6 +5,7 @@ import com.douglasbruce.tasky.core.common.utils.UiText
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
@@ -44,7 +45,7 @@ enum class NotificationType(val text: UiText) {
             time: LocalTime,
             notificationType: NotificationType,
         ): ZonedDateTime {
-            val dateTime = ZonedDateTime.of(date, time, ZonedDateTime.now().zone)
+            val dateTime = ZonedDateTime.of(date, time, ZoneId.systemDefault())
 
             return when (notificationType) {
                 TEN_MINUTES -> dateTime.minusMinutes(10)

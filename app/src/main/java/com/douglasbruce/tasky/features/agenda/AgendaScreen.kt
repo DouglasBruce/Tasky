@@ -68,7 +68,6 @@ import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.features.agenda.form.AgendaEvent
 import com.douglasbruce.tasky.features.agenda.form.AgendaState
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -150,7 +149,8 @@ internal fun AgendaScreen(
                             .clickable { onEvent(AgendaEvent.OnAccountOptionsClick(true)) },
                     ) {
                         Text(
-                            text = agendaUiState.initials, style = TextStyle(
+                            text = agendaUiState.initials.uppercase(),
+                            style = TextStyle(
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight(600),
                                 color = LightGrayBlue,
@@ -250,7 +250,7 @@ internal fun AgendaScreen(
                         initialSelectedDateMillis = DateUtils.getDateMilli(
                             agendaUiState.selectedDate.plusDays(
                                 agendaUiState.selectedDay.toLong()
-                            ), ZoneId.of("UTC")
+                            )
                         )
                     )
 

@@ -5,7 +5,6 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import kotlinx.coroutines.flow.Flow
-import java.time.ZoneId
 import java.time.ZonedDateTime
 
 @Dao
@@ -40,7 +39,7 @@ interface TaskDao {
         """
     )
     suspend fun getFutureTasks(
-        startingDate: Long = ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond() * 1000,
+        startingDate: Long = ZonedDateTime.now().toInstant().toEpochMilli(),
     ): List<TaskEntity>
 
     @Query(

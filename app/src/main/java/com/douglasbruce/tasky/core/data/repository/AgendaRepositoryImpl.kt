@@ -32,8 +32,8 @@ class AgendaRepositoryImpl @Inject constructor(
 ) : AgendaRepository {
 
     override fun getAgendaForDate(date: LocalDate): Flow<List<AgendaItem>> {
-        val utcStartOfDate = date.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant().toEpochMilli()
-        val utcEndOfDate = date.atStartOfDay().plusDays(1).atZone(ZoneId.of("UTC")).toInstant()
+        val utcStartOfDate = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val utcEndOfDate = date.atStartOfDay(ZoneId.systemDefault()).plusDays(1).toInstant()
             .toEpochMilli()
 
         return combine(
@@ -51,11 +51,11 @@ class AgendaRepositoryImpl @Inject constructor(
     override suspend fun fetchAgendaForDate(date: LocalDate) {
         val zoneId = ZoneId.systemDefault()
         val utcDateTime =
-            ZonedDateTime.of(date, LocalTime.now(), zoneId).withZoneSameInstant(ZoneId.of("UTC"))
+            ZonedDateTime.of(date, LocalTime.now(), zoneId).toInstant().toEpochMilli()
 
         val agendaItems = taskyNetwork.getAgenda(
             timeZone = zoneId.toString(),
-            time = utcDateTime.toEpochSecond() * 1000
+            time = utcDateTime
         ).toAgendaItems()
 
         val fetchedEvents: List<EventEntity> =
