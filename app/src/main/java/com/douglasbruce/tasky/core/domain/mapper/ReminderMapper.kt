@@ -11,29 +11,27 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 fun AgendaItem.Reminder.toReminderEntity(): ReminderEntity {
-    val utcTime = this.time.withZoneSameInstant(ZoneId.of("UTC"))
-    val utcRemindAtTime = this.remindAt.withZoneSameInstant(ZoneId.of("UTC"))
-
     return ReminderEntity(
         id = this.reminderId,
         title = this.reminderTitle,
         description = this.reminderDescription ?: "",
-        time = utcTime.toEpochSecond() * 1000,
-        remindAt = utcRemindAtTime.toEpochSecond() * 1000,
+        time = this.time.toInstant().toEpochMilli(),
+        remindAt = this.remindAtTime.toInstant().toEpochMilli(),
         notificationType = this.reminderNotificationType
     )
 }
 
 fun ReminderEntity.toReminder(): AgendaItem.Reminder {
+    val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.systemDefault())
+    val remindAt =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault())
+
     return AgendaItem.Reminder(
         reminderId = this.id,
         reminderTitle = this.title,
         reminderDescription = this.description,
-        time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.systemDefault()),
-        remindAtTime = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(this.remindAt),
-            ZoneId.systemDefault()
-        ),
+        time = time,
+        remindAtTime = remindAt,
         reminderNotificationType = this.notificationType
     )
 }
@@ -42,6 +40,7 @@ fun NetworkReminder.toReminder(): AgendaItem.Reminder {
     val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.systemDefault())
     val remindAt =
         ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.remindAt), ZoneId.systemDefault())
+
     return AgendaItem.Reminder(
         reminderId = this.id,
         reminderTitle = this.title,
@@ -53,27 +52,21 @@ fun NetworkReminder.toReminder(): AgendaItem.Reminder {
 }
 
 fun AgendaItem.Reminder.toCreateReminderRequest(): CreateReminderRequest {
-    val utcTime = this.time.withZoneSameInstant(ZoneId.of("UTC"))
-    val utcRemindAtTime = this.remindAt.withZoneSameInstant(ZoneId.of("UTC"))
-
     return CreateReminderRequest(
         id = this.reminderId,
         title = this.reminderTitle,
         description = this.reminderDescription ?: "",
-        time = utcTime.toEpochSecond() * 1000,
-        remindAt = utcRemindAtTime.toEpochSecond() * 1000,
+        time = this.time.toInstant().toEpochMilli(),
+        remindAt = this.remindAtTime.toInstant().toEpochMilli(),
     )
 }
 
 fun AgendaItem.Reminder.toUpdateReminderRequest(): UpdateReminderRequest {
-    val utcTime = this.time.withZoneSameInstant(ZoneId.of("UTC"))
-    val utcRemindAtTime = this.remindAt.withZoneSameInstant(ZoneId.of("UTC"))
-
     return UpdateReminderRequest(
         id = this.reminderId,
         title = this.reminderTitle,
         description = this.reminderDescription ?: "",
-        time = utcTime.toEpochSecond() * 1000,
-        remindAt = utcRemindAtTime.toEpochSecond() * 1000,
+        time = this.time.toInstant().toEpochMilli(),
+        remindAt = this.remindAtTime.toInstant().toEpochMilli(),
     )
 }

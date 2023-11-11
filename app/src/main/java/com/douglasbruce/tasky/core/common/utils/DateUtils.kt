@@ -8,8 +8,8 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 object DateUtils {
-    fun getDateMilli(date: LocalDate, zone: ZoneId = ZoneId.systemDefault()): Long {
-        return date.atStartOfDay(zone).toInstant().toEpochMilli()
+    fun getDateMilli(date: LocalDate): Long {
+        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
 
     fun getLocalDate(dateMilli: Long): LocalDate {
