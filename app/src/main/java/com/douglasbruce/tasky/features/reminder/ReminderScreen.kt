@@ -1,9 +1,9 @@
 package com.douglasbruce.tasky.features.reminder
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -279,12 +279,14 @@ internal fun ReminderScreen(
                     isReadOnly = !reminderUiState.isEditing,
                 )
                 Divider(color = LightBlue)
-                Spacer(Modifier.weight(1f))
                 if (!reminderUiState.isNew) {
-                    TaskyTextButton(
-                        text = stringResource(R.string.delete_reminder).uppercase(),
-                        onClick = { onEvent(ReminderEvent.ToggleDeleteConfirmationClick(true)) },
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        TaskyTextButton(
+                            text = stringResource(R.string.delete_reminder).uppercase(),
+                            onClick = { onEvent(ReminderEvent.ToggleDeleteConfirmationClick(true)) },
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        )
+                    }
                 }
             }
         }

@@ -1,9 +1,9 @@
 package com.douglasbruce.tasky.features.task
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -277,12 +277,14 @@ internal fun TaskScreen(
                     isReadOnly = !taskUiState.isEditing,
                 )
                 Divider(color = LightBlue)
-                Spacer(Modifier.weight(1f))
                 if (!taskUiState.isNew) {
-                    TaskyTextButton(
-                        text = stringResource(R.string.delete_task).uppercase(),
-                        onClick = { onEvent(TaskEvent.ToggleDeleteConfirmationClick(true)) },
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        TaskyTextButton(
+                            text = stringResource(R.string.delete_task).uppercase(),
+                            onClick = { onEvent(TaskEvent.ToggleDeleteConfirmationClick(true)) },
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        )
+                    }
                 }
             }
         }

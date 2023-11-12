@@ -11,8 +11,11 @@ import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
+import com.douglasbruce.tasky.core.domain.validation.EmailValidator
+import com.douglasbruce.tasky.core.domain.validation.ErrorType
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaPhoto
+import com.douglasbruce.tasky.core.model.Attendee
 import com.douglasbruce.tasky.core.model.NotificationType
 import com.douglasbruce.tasky.features.event.form.EventFormEvent
 import com.douglasbruce.tasky.features.event.form.EventState
@@ -20,6 +23,7 @@ import com.douglasbruce.tasky.features.event.navigation.EventArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -38,6 +42,7 @@ class EventViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     userDataPreferences: UserDataPreferences,
     private val eventRepository: EventRepository,
+    private val emailValidator: EmailValidator,
 ) : ViewModel() {
 
     private val eventArgs: EventArgs = EventArgs(savedStateHandle)
@@ -164,7 +169,7 @@ class EventViewModel @Inject constructor(
 
             is EventFormEvent.OnVisitorFilterTypeSelection -> {
                 state = state.copy(
-                    visitorFilterType = event.visitorFilterType
+                    attendeeFilterType = event.attendeeFilterType
                 )
             }
 
@@ -254,16 +259,87 @@ class EventViewModel @Inject constructor(
                                 state = state.copy(closeScreen = true)
                             }
 
-                            is AuthResult.Unauthorized -> {
-                                state.copy(logout = true)
-                            }
-
-                            is AuthResult.Error -> {
-                                state.copy(closeScreen = true)
-                            }
+                            else -> {}
                         }
                     }
                 }
+            }
+
+            is EventFormEvent.ToggleAddVisitorDialogClick -> {
+                state = state.copy(showAddVisitorDialog = event.show)
+            }
+
+            is EventFormEvent.AttendeeEmailValueChanged -> {
+                val result = emailValidator.validate(event.email)
+                state = state.copy(
+                    attendeeEmail = event.email,
+                    attendeeEmailErrorType = result.errorType,
+                    isAttendeeEmailValid = result.successful
+                )
+            }
+
+            is EventFormEvent.OnAddAttendeeClick -> {
+                state = state.copy(isCheckingAttendee = true)
+                val eventId = state.id ?: UUID.randomUUID().toString()
+
+                viewModelScope.launch {
+                    when (val result = eventRepository.getAttendee(state.attendeeEmail)) {
+                        is AuthResult.Success -> {
+                            val remindAt = NotificationType.notificationTypeToZonedDateTime(
+                                state.fromDate,
+                                state.fromTime,
+                                state.notificationType
+                            )
+
+                            result.data?.let { networkAttendee ->
+                                if (networkAttendee.doesUserExist) {
+                                    networkAttendee.attendee?.let { attendee ->
+                                        val newAttendee = Attendee(
+                                            email = attendee.email,
+                                            fullName = attendee.fullName,
+                                            userId = attendee.userId,
+                                            isGoing = true,
+                                            eventId = eventId,
+                                            remindAt = remindAt.toInstant().toEpochMilli(),
+                                        )
+
+                                        state = state.copy(
+                                            id = eventId,
+                                            showAddVisitorDialog = false,
+                                            attendeeEmail = "",
+                                            isAttendeeEmailValid = false,
+                                            attendeeEmailErrorType = ErrorType.NONE,
+                                            attendees = state.attendees.plus(newAttendee),
+                                            isCheckingAttendee = false,
+                                        )
+                                    }
+                                } else {
+                                    state = state.copy(
+                                        isAttendeeEmailValid = false,
+                                        attendeeEmailErrorType = ErrorType.DOES_NOT_EXIST,
+                                        isCheckingAttendee = false,
+                                    )
+                                }
+                            }
+                        }
+
+                        is AuthResult.Error -> {
+                            state = state.copy(isCheckingAttendee = false)
+                            result.message?.let {
+                                //TODO: Update supporting text to display error
+                            }
+                            //TODO: Update supporting text to display unknown error
+                        }
+
+                        else -> {
+                            state = state.copy(isCheckingAttendee = false)
+                        }
+                    }
+                }
+            }
+
+            is EventFormEvent.OnDeleteAttendeeClick -> {
+                state = state.copy(attendees = state.attendees.filter { it.userId != event.userId })
             }
         }
     }
@@ -285,6 +361,7 @@ class EventViewModel @Inject constructor(
                             notificationType = event.eventNotificationType,
                             photos = event.photos,
                             attendees = event.attendees,
+                            host = event.host,
                             isUserEventCreator = event.isUserEventCreator,
                             isLoading = false,
                         )

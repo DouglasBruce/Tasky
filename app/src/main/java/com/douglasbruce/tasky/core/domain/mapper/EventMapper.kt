@@ -21,7 +21,8 @@ fun AgendaItem.Event.toEventEntity(): EventEntity {
         remindAt = this.remindAtTime.toInstant().toEpochMilli(),
         host = this.host ?: "",
         notificationType = this.eventNotificationType,
-        isUserEventCreator = this.isUserEventCreator
+        isUserEventCreator = this.isUserEventCreator,
+        attendees = this.attendees
     )
 }
 
@@ -42,7 +43,7 @@ fun EventEntity.toEvent(): AgendaItem.Event {
         eventNotificationType = this.notificationType,
         isUserEventCreator = this.isUserEventCreator,
         photos = emptyList(), //TODO: Update value to reflect real state
-        attendees = emptyList(), //TODO: Update value to reflect real state
+        attendees = this.attendees,
     )
 }
 

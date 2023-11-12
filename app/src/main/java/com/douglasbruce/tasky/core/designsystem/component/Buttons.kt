@@ -2,6 +2,7 @@ package com.douglasbruce.tasky.core.designsystem.component
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,6 +20,7 @@ fun TaskyButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
 ) {
     Button(
         onClick = onClick,
@@ -29,14 +31,18 @@ fun TaskyButton(
         enabled = enabled,
         modifier = modifier
     ) {
-        Text(
-            text = text,
-            style = TextStyle(
-                fontSize = 16.sp,
-                lineHeight = 30.sp,
-                fontWeight = FontWeight(700),
+        if (isLoading) {
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+        } else {
+            Text(
+                text = text,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 30.sp,
+                    fontWeight = FontWeight(700),
+                )
             )
-        )
+        }
     }
 }
 

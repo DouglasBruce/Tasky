@@ -2,6 +2,7 @@ package com.douglasbruce.tasky.core.domain.repository
 
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.network.model.NetworkAttendeeCheck
 
 interface EventRepository {
     suspend fun getEventById(eventId: String): AuthResult<AgendaItem.Event>
@@ -13,4 +14,5 @@ interface EventRepository {
 
     suspend fun deleteEventById(eventId: String): AuthResult<Unit>
     suspend fun getFutureEvents(): List<AgendaItem.Event>
+    suspend fun getAttendee(email: String): AuthResult<NetworkAttendeeCheck>
 }

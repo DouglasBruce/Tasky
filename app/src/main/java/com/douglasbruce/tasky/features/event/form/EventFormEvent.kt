@@ -1,8 +1,8 @@
 package com.douglasbruce.tasky.features.event.form
 
 import android.net.Uri
+import com.douglasbruce.tasky.core.model.AttendeeFilterType
 import com.douglasbruce.tasky.core.model.NotificationType
-import com.douglasbruce.tasky.core.model.VisitorFilterType
 
 sealed class EventFormEvent {
     data object ToggleEditMode : EventFormEvent()
@@ -16,7 +16,7 @@ sealed class EventFormEvent {
     data class OnNotificationTypeSelection(val notificationType: NotificationType) :
         EventFormEvent()
 
-    data class OnVisitorFilterTypeSelection(val visitorFilterType: VisitorFilterType) :
+    data class OnVisitorFilterTypeSelection(val attendeeFilterType: AttendeeFilterType) :
         EventFormEvent()
 
     data class OnAddPhotoClick(val uris: List<Uri>) : EventFormEvent()
@@ -24,4 +24,8 @@ sealed class EventFormEvent {
     data object OnSaveClick : EventFormEvent()
     data class ToggleDeleteConfirmationClick(val show: Boolean) : EventFormEvent()
     data object OnDeleteEventClick : EventFormEvent()
+    data class ToggleAddVisitorDialogClick(val show: Boolean) : EventFormEvent()
+    data class AttendeeEmailValueChanged(val email: String) : EventFormEvent()
+    data object OnAddAttendeeClick : EventFormEvent()
+    data class OnDeleteAttendeeClick(val userId: String) : EventFormEvent()
 }
