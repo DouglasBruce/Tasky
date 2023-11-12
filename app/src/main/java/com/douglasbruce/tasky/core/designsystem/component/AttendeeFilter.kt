@@ -22,7 +22,7 @@ import com.douglasbruce.tasky.core.designsystem.theme.LightBlueVariant
 import com.douglasbruce.tasky.core.designsystem.theme.White
 
 @Composable
-fun VisitorFilter(
+fun AttendeeFilter(
     text: String,
     selected: Boolean,
     onClick: () -> Unit,
@@ -54,8 +54,8 @@ fun VisitorFilter(
 
 @Preview
 @Composable
-fun VisitorFilterPreview() {
-    VisitorFilter(
+fun AttendeeFilterPreview() {
+    AttendeeFilter(
         text = "All",
         selected = false,
         onClick = {}
@@ -64,8 +64,8 @@ fun VisitorFilterPreview() {
 
 @Preview
 @Composable
-fun SelectedVisitorFilterPreview() {
-    VisitorFilter(
+fun SelectedAttendeeFilterPreview() {
+    AttendeeFilter(
         text = "Not going",
         selected = true,
         onClick = {}

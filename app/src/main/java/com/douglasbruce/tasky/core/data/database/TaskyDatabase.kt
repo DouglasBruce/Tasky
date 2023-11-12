@@ -12,6 +12,7 @@ import com.douglasbruce.tasky.core.data.database.model.ModifiedReminderEntity
 import com.douglasbruce.tasky.core.data.database.model.ModifiedTaskEntity
 import com.douglasbruce.tasky.core.data.database.model.ReminderEntity
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
+import com.douglasbruce.tasky.core.data.database.util.AttendeeConverter
 import com.douglasbruce.tasky.core.data.database.util.NotificationTypeConverter
 
 @Database(
@@ -28,6 +29,7 @@ import com.douglasbruce.tasky.core.data.database.util.NotificationTypeConverter
 )
 @TypeConverters(
     NotificationTypeConverter::class,
+    AttendeeConverter::class,
 )
 abstract class TaskyDatabase : RoomDatabase() {
     abstract fun eventsDao(): EventDao

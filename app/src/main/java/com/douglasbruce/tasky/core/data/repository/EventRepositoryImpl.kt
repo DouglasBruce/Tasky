@@ -12,6 +12,7 @@ import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateEventRequest
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.network.model.NetworkAttendeeCheck
 import com.douglasbruce.tasky.core.network.model.request.CreateEventRequest
 import com.douglasbruce.tasky.core.network.model.request.UpdateEventRequest
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
@@ -46,13 +47,15 @@ class EventRepositoryImpl @Inject constructor(
             serializer.toJson(event.toCreateEventRequest(), CreateEventRequest::class.java)
 
         return authenticatedRetrofitCall(serializer) {
-            taskyNetwork.createEvent(
+            val networkEvent = taskyNetwork.createEvent(
                 createEventRequest = MultipartBody.Part.createFormData(
                     "create_event_request",
                     requestJson!!
                 ),
                 photos = emptyList()
             )
+
+            dao.upsertEvent(networkEvent.toEvent().toEventEntity())
             AuthResult.Success(Unit)
         }
     }
@@ -73,13 +76,15 @@ class EventRepositoryImpl @Inject constructor(
         )
 
         return authenticatedRetrofitCall(serializer) {
-            taskyNetwork.updateEvent(
+            val networkEvent = taskyNetwork.updateEvent(
                 updateEventRequest = MultipartBody.Part.createFormData(
                     "update_event_request",
                     requestJson!!
                 ),
                 photos = emptyList()
             )
+
+            dao.upsertEvent(networkEvent.toEvent().toEventEntity())
             AuthResult.Success(Unit)
         }
     }
@@ -95,5 +100,11 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun getFutureEvents(): List<AgendaItem.Event> {
         return dao.getFutureEvents().map { it.toEvent() }
+    }
+
+    override suspend fun getAttendee(email: String): AuthResult<NetworkAttendeeCheck> {
+        return authenticatedRetrofitCall(serializer) {
+            AuthResult.Success(data = taskyNetwork.getAttendee(email))
+        }
     }
 }

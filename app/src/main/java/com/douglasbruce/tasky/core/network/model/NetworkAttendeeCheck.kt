@@ -6,5 +6,5 @@ data class NetworkAttendeeCheck(
     @field:Json(name = "doesUserExist")
     val doesUserExist: Boolean,
     @field:Json(name = "attendee")
-    val attendee: NetworkAttendee,
+    val attendee: NetworkAttendee?,
 )

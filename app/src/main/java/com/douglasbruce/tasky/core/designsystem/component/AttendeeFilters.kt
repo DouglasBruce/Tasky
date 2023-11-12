@@ -8,15 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.douglasbruce.tasky.core.model.VisitorFilterType
+import com.douglasbruce.tasky.core.model.AttendeeFilterType
 
 @Composable
-fun VisitorFilters(
-    onClick: (VisitorFilterType) -> Unit,
-    selectedFilterType: VisitorFilterType,
+fun AttendeeFilters(
+    onClick: (AttendeeFilterType) -> Unit,
+    selectedFilterType: AttendeeFilterType,
     modifier: Modifier = Modifier,
 ) {
-    val filterTypes = VisitorFilterType.values()
+    val filterTypes = AttendeeFilterType.values()
 
     LazyRow(
         modifier = modifier.fillMaxWidth(),
@@ -24,7 +24,7 @@ fun VisitorFilters(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         items(filterTypes) {
-            VisitorFilter(
+            AttendeeFilter(
                 text = it.text.asString(),
                 selected = selectedFilterType == it,
                 onClick = { onClick(it) }
@@ -35,9 +35,9 @@ fun VisitorFilters(
 
 @Preview
 @Composable
-fun VisitorFiltersPreview() {
-    VisitorFilters(
+fun AttendeeFiltersPreview() {
+    AttendeeFilters(
         onClick = {},
-        selectedFilterType = VisitorFilterType.ALL
+        selectedFilterType = AttendeeFilterType.ALL
     )
 }
