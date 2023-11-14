@@ -36,7 +36,7 @@ interface EventDao {
         value = """
             SELECT * FROM events
             WHERE `from` >= :startingDate
-        """
+        """,
     )
     suspend fun getFutureEvents(
         startingDate: Long = ZonedDateTime.now().toInstant().toEpochMilli(),
@@ -49,4 +49,12 @@ interface EventDao {
         """,
     )
     suspend fun deleteEventById(eventId: String)
+
+    @Query(
+        value = """
+            DELETE FROM events
+            WHERE id = :eventId
+        """,
+    )
+    suspend fun leaveEvent(eventId: String)
 }

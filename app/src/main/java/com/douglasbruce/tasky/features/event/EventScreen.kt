@@ -118,6 +118,7 @@ internal fun EventRoute(
         onPhotoViewerClick = onPhotoViewerClick,
         eventUiState = viewModel.state,
         onEvent = viewModel::onEvent,
+        isEventEditable = viewModel.canEditEvent(),
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -130,6 +131,7 @@ internal fun EventScreen(
     onPhotoViewerClick: (key: String, uri: String) -> Unit,
     eventUiState: EventState,
     onEvent: (EventFormEvent) -> Unit,
+    isEventEditable: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
@@ -306,13 +308,13 @@ internal fun EventScreen(
                     )
                     AgendaTitle(
                         title = eventTitle,
-                        isReadOnly = !eventUiState.isEditing,
+                        isReadOnly = !isEventEditable,
                         onClick = { onEditorClick(true, "event_title", eventTitle) }
                     )
                     Divider(color = LightBlue)
                     AgendaDescription(
                         description = eventDesc,
-                        isReadOnly = !eventUiState.isEditing,
+                        isReadOnly = !isEventEditable,
                         onClick = { onEditorClick(false, "event_desc", eventDesc) }
                     )
                     Spacer(Modifier.height(8.dp))
@@ -322,6 +324,7 @@ internal fun EventScreen(
                         onPhotosSelected = {
                             onEvent(EventFormEvent.OnAddPhotoClick(it))
                         },
+                        isReadOnly = !isEventEditable,
                     )
                     Spacer(Modifier.height(8.dp))
                     Divider(color = LightBlue)
@@ -331,7 +334,7 @@ internal fun EventScreen(
                         date = eventUiState.fromDate,
                         onTimeClick = { onEvent(EventFormEvent.OnTimePickerClick(false)) },
                         onDateClick = { onEvent(EventFormEvent.OnDatePickerClick(false)) },
-                        isReadOnly = !eventUiState.isEditing,
+                        isReadOnly = !isEventEditable,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Divider(color = LightBlue)
@@ -341,7 +344,7 @@ internal fun EventScreen(
                         date = eventUiState.toDate,
                         onTimeClick = { onEvent(EventFormEvent.OnTimePickerClick(true)) },
                         onDateClick = { onEvent(EventFormEvent.OnDatePickerClick(true)) },
-                        isReadOnly = !eventUiState.isEditing,
+                        isReadOnly = !isEventEditable,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Divider(color = LightBlue)
@@ -353,7 +356,7 @@ internal fun EventScreen(
                     Divider(color = LightBlue)
                     Spacer(Modifier.height(16.dp))
                     AddAttendeeButton(
-                        isEditing = eventUiState.isEditing,
+                        isEditing = isEventEditable,
                         onAddAttendeeClick = {
                             onEvent(
                                 EventFormEvent.ToggleAddVisitorDialogClick(
@@ -386,12 +389,11 @@ internal fun EventScreen(
                             id = attendee.userId,
                             name = attendee.fullName,
                             isHost = attendee.userId == eventUiState.host,
-                            isEditing = eventUiState.isEditing,
+                            isEditing = isEventEditable,
                             onDeleteAttendee = { userId ->
                                 onEvent(EventFormEvent.OnDeleteAttendeeClick(userId))
                             },
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp),
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                     }
@@ -411,19 +413,18 @@ internal fun EventScreen(
                             id = attendee.userId,
                             name = attendee.fullName,
                             isHost = false,
-                            isEditing = eventUiState.isEditing,
+                            isEditing = isEventEditable,
                             onDeleteAttendee = { userId ->
                                 onEvent(EventFormEvent.OnDeleteAttendeeClick(userId))
                             },
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp),
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
                 item {
-                    Spacer(Modifier.height(40.dp))
-                    if (!eventUiState.isNew) {
+                    if (!eventUiState.isNew && eventUiState.isUserEventCreator) {
+                        Spacer(Modifier.height(40.dp))
                         Box(modifier = Modifier.fillMaxSize()) {
                             TaskyTextButton(
                                 text = stringResource(R.string.delete_event).uppercase(),
@@ -436,6 +437,26 @@ internal fun EventScreen(
                                 },
                                 modifier = Modifier.align(Alignment.BottomCenter)
                             )
+                        }
+                    }
+                }
+                item {
+                    eventUiState.localAttendee?.let { attendee ->
+                        if (!eventUiState.isNew && !eventUiState.isUserEventCreator) {
+
+                            val buttonText = when (attendee.isGoing) {
+                                true -> stringResource(R.string.leave_event).uppercase()
+                                false -> stringResource(R.string.join_event).uppercase()
+                            }
+
+                            Spacer(Modifier.height(40.dp))
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                TaskyTextButton(
+                                    text = buttonText,
+                                    onClick = { onEvent(EventFormEvent.OnToggleAttendeeStatus(!attendee.isGoing)) },
+                                    modifier = Modifier.align(Alignment.BottomCenter)
+                                )
+                            }
                         }
                     }
                 }
@@ -473,6 +494,7 @@ fun EventPreview() {
                 )
             ),
             onEvent = {},
+            isEventEditable = false,
         )
     }
 }

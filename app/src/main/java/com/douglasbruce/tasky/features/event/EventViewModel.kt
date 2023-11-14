@@ -309,7 +309,7 @@ class EventViewModel @Inject constructor(
                                             attendeeEmail = "",
                                             isAttendeeEmailValid = false,
                                             attendeeEmailErrorType = ErrorType.NONE,
-                                            attendees = state.attendees.plus(newAttendee),
+                                            attendees = state.attendees + newAttendee,
                                             isCheckingAttendee = false,
                                         )
                                     }
@@ -324,11 +324,10 @@ class EventViewModel @Inject constructor(
                         }
 
                         is AuthResult.Error -> {
-                            state = state.copy(isCheckingAttendee = false)
-                            result.message?.let {
-                                //TODO: Update supporting text to display error
-                            }
-                            //TODO: Update supporting text to display unknown error
+                            state = state.copy(
+                                isCheckingAttendee = false,
+                                attendeeEmailErrorType = ErrorType.UNKNOWN,
+                            )
                         }
 
                         else -> {
@@ -341,12 +340,71 @@ class EventViewModel @Inject constructor(
             is EventFormEvent.OnDeleteAttendeeClick -> {
                 state = state.copy(attendees = state.attendees.filter { it.userId != event.userId })
             }
+
+            is EventFormEvent.OnToggleAttendeeStatus -> {
+                updateAttendeeStatus(event.isGoing)
+            }
+        }
+    }
+
+    fun canEditEvent(): Boolean {
+        return (state.isNew && state.isEditing) || (state.isUserEventCreator && state.isEditing)
+    }
+
+    private fun updateAttendeeStatus(isGoing: Boolean) {
+        viewModelScope.launch {
+            val userId = localUserId.first()
+            val index = state.attendees.indexOfFirst { it.userId == userId }
+            val updatedAttendees = state.attendees.toMutableList()
+            updatedAttendees[index] = state.attendees[index].copy(isGoing = isGoing)
+
+            state = state.copy(
+                attendees = updatedAttendees,
+                localAttendee = updatedAttendees.find { it.userId == userId }
+            )
+
+            val eventItem = AgendaItem.Event(
+                eventId = state.id!!,
+                eventTitle = state.title ?: "",
+                eventDescription = state.description,
+                from = ZonedDateTime.of(
+                    state.fromDate,
+                    state.fromTime,
+                    ZoneId.systemDefault()
+                ),
+                to = ZonedDateTime.of(
+                    state.toDate,
+                    state.toTime,
+                    ZoneId.systemDefault()
+                ),
+                remindAtTime = NotificationType.notificationTypeToZonedDateTime(
+                    state.fromDate,
+                    state.fromTime,
+                    state.notificationType
+                ),
+                eventNotificationType = state.notificationType,
+                host = state.host,
+                isUserEventCreator = state.isUserEventCreator,
+                photos = state.photos,
+                attendees = state.attendees
+            )
+
+            when (val result = eventRepository.updateEvent(eventItem, emptyList())) {
+                is AuthResult.Error -> {
+                    result.message?.let {
+                        infoChannel.send(result.message)
+                    }
+                }
+
+                else -> {}
+            }
         }
     }
 
     private fun getEvent(id: String) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
+            val userId = localUserId.first()
 
             when (val result = eventRepository.getEventById(id)) {
                 is AuthResult.Success -> {
@@ -363,6 +421,7 @@ class EventViewModel @Inject constructor(
                             attendees = event.attendees,
                             host = event.host,
                             isUserEventCreator = event.isUserEventCreator,
+                            localAttendee = event.attendees.find { it.userId == userId },
                             isLoading = false,
                         )
                     }

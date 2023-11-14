@@ -55,6 +55,7 @@ fun PhotoSelector(
     onPhotoClick: (AgendaPhoto) -> Unit,
     onPhotosSelected: (List<Uri>) -> Unit,
     modifier: Modifier = Modifier,
+    isReadOnly: Boolean = false,
 ) {
     val maxItems = AgendaItem.Event.MAX_PHOTO_AMOUNT - photos.size
     val photoPickerLauncher = when (maxItems > 1) {
@@ -80,6 +81,7 @@ fun PhotoSelector(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
             },
+            isReadOnly = isReadOnly,
             modifier = modifier,
         )
     } else {
@@ -91,6 +93,7 @@ fun PhotoSelector(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
             },
+            isReadOnly = isReadOnly,
             modifier = modifier,
         )
     }
@@ -99,6 +102,7 @@ fun PhotoSelector(
 @Composable
 private fun EmptyPhotoPicker(
     onAddPhoto: () -> Unit,
+    isReadOnly: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -108,23 +112,35 @@ private fun EmptyPhotoPicker(
             .fillMaxWidth()
             .height(120.dp)
             .background(color = LightBlueVariant)
-            .clickable { onAddPhoto() },
+            .clickable(enabled = !isReadOnly) { onAddPhoto() },
     ) {
-        Icon(
-            imageVector = TaskyIcons.Add,
-            contentDescription = stringResource(R.string.add_photos),
-            tint = Gray
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = stringResource(R.string.add_photos),
-            style = TextStyle(
-                fontSize = 16.sp,
-                lineHeight = 18.sp,
-                fontWeight = FontWeight(600),
-                color = Gray,
+        if (isReadOnly) {
+            Text(
+                text = stringResource(R.string.no_photos),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight(600),
+                    color = Gray,
+                )
             )
-        )
+        } else {
+            Icon(
+                imageVector = TaskyIcons.Add,
+                contentDescription = stringResource(R.string.add_photos),
+                tint = Gray
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = stringResource(R.string.add_photos),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight(600),
+                    color = Gray,
+                )
+            )
+        }
     }
 }
 
@@ -133,6 +149,7 @@ private fun PhotoViewer(
     photos: List<AgendaPhoto>,
     onPhotoClick: (AgendaPhoto) -> Unit,
     onAddPhoto: () -> Unit,
+    isReadOnly: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -180,7 +197,7 @@ private fun PhotoViewer(
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                 }
-                if (photos.size < 10) {
+                if (photos.size < 10 && !isReadOnly) {
                     item {
                         Box(
                             contentAlignment = Alignment.Center,

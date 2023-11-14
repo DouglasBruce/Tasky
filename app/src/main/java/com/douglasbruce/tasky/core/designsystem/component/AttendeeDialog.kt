@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.douglasbruce.tasky.R
+import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.designsystem.icon.TaskyIcons
 import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.domain.validation.ErrorType
@@ -95,6 +96,10 @@ fun AttendeeDialog(
                         { Text(text = stringResource(R.string.user_does_not_exist)) }
                     }
 
+                    ErrorType.UNKNOWN -> {
+                        { Text(text = UiText.UnknownError.asString()) }
+                    }
+
                     else -> null
                 },
                 keyboardOptions = KeyboardOptions(
@@ -119,6 +124,6 @@ fun AttendeeDialogPreview() {
         onAdd = {},
         isValid = true,
         isChecking = false,
-        errorType = ErrorType.NONE
+        errorType = ErrorType.NONE,
     )
 }
