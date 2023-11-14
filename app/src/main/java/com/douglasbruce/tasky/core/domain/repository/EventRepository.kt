@@ -15,4 +15,5 @@ interface EventRepository {
     suspend fun deleteEventById(eventId: String): AuthResult<Unit>
     suspend fun getFutureEvents(): List<AgendaItem.Event>
     suspend fun getAttendee(email: String): AuthResult<NetworkAttendeeCheck>
+    suspend fun leaveEvent(eventId: String): AuthResult<Unit>
 }

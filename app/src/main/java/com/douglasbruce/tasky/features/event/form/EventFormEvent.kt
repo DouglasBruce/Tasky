@@ -28,4 +28,5 @@ sealed class EventFormEvent {
     data class AttendeeEmailValueChanged(val email: String) : EventFormEvent()
     data object OnAddAttendeeClick : EventFormEvent()
     data class OnDeleteAttendeeClick(val userId: String) : EventFormEvent()
+    data class OnToggleAttendeeStatus(val isGoing: Boolean) : EventFormEvent()
 }

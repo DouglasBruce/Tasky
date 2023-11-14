@@ -39,4 +39,5 @@ data class EventState(
     val isAttendeeEmailValid: Boolean = false,
     val attendeeEmailErrorType: ErrorType = ErrorType.NONE,
     val isCheckingAttendee: Boolean = false,
+    val localAttendee: Attendee? = null,
 ) : Parcelable

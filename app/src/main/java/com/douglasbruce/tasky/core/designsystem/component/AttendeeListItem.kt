@@ -54,9 +54,8 @@ fun AttendeeItem(
                 .clip(CircleShape)
                 .background(Gray),
         ) {
-            val nameFormatter = NameFormatter()
             Text(
-                text = nameFormatter.getInitials(name).uppercase(),
+                text = NameFormatter().getInitials(name).uppercase(),
                 style = TextStyle(
                     fontSize = 12.sp,
                     lineHeight = 14.4.sp,

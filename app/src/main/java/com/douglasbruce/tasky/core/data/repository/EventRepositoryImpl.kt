@@ -17,9 +17,11 @@ import com.douglasbruce.tasky.core.network.model.request.CreateEventRequest
 import com.douglasbruce.tasky.core.network.model.request.UpdateEventRequest
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
@@ -55,7 +57,9 @@ class EventRepositoryImpl @Inject constructor(
                 photos = emptyList()
             )
 
-            dao.upsertEvent(networkEvent.toEvent().toEventEntity())
+            withContext(NonCancellable) {
+                dao.upsertEvent(networkEvent.toEvent().toEventEntity())
+            }
             AuthResult.Success(Unit)
         }
     }
@@ -84,7 +88,9 @@ class EventRepositoryImpl @Inject constructor(
                 photos = emptyList()
             )
 
-            dao.upsertEvent(networkEvent.toEvent().toEventEntity())
+            withContext(NonCancellable) {
+                dao.upsertEvent(networkEvent.toEvent().toEventEntity())
+            }
             AuthResult.Success(Unit)
         }
     }
@@ -105,6 +111,14 @@ class EventRepositoryImpl @Inject constructor(
     override suspend fun getAttendee(email: String): AuthResult<NetworkAttendeeCheck> {
         return authenticatedRetrofitCall(serializer) {
             AuthResult.Success(data = taskyNetwork.getAttendee(email))
+        }
+    }
+
+    override suspend fun leaveEvent(eventId: String): AuthResult<Unit> {
+        return authenticatedRetrofitCall(serializer) {
+            taskyNetwork.leaveEvent(eventId)
+            dao.leaveEvent(eventId)
+            AuthResult.Success(Unit)
         }
     }
 }

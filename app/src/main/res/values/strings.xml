@@ -87,4 +87,7 @@
     <string name="add_visitor">Add visitor</string>
     <string name="user_does_not_exist">User does not exist</string>
     <string name="creator">creator</string>
+    <string name="leave_event">Leave event</string>
+    <string name="join_event">Join event</string>
+    <string name="no_photos">No photos</string>
 </resources>
