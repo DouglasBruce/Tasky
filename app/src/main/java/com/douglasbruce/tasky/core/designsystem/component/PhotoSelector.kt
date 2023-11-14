@@ -197,7 +197,7 @@ private fun PhotoViewer(
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                 }
-                if (photos.size < 10 && !isReadOnly) {
+                if (photos.size < AgendaItem.Event.MAX_PHOTO_AMOUNT && !isReadOnly) {
                     item {
                         Box(
                             contentAlignment = Alignment.Center,
