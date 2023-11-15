@@ -23,6 +23,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -36,7 +40,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,12 +85,6 @@ internal fun AgendaRoute(
     modifier: Modifier = Modifier,
     viewModel: AgendaViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(viewModel.state.logout) {
-        if (viewModel.state.logout) {
-            onLogoutClick()
-        }
-    }
-
     AgendaScreen(
         agendaUiState = viewModel.state,
         onEvent = viewModel::onEvent,
@@ -98,11 +95,16 @@ internal fun AgendaRoute(
         onOpenTaskClick = onOpenTaskClick,
         onAddReminderClick = onAddReminderClick,
         onOpenReminderClick = onOpenReminderClick,
+        onRefresh = { viewModel.refreshAgenda() },
         modifier = modifier.fillMaxSize(),
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalLayoutApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterialApi::class
+)
 @Composable
 internal fun AgendaScreen(
     agendaUiState: AgendaState,
@@ -114,6 +116,7 @@ internal fun AgendaScreen(
     onOpenTaskClick: (Long, String, Boolean) -> Unit,
     onAddReminderClick: (Long) -> Unit,
     onOpenReminderClick: (Long, String, Boolean) -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -273,118 +276,146 @@ internal fun AgendaScreen(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
-                //TODO: Wrap in swipe to refresh or create refresh button
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        Text(
-                            text = when (agendaUiState.displayDate) {
-                                yesterday -> stringResource(R.string.yesterday)
-                                today -> stringResource(R.string.today)
-                                tomorrow -> stringResource(R.string.tomorrow)
-                                else -> agendaUiState.displayDate.format(dateFormatter)
-                            },
-                            style = TextStyle(
-                                fontSize = 20.sp,
-                                lineHeight = 16.sp,
-                                fontWeight = FontWeight(700),
-                                color = Black,
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        if (agendaUiState.itemBeforeTimeNeedle == null && agendaUiState.items.isNotEmpty()) {
-                            TimeNeedle(modifier = Modifier.fillMaxWidth())
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
-                    items(agendaUiState.items, { item -> item.id }) { item ->
-                        when (item) {
-                            is AgendaItem.Event -> AgendaEventCard(
-                                title = item.eventTitle.ifBlank { stringResource(R.string.new_event) },
-                                content = if (item.eventDescription.isNullOrBlank()) stringResource(
-                                    R.string.event_description
-                                ) else item.eventDescription,
-                                dateTime = DateUtils.formatDates(item.from, item.to),
-                                onOpenOptionClick = {
-                                    onOpenEventClick(
-                                        DateUtils.getDateMilli(item.from.toLocalDate()),
-                                        item.eventId,
-                                        false
-                                    )
-                                },
-                                onEditOptionClick = {
-                                    onOpenEventClick(
-                                        DateUtils.getDateMilli(item.from.toLocalDate()),
-                                        item.eventId,
-                                        true
-                                    )
-                                },
-                                onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteEventClick(item.eventId)) }
-                            )
+                val refreshState =
+                    rememberPullRefreshState(agendaUiState.isRefreshing, { onRefresh() })
 
-                            is AgendaItem.Task -> AgendaTaskCard(
-                                title = item.taskTitle.ifBlank { stringResource(R.string.new_task) },
-                                content = if (item.taskDescription.isNullOrBlank()) stringResource(
-                                    R.string.task_description
-                                ) else item.taskDescription,
-                                dateTime = DateUtils.formatDate(item.time),
-                                isDone = item.isDone,
-                                onLeadingIconClick = { onEvent(AgendaEvent.ToggleTaskDoneClick(item)) },
-                                onOpenOptionClick = {
-                                    onOpenTaskClick(
-                                        DateUtils.getDateMilli(item.time.toLocalDate()),
-                                        item.taskId,
-                                        false
-                                    )
+                Box(modifier = Modifier.pullRefresh(refreshState)) {
+                    PullRefreshIndicator(
+                        agendaUiState.isRefreshing,
+                        refreshState,
+                        Modifier.align(Alignment.TopCenter)
+                    )
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        item {
+                            Text(
+                                text = when (agendaUiState.displayDate) {
+                                    yesterday -> stringResource(R.string.yesterday)
+                                    today -> stringResource(R.string.today)
+                                    tomorrow -> stringResource(R.string.tomorrow)
+                                    else -> agendaUiState.displayDate.format(dateFormatter)
                                 },
-                                onEditOptionClick = {
-                                    onOpenTaskClick(
-                                        DateUtils.getDateMilli(item.time.toLocalDate()),
-                                        item.taskId,
-                                        true
-                                    )
-                                },
-                                onDeleteOptionClick = { onEvent(AgendaEvent.OnDeleteTaskClick(item.taskId)) }
+                                style = TextStyle(
+                                    fontSize = 20.sp,
+                                    lineHeight = 16.sp,
+                                    fontWeight = FontWeight(700),
+                                    color = Black,
+                                )
                             )
-
-                            is AgendaItem.Reminder -> AgendaReminderCard(
-                                title = item.reminderTitle.ifBlank { stringResource(R.string.new_reminder) },
-                                content = if (item.reminderDescription.isNullOrBlank()) stringResource(
-                                    R.string.reminder_description
-                                ) else item.reminderDescription,
-                                dateTime = DateUtils.formatDate(item.time),
-                                onOpenOptionClick = {
-                                    onOpenReminderClick(
-                                        DateUtils.getDateMilli(item.time.toLocalDate()),
-                                        item.reminderId,
-                                        false
-                                    )
-                                },
-                                onEditOptionClick = {
-                                    onOpenReminderClick(
-                                        DateUtils.getDateMilli(item.time.toLocalDate()),
-                                        item.reminderId,
-                                        true
-                                    )
-                                },
-                                onDeleteOptionClick = {
-                                    onEvent(
-                                        AgendaEvent.OnDeleteReminderClick(
-                                            item.reminderId
-                                        )
-                                    )
-                                }
-                            )
-                        }
-                        if (item == agendaUiState.itemBeforeTimeNeedle) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            TimeNeedle(modifier = Modifier.fillMaxWidth())
-                            Spacer(modifier = Modifier.height(4.dp))
-                        } else {
                             Spacer(modifier = Modifier.height(16.dp))
+                            if (agendaUiState.itemBeforeTimeNeedle == null && agendaUiState.items.isNotEmpty()) {
+                                TimeNeedle(modifier = Modifier.fillMaxWidth())
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(72.dp))
+                        items(agendaUiState.items, { item -> item.id }) { item ->
+                            when (item) {
+                                is AgendaItem.Event -> AgendaEventCard(
+                                    title = item.eventTitle.ifBlank { stringResource(R.string.new_event) },
+                                    content = if (item.eventDescription.isNullOrBlank()) stringResource(
+                                        R.string.event_description
+                                    ) else item.eventDescription,
+                                    dateTime = DateUtils.formatDates(item.from, item.to),
+                                    onOpenOptionClick = {
+                                        onOpenEventClick(
+                                            DateUtils.getDateMilli(item.from.toLocalDate()),
+                                            item.eventId,
+                                            false
+                                        )
+                                    },
+                                    onEditOptionClick = {
+                                        onOpenEventClick(
+                                            DateUtils.getDateMilli(item.from.toLocalDate()),
+                                            item.eventId,
+                                            true
+                                        )
+                                    },
+                                    onDeleteOptionClick = {
+                                        onEvent(
+                                            AgendaEvent.OnDeleteEventClick(
+                                                item.eventId,
+                                                item.isUserEventCreator,
+                                            )
+                                        )
+                                    }
+                                )
+
+                                is AgendaItem.Task -> AgendaTaskCard(
+                                    title = item.taskTitle.ifBlank { stringResource(R.string.new_task) },
+                                    content = if (item.taskDescription.isNullOrBlank()) stringResource(
+                                        R.string.task_description
+                                    ) else item.taskDescription,
+                                    dateTime = DateUtils.formatDate(item.time),
+                                    isDone = item.isDone,
+                                    onLeadingIconClick = {
+                                        onEvent(
+                                            AgendaEvent.ToggleTaskDoneClick(
+                                                item
+                                            )
+                                        )
+                                    },
+                                    onOpenOptionClick = {
+                                        onOpenTaskClick(
+                                            DateUtils.getDateMilli(item.time.toLocalDate()),
+                                            item.taskId,
+                                            false
+                                        )
+                                    },
+                                    onEditOptionClick = {
+                                        onOpenTaskClick(
+                                            DateUtils.getDateMilli(item.time.toLocalDate()),
+                                            item.taskId,
+                                            true
+                                        )
+                                    },
+                                    onDeleteOptionClick = {
+                                        onEvent(
+                                            AgendaEvent.OnDeleteTaskClick(
+                                                item.taskId
+                                            )
+                                        )
+                                    }
+                                )
+
+                                is AgendaItem.Reminder -> AgendaReminderCard(
+                                    title = item.reminderTitle.ifBlank { stringResource(R.string.new_reminder) },
+                                    content = if (item.reminderDescription.isNullOrBlank()) stringResource(
+                                        R.string.reminder_description
+                                    ) else item.reminderDescription,
+                                    dateTime = DateUtils.formatDate(item.time),
+                                    onOpenOptionClick = {
+                                        onOpenReminderClick(
+                                            DateUtils.getDateMilli(item.time.toLocalDate()),
+                                            item.reminderId,
+                                            false
+                                        )
+                                    },
+                                    onEditOptionClick = {
+                                        onOpenReminderClick(
+                                            DateUtils.getDateMilli(item.time.toLocalDate()),
+                                            item.reminderId,
+                                            true
+                                        )
+                                    },
+                                    onDeleteOptionClick = {
+                                        onEvent(
+                                            AgendaEvent.OnDeleteReminderClick(
+                                                item.reminderId
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                            if (item == agendaUiState.itemBeforeTimeNeedle) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                TimeNeedle(modifier = Modifier.fillMaxWidth())
+                                Spacer(modifier = Modifier.height(4.dp))
+                            } else {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(72.dp))
+                        }
                     }
                 }
             }
@@ -406,6 +437,7 @@ fun AgendaPreview() {
             onOpenTaskClick = { _: Long, _: String, _: Boolean -> },
             onAddReminderClick = {},
             onOpenReminderClick = { _: Long, _: String, _: Boolean -> },
+            onRefresh = {},
         )
     }
 }

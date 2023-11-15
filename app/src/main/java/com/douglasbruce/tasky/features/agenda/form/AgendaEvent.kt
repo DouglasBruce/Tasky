@@ -10,7 +10,7 @@ sealed class AgendaEvent {
     data class OnDateSelected(val dateMillis: Long) : AgendaEvent()
     data class OnDayClick(val day: Int) : AgendaEvent()
     data class ToggleTaskDoneClick(var task: AgendaItem.Task) : AgendaEvent()
-    data class OnDeleteEventClick(val eventId: String) : AgendaEvent()
+    data class OnDeleteEventClick(val eventId: String, val isUserEventCreator: Boolean) : AgendaEvent()
     data class OnDeleteTaskClick(val taskId: String) : AgendaEvent()
     data class OnDeleteReminderClick(val reminderId: String) : AgendaEvent()
 }

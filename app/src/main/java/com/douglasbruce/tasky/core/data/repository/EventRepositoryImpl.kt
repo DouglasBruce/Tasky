@@ -117,7 +117,9 @@ class EventRepositoryImpl @Inject constructor(
     override suspend fun leaveEvent(eventId: String): AuthResult<Unit> {
         return authenticatedRetrofitCall(serializer) {
             taskyNetwork.leaveEvent(eventId)
-            dao.leaveEvent(eventId)
+            withContext(NonCancellable) {
+                dao.leaveEvent(eventId)
+            }
             AuthResult.Success(Unit)
         }
     }

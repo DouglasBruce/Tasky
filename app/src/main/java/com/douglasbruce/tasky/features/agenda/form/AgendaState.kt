@@ -17,5 +17,5 @@ data class AgendaState(
     val showSelectedAgendaOptions: Boolean = false,
     val showAccountOptions: Boolean = false,
     val showDatePicker: Boolean = false,
-    val logout: Boolean = false,
+    val isRefreshing: Boolean = false,
 ) : Parcelable
