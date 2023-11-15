@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
-import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.formatter.NameFormatter
@@ -101,30 +100,30 @@ class AgendaViewModel @Inject constructor(
 
             is AgendaEvent.OnDeleteEventClick -> {
                 viewModelScope.launch {
-                    val result = eventRepository.deleteEventById(event.eventId)
-                    if (result is AuthResult.Unauthorized) {
-                        state = state.copy(logout = true)
+                    when {
+                        event.isUserEventCreator -> eventRepository.deleteEventById(event.eventId)
+                        else -> eventRepository.leaveEvent(event.eventId)
                     }
                 }
             }
 
             is AgendaEvent.OnDeleteTaskClick -> {
                 viewModelScope.launch {
-                    val result = taskRepository.deleteTaskById(event.taskId)
-                    if (result is AuthResult.Unauthorized) {
-                        state = state.copy(logout = true)
-                    }
+                    taskRepository.deleteTaskById(event.taskId)
                 }
             }
 
             is AgendaEvent.OnDeleteReminderClick -> {
                 viewModelScope.launch {
-                    val result = reminderRepository.deleteReminderById(event.reminderId)
-                    if (result is AuthResult.Unauthorized) {
-                        state = state.copy(logout = true)
-                    }
+                    reminderRepository.deleteReminderById(event.reminderId)
                 }
             }
+        }
+    }
+
+    fun refreshAgenda() {
+        viewModelScope.launch {
+            agendaRepository.fetchAgendaForDate(state.selectedDate.plusDays(state.selectedDay.toLong()))
         }
     }
 
