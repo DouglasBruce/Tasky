@@ -3,6 +3,7 @@ package com.douglasbruce.tasky.core.data.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import com.douglasbruce.tasky.core.data.database.model.ModifiedTaskEntity
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
@@ -49,4 +50,14 @@ interface TaskDao {
         """,
     )
     suspend fun deleteTaskById(taskId: String)
+
+    @Upsert
+    suspend fun upsertModifiedTask(modifiedTask: ModifiedTaskEntity)
+
+    @Query(
+        value = """
+            SELECT * FROM modified_tasks
+        """,
+    )
+    suspend fun getModifiedTasks(): List<ModifiedTaskEntity>
 }

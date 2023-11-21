@@ -64,7 +64,7 @@ android {
 // Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.25.0"
+        artifact = "com.google.protobuf:protoc:3.25.1"
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -84,7 +84,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.8.0")
+    implementation("androidx.activity:activity-compose:1.8.1")
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -98,7 +98,7 @@ dependencies {
 
     // Proto Datastore
     implementation("androidx.datastore:datastore:1.0.0")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:3.25.0")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.25.1")
 
     // Dagger - Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
