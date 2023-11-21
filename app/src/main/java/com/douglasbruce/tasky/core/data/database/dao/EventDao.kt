@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.EventEntity
+import com.douglasbruce.tasky.core.data.database.model.ModifiedEventEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
 
@@ -57,4 +58,14 @@ interface EventDao {
         """,
     )
     suspend fun leaveEvent(eventId: String)
+
+    @Upsert
+    suspend fun upsertModifiedEvent(modifiedEvent: ModifiedEventEntity)
+
+    @Query(
+        value = """
+            SELECT * FROM modified_events
+        """,
+    )
+    suspend fun getModifiedEvents(): List<ModifiedEventEntity>
 }

@@ -3,6 +3,7 @@ package com.douglasbruce.tasky.core.data.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import com.douglasbruce.tasky.core.data.database.model.ModifiedReminderEntity
 import com.douglasbruce.tasky.core.data.database.model.ReminderEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
@@ -49,4 +50,14 @@ interface ReminderDao {
         """,
     )
     suspend fun deleteReminderById(reminderId: String)
+
+    @Upsert
+    suspend fun upsertModifiedReminder(modifiedReminder: ModifiedReminderEntity)
+
+    @Query(
+        value = """
+            SELECT * FROM modified_reminders
+        """,
+    )
+    suspend fun getModifiedReminders(): List<ModifiedReminderEntity>
 }

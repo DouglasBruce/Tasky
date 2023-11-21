@@ -4,6 +4,7 @@ import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.ReminderDao
+import com.douglasbruce.tasky.core.data.database.model.ModifiedReminderEntity
 import com.douglasbruce.tasky.core.domain.mapper.toCreateReminderRequest
 import com.douglasbruce.tasky.core.domain.mapper.toReminder
 import com.douglasbruce.tasky.core.domain.mapper.toReminderEntity
@@ -11,6 +12,7 @@ import com.douglasbruce.tasky.core.domain.mapper.toUpdateReminderRequest
 import com.douglasbruce.tasky.core.domain.repository.ReminderRepository
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.model.ModificationType
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
 import javax.inject.Inject
@@ -35,19 +37,39 @@ class ReminderRepositoryImpl @Inject constructor(
     override suspend fun createReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
         dao.upsertReminder(reminder.toReminderEntity())
 
-        return authenticatedRetrofitCall(serializer) {
+        val result =  authenticatedRetrofitCall(serializer) {
             taskyNetwork.createReminder(reminder.toCreateReminderRequest())
             AuthResult.Success(Unit)
         }
+
+        return if (result is AuthResult.Error) {
+            dao.upsertModifiedReminder(
+                ModifiedReminderEntity(
+                    reminderId = reminder.id,
+                    type = ModificationType.Created
+                )
+            )
+            result
+        } else result
     }
 
     override suspend fun updateReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
         dao.upsertReminder(reminder.toReminderEntity())
 
-        return authenticatedRetrofitCall(serializer) {
+        val result = authenticatedRetrofitCall(serializer) {
             taskyNetwork.updateReminder(reminder.toUpdateReminderRequest())
             AuthResult.Success(Unit)
         }
+
+        return if (result is AuthResult.Error) {
+            dao.upsertModifiedReminder(
+                ModifiedReminderEntity(
+                    reminderId = reminder.id,
+                    type = ModificationType.Updated
+                )
+            )
+            result
+        } else result
     }
 
     override suspend fun deleteReminderById(reminderId: String): AuthResult<Unit> {
@@ -56,6 +78,14 @@ class ReminderRepositoryImpl @Inject constructor(
             taskyNetwork.deleteReminder(reminderId)
             AuthResult.Success(Unit)
         }
-        return result //TODO: Check if result is successful or error etc.
+        return if (result is AuthResult.Error) {
+            dao.upsertModifiedReminder(
+                ModifiedReminderEntity(
+                    reminderId = reminderId,
+                    type = ModificationType.Deleted
+                )
+            )
+            result
+        } else result
     }
 }

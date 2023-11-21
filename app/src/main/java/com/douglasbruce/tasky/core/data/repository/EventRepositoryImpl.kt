@@ -5,6 +5,7 @@ import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.EventDao
+import com.douglasbruce.tasky.core.data.database.model.ModifiedEventEntity
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.mapper.toCreateEventRequest
 import com.douglasbruce.tasky.core.domain.mapper.toEvent
@@ -12,6 +13,7 @@ import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateEventRequest
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.model.ModificationType
 import com.douglasbruce.tasky.core.network.model.NetworkAttendeeCheck
 import com.douglasbruce.tasky.core.network.model.request.CreateEventRequest
 import com.douglasbruce.tasky.core.network.model.request.UpdateEventRequest
@@ -48,7 +50,7 @@ class EventRepositoryImpl @Inject constructor(
         val requestJson =
             serializer.toJson(event.toCreateEventRequest(), CreateEventRequest::class.java)
 
-        return authenticatedRetrofitCall(serializer) {
+        val result = authenticatedRetrofitCall(serializer) {
             val networkEvent = taskyNetwork.createEvent(
                 createEventRequest = MultipartBody.Part.createFormData(
                     "create_event_request",
@@ -62,6 +64,16 @@ class EventRepositoryImpl @Inject constructor(
             }
             AuthResult.Success(Unit)
         }
+
+        return if (result is AuthResult.Error) {
+            dao.upsertModifiedEvent(
+                ModifiedEventEntity(
+                    eventId = event.id,
+                    type = ModificationType.Created
+                )
+            )
+            result
+        } else result
     }
 
     override suspend fun updateEvent(
@@ -79,7 +91,7 @@ class EventRepositoryImpl @Inject constructor(
             ), UpdateEventRequest::class.java
         )
 
-        return authenticatedRetrofitCall(serializer) {
+        val result = authenticatedRetrofitCall(serializer) {
             val networkEvent = taskyNetwork.updateEvent(
                 updateEventRequest = MultipartBody.Part.createFormData(
                     "update_event_request",
@@ -93,6 +105,16 @@ class EventRepositoryImpl @Inject constructor(
             }
             AuthResult.Success(Unit)
         }
+
+        return if (result is AuthResult.Error) {
+            dao.upsertModifiedEvent(
+                ModifiedEventEntity(
+                    eventId = event.id,
+                    type = ModificationType.Updated
+                )
+            )
+            result
+        } else result
     }
 
     override suspend fun deleteEventById(eventId: String): AuthResult<Unit> {
@@ -101,7 +123,15 @@ class EventRepositoryImpl @Inject constructor(
             taskyNetwork.deleteEvent(eventId)
             AuthResult.Success(Unit)
         }
-        return result //TODO: Check if result is successful or error etc.
+        return if (result is AuthResult.Error) {
+            dao.upsertModifiedEvent(
+                ModifiedEventEntity(
+                    eventId = eventId,
+                    type = ModificationType.Deleted
+                )
+            )
+            result
+        } else result
     }
 
     override suspend fun getFutureEvents(): List<AgendaItem.Event> {
