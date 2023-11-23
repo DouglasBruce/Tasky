@@ -5,7 +5,7 @@ import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.EventDao
-import com.douglasbruce.tasky.core.data.database.model.ModifiedEventEntity
+import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.mapper.toCreateEventRequest
 import com.douglasbruce.tasky.core.domain.mapper.toEvent
@@ -13,6 +13,7 @@ import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateEventRequest
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.model.AgendaItemType
 import com.douglasbruce.tasky.core.model.ModificationType
 import com.douglasbruce.tasky.core.network.model.NetworkAttendeeCheck
 import com.douglasbruce.tasky.core.network.model.request.CreateEventRequest
@@ -66,12 +67,15 @@ class EventRepositoryImpl @Inject constructor(
         }
 
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedEvent(
-                ModifiedEventEntity(
-                    eventId = event.id,
-                    type = ModificationType.Created
+            withContext(NonCancellable) {
+                dao.upsertModifiedEvent(
+                    ModifiedAgendaItemEntity(
+                        id = event.id,
+                        agendaItemType = AgendaItemType.Event,
+                        modificationType = ModificationType.Created
+                    )
                 )
-            )
+            }
             result
         } else result
     }
@@ -107,12 +111,15 @@ class EventRepositoryImpl @Inject constructor(
         }
 
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedEvent(
-                ModifiedEventEntity(
-                    eventId = event.id,
-                    type = ModificationType.Updated
+            withContext(NonCancellable) {
+                dao.upsertModifiedEvent(
+                    ModifiedAgendaItemEntity(
+                        id = event.id,
+                        agendaItemType = AgendaItemType.Event,
+                        modificationType = ModificationType.Updated
+                    )
                 )
-            )
+            }
             result
         } else result
     }
@@ -124,12 +131,15 @@ class EventRepositoryImpl @Inject constructor(
             AuthResult.Success(Unit)
         }
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedEvent(
-                ModifiedEventEntity(
-                    eventId = eventId,
-                    type = ModificationType.Deleted
+            withContext(NonCancellable) {
+                dao.upsertModifiedEvent(
+                    ModifiedAgendaItemEntity(
+                        id = eventId,
+                        agendaItemType = AgendaItemType.Event,
+                        modificationType = ModificationType.Deleted
+                    )
                 )
-            )
+            }
             result
         } else result
     }

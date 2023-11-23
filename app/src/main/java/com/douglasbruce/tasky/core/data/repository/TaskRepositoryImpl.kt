@@ -4,7 +4,7 @@ import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.TaskDao
-import com.douglasbruce.tasky.core.data.database.model.ModifiedTaskEntity
+import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import com.douglasbruce.tasky.core.domain.mapper.toCreateTaskRequest
 import com.douglasbruce.tasky.core.domain.mapper.toTask
 import com.douglasbruce.tasky.core.domain.mapper.toTaskEntity
@@ -12,9 +12,12 @@ import com.douglasbruce.tasky.core.domain.mapper.toUpdateTaskRequest
 import com.douglasbruce.tasky.core.domain.repository.TaskRepository
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.model.AgendaItemType
 import com.douglasbruce.tasky.core.model.ModificationType
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -40,12 +43,15 @@ class TaskRepositoryImpl @Inject constructor(
         }
 
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedTask(
-                ModifiedTaskEntity(
-                    taskId = task.id,
-                    type = ModificationType.Created,
+            withContext(NonCancellable) {
+                dao.upsertModifiedTask(
+                    ModifiedAgendaItemEntity(
+                        id = task.id,
+                        agendaItemType = AgendaItemType.Task,
+                        modificationType = ModificationType.Created,
+                    )
                 )
-            )
+            }
             result
         } else result
     }
@@ -59,12 +65,15 @@ class TaskRepositoryImpl @Inject constructor(
         }
 
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedTask(
-                ModifiedTaskEntity(
-                    taskId = task.id,
-                    type = ModificationType.Updated,
+            withContext(NonCancellable) {
+                dao.upsertModifiedTask(
+                    ModifiedAgendaItemEntity(
+                        id = task.id,
+                        agendaItemType = AgendaItemType.Task,
+                        modificationType = ModificationType.Updated,
+                    )
                 )
-            )
+            }
             result
         } else result
     }
@@ -76,12 +85,15 @@ class TaskRepositoryImpl @Inject constructor(
             AuthResult.Success(Unit)
         }
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedTask(
-                ModifiedTaskEntity(
-                    taskId = taskId,
-                    type = ModificationType.Deleted
+            withContext(NonCancellable) {
+                dao.upsertModifiedTask(
+                    ModifiedAgendaItemEntity(
+                        id = taskId,
+                        agendaItemType = AgendaItemType.Task,
+                        modificationType = ModificationType.Deleted
+                    )
                 )
-            )
+            }
             result
         } else result
     }
