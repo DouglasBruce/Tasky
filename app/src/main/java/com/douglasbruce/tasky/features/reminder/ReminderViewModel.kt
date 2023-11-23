@@ -132,9 +132,7 @@ class ReminderViewModel @Inject constructor(
                         }
 
                         is AuthResult.Error -> {
-                            result.message?.let {
-                                infoChannel.send(result.message)
-                            }
+                            state = state.copy(closeScreen = true)
                         }
 
                         else -> {}

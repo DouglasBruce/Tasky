@@ -34,6 +34,7 @@ import java.util.UUID
 internal fun PhotoViewerRoute(
     key: String,
     uri: String,
+    canDelete: Boolean,
     onBackClick: () -> Unit,
     onRemovePhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -41,6 +42,7 @@ internal fun PhotoViewerRoute(
     PhotoViewerScreen(
         key = key,
         uri = uri,
+        canDelete = canDelete,
         onBackClick = onBackClick,
         onRemovePhotoClick = onRemovePhotoClick,
         modifier = modifier.fillMaxSize(),
@@ -52,6 +54,7 @@ internal fun PhotoViewerRoute(
 internal fun PhotoViewerScreen(
     key: String,
     uri: String,
+    canDelete: Boolean,
     onBackClick: () -> Unit,
     onRemovePhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -64,7 +67,10 @@ internal fun PhotoViewerScreen(
                 navigationIconContentDescription = stringResource(R.string.cancel),
                 onNavigationClick = onBackClick,
                 actions = {
-                    IconButton(onClick = { onRemovePhotoClick(key) }) {
+                    IconButton(
+                        enabled = canDelete,
+                        onClick = { onRemovePhotoClick(key) }
+                    ) {
                         Icon(
                             imageVector = TaskyIcons.DeleteOutlined,
                             contentDescription = stringResource(R.string.remove_photo)
@@ -113,6 +119,7 @@ fun PhotoViewerScreenPreview() {
     PhotoViewerScreen(
         key = UUID.randomUUID().toString(),
         uri = "",
+        canDelete = false,
         onBackClick = {},
         onRemovePhotoClick = {},
     )

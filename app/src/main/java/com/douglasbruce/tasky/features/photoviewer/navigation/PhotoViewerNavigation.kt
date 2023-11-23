@@ -18,9 +18,12 @@ internal const val photoViewerKeyArg = "photoViewerKey"
 @VisibleForTesting
 internal const val photoViewerUriArg = "photoViewerUri"
 
-fun NavController.navigateToPhotoViewer(key: String, uri: String) {
+@VisibleForTesting
+internal const val photoViewerCanDeleteArg = "photoViewerCanDelete"
+
+fun NavController.navigateToPhotoViewer(key: String, uri: String, canDelete: Boolean) {
     val encodedUri = URLEncoder.encode(uri, urlCharacterEncoding)
-    this.navigate("$photoViewerNavigationRoute/$key/$encodedUri") {
+    this.navigate("$photoViewerNavigationRoute/$key/$encodedUri/$canDelete") {
         launchSingleTop = true
     }
 }
@@ -30,18 +33,24 @@ fun NavGraphBuilder.photoViewerScreen(
     onRemovePhotoClick: (String) -> Unit,
 ) {
     composable(
-        route = "$photoViewerNavigationRoute/{$photoViewerKeyArg}/{$photoViewerUriArg}",
+        route = "$photoViewerNavigationRoute/{$photoViewerKeyArg}/{$photoViewerUriArg}/{$photoViewerCanDeleteArg}",
         arguments = listOf(
             navArgument(photoViewerKeyArg) { type = NavType.StringType },
             navArgument(photoViewerUriArg) { type = NavType.StringType },
+            navArgument(photoViewerCanDeleteArg) {
+                type = NavType.BoolType
+                defaultValue = false
+            },
         ),
     ) {
         it.savedStateHandle[photoViewerKeyArg] = it.arguments?.getString(photoViewerKeyArg, "")
         it.savedStateHandle[photoViewerUriArg] = it.arguments?.getString(photoViewerUriArg, "")
+        it.savedStateHandle[photoViewerCanDeleteArg] = it.arguments?.getBoolean(photoViewerCanDeleteArg, false)
 
         PhotoViewerRoute(
             key = it.savedStateHandle.get<String>(photoViewerKeyArg)!!,
             uri = it.savedStateHandle.get<String>(photoViewerUriArg)!!,
+            canDelete = it.savedStateHandle.get<Boolean>(photoViewerCanDeleteArg)!!,
             onBackClick = onBackClick,
             onRemovePhotoClick = onRemovePhotoClick,
         )

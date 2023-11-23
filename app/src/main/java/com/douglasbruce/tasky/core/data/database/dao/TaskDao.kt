@@ -3,7 +3,7 @@ package com.douglasbruce.tasky.core.data.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.douglasbruce.tasky.core.data.database.model.ModifiedTaskEntity
+import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
@@ -36,6 +36,15 @@ interface TaskDao {
     @Query(
         value = """
             SELECT * FROM tasks
+            WHERE time >= :startOfDate
+            AND time < :endOfDate
+        """,
+    )
+    fun getOneOffTasksForDate(startOfDate: Long, endOfDate: Long): List<TaskEntity>
+
+    @Query(
+        value = """
+            SELECT * FROM tasks
             WHERE time >= :startingDate
         """
     )
@@ -52,12 +61,13 @@ interface TaskDao {
     suspend fun deleteTaskById(taskId: String)
 
     @Upsert
-    suspend fun upsertModifiedTask(modifiedTask: ModifiedTaskEntity)
+    suspend fun upsertModifiedTask(modifiedTask: ModifiedAgendaItemEntity)
 
     @Query(
         value = """
-            SELECT * FROM modified_tasks
+            SELECT * FROM modified_agenda
+            WHERE agendaItemType = 'Task'
         """,
     )
-    suspend fun getModifiedTasks(): List<ModifiedTaskEntity>
+    suspend fun getModifiedTasks(): List<ModifiedAgendaItemEntity>
 }

@@ -78,7 +78,7 @@ internal fun EventRoute(
     removePhotoLocation: String,
     onBackClick: () -> Unit,
     onEditorClick: (isTitle: Boolean, key: String, value: String) -> Unit,
-    onPhotoViewerClick: (key: String, uri: String) -> Unit,
+    onPhotoViewerClick: (key: String, uri: String, canDelete: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EventViewModel = hiltViewModel(),
 ) {
@@ -128,7 +128,7 @@ internal fun EventRoute(
 internal fun EventScreen(
     onBackClick: () -> Unit,
     onEditorClick: (isTitle: Boolean, key: String, value: String) -> Unit,
-    onPhotoViewerClick: (key: String, uri: String) -> Unit,
+    onPhotoViewerClick: (key: String, uri: String, canDelete: Boolean) -> Unit,
     eventUiState: EventState,
     onEvent: (EventFormEvent) -> Unit,
     isEventEditable: Boolean,
@@ -320,7 +320,7 @@ internal fun EventScreen(
                     Spacer(Modifier.height(8.dp))
                     PhotoSelector(
                         photos = eventUiState.photos,
-                        onPhotoClick = { onPhotoViewerClick(it.key(), it.uri()) },
+                        onPhotoClick = { onPhotoViewerClick(it.key(), it.uri(), isEventEditable) },
                         onPhotosSelected = {
                             onEvent(EventFormEvent.OnAddPhotoClick(it))
                         },
@@ -472,7 +472,7 @@ fun EventPreview() {
         EventScreen(
             onBackClick = {},
             onEditorClick = { _: Boolean, _: String, _: String -> },
-            onPhotoViewerClick = { _: String, _: String -> },
+            onPhotoViewerClick = { _: String, _: String, _: Boolean -> },
             eventUiState = EventState(
                 attendees = listOf(
                     Attendee(

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.EventEntity
-import com.douglasbruce.tasky.core.data.database.model.ModifiedEventEntity
+import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
 
@@ -36,6 +36,15 @@ interface EventDao {
     @Query(
         value = """
             SELECT * FROM events
+            WHERE `from` >= :startOfDate
+            AND `from` < :endOfDate
+        """,
+    )
+    fun getOneOffEventsForDate(startOfDate: Long, endOfDate: Long): List<EventEntity>
+
+    @Query(
+        value = """
+            SELECT * FROM events
             WHERE `from` >= :startingDate
         """,
     )
@@ -60,12 +69,13 @@ interface EventDao {
     suspend fun leaveEvent(eventId: String)
 
     @Upsert
-    suspend fun upsertModifiedEvent(modifiedEvent: ModifiedEventEntity)
+    suspend fun upsertModifiedEvent(modifiedEvent: ModifiedAgendaItemEntity)
 
     @Query(
         value = """
-            SELECT * FROM modified_events
+            SELECT * FROM modified_agenda
+            WHERE agendaItemType = 'Event'
         """,
     )
-    suspend fun getModifiedEvents(): List<ModifiedEventEntity>
+    suspend fun getModifiedEvents(): List<ModifiedAgendaItemEntity>
 }

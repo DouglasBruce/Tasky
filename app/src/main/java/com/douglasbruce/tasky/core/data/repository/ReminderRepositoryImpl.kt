@@ -4,7 +4,7 @@ import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.ReminderDao
-import com.douglasbruce.tasky.core.data.database.model.ModifiedReminderEntity
+import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import com.douglasbruce.tasky.core.domain.mapper.toCreateReminderRequest
 import com.douglasbruce.tasky.core.domain.mapper.toReminder
 import com.douglasbruce.tasky.core.domain.mapper.toReminderEntity
@@ -12,9 +12,12 @@ import com.douglasbruce.tasky.core.domain.mapper.toUpdateReminderRequest
 import com.douglasbruce.tasky.core.domain.repository.ReminderRepository
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.model.AgendaItemType
 import com.douglasbruce.tasky.core.model.ModificationType
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ReminderRepositoryImpl @Inject constructor(
@@ -43,12 +46,15 @@ class ReminderRepositoryImpl @Inject constructor(
         }
 
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedReminder(
-                ModifiedReminderEntity(
-                    reminderId = reminder.id,
-                    type = ModificationType.Created
+            withContext(NonCancellable) {
+                dao.upsertModifiedReminder(
+                    ModifiedAgendaItemEntity(
+                        id = reminder.id,
+                        agendaItemType = AgendaItemType.Reminder,
+                        modificationType = ModificationType.Created
+                    )
                 )
-            )
+            }
             result
         } else result
     }
@@ -62,12 +68,15 @@ class ReminderRepositoryImpl @Inject constructor(
         }
 
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedReminder(
-                ModifiedReminderEntity(
-                    reminderId = reminder.id,
-                    type = ModificationType.Updated
+            withContext(NonCancellable) {
+                dao.upsertModifiedReminder(
+                    ModifiedAgendaItemEntity(
+                        id = reminder.id,
+                        agendaItemType = AgendaItemType.Reminder,
+                        modificationType = ModificationType.Updated
+                    )
                 )
-            )
+            }
             result
         } else result
     }
@@ -79,12 +88,15 @@ class ReminderRepositoryImpl @Inject constructor(
             AuthResult.Success(Unit)
         }
         return if (result is AuthResult.Error) {
-            dao.upsertModifiedReminder(
-                ModifiedReminderEntity(
-                    reminderId = reminderId,
-                    type = ModificationType.Deleted
+            withContext(NonCancellable) {
+                dao.upsertModifiedReminder(
+                    ModifiedAgendaItemEntity(
+                        id = reminderId,
+                        agendaItemType = AgendaItemType.Reminder,
+                        modificationType = ModificationType.Deleted
+                    )
                 )
-            )
+            }
             result
         } else result
     }
