@@ -11,10 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.WorkManager
+import com.douglasbruce.tasky.core.data.workers.AgendaSyncWorker
 import com.douglasbruce.tasky.core.designsystem.theme.Black
 import com.douglasbruce.tasky.core.designsystem.theme.TaskyTheme
 import com.douglasbruce.tasky.core.network.interceptor.onLoggedOut
@@ -65,6 +69,15 @@ fun TaskyApp(viewModel: MainActivityViewModel) {
                         navController.navigateToLoginGraph()
                     }
                 }
+            }
+
+            if (isAuthenticated) {
+                val workManager = WorkManager.getInstance(LocalContext.current)
+                workManager.enqueueUniquePeriodicWork(
+                    "SyncWorkName",
+                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                    AgendaSyncWorker.startUpSyncWorkPeriodic(),
+                )
             }
 
             TaskyNavHost(
