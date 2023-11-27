@@ -59,6 +59,7 @@ fun TaskyApp(viewModel: MainActivityViewModel) {
         val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
         if (!isLoading) {
+            val context = LocalContext.current
             val isAuthenticated by viewModel.isAuthenticated.collectAsStateWithLifecycle()
             val navController: NavHostController = rememberNavController()
 
@@ -72,7 +73,7 @@ fun TaskyApp(viewModel: MainActivityViewModel) {
             }
 
             if (isAuthenticated) {
-                val workManager = WorkManager.getInstance(LocalContext.current)
+                val workManager = WorkManager.getInstance(context)
                 workManager.enqueueUniquePeriodicWork(
                     "SyncWorkName",
                     ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
@@ -82,6 +83,7 @@ fun TaskyApp(viewModel: MainActivityViewModel) {
 
             TaskyNavHost(
                 onLogoutClick = {
+                    WorkManager.getInstance(context).cancelUniqueWork("SyncWorkName")
                     viewModel.logout()
                     navController.navigateToLoginGraph()
                 },
