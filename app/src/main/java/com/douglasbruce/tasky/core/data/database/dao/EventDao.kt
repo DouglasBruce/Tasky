@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.EventEntity
 import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
+import com.douglasbruce.tasky.core.model.ModificationType
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
 
@@ -75,7 +76,27 @@ interface EventDao {
         value = """
             SELECT * FROM modified_agenda
             WHERE agendaItemType = 'Event'
+            AND modificationType = :modificationType
         """,
     )
-    suspend fun getModifiedEvents(): List<ModifiedAgendaItemEntity>
+    suspend fun getModifiedEventsWithModType(modificationType: ModificationType): List<ModifiedAgendaItemEntity>
+
+    @Query(
+        value = """
+            DELETE FROM modified_agenda
+            WHERE agendaItemType = 'Event'
+            AND id = :id
+            AND modificationType = :modificationType
+        """,
+    )
+    suspend fun deleteModifiedEventWithModType(id: String, modificationType: ModificationType)
+
+    @Query(
+        value = """
+            DELETE FROM modified_agenda
+            WHERE agendaItemType = 'Event'
+            AND modificationType = :modificationType
+        """,
+    )
+    suspend fun clearModifiedEventsWithModType(modificationType: ModificationType)
 }

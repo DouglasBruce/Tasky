@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import com.douglasbruce.tasky.core.data.database.model.ReminderEntity
+import com.douglasbruce.tasky.core.model.ModificationType
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
 
@@ -67,7 +68,27 @@ interface ReminderDao {
         value = """
             SELECT * FROM modified_agenda
             WHERE agendaItemType = 'Reminder'
+            AND modificationType = :modificationType
         """,
     )
-    suspend fun getModifiedReminders(): List<ModifiedAgendaItemEntity>
+    suspend fun getModifiedRemindersWithModType(modificationType: ModificationType): List<ModifiedAgendaItemEntity>
+
+    @Query(
+        value = """
+            DELETE FROM modified_agenda
+            WHERE agendaItemType = 'Reminder'
+            AND id = :id
+            AND modificationType = :modificationType
+        """,
+    )
+    suspend fun deleteModifiedReminderWithModType(id: String, modificationType: ModificationType)
+
+    @Query(
+        value = """
+            DELETE FROM modified_agenda
+            WHERE agendaItemType = 'Reminder'
+            AND modificationType = :modificationType
+        """,
+    )
+    suspend fun clearModifiedRemindersWithModType(modificationType: ModificationType)
 }
