@@ -5,11 +5,13 @@ import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.TaskDao
 import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
+import com.douglasbruce.tasky.core.domain.mapper.toAlarmItem
 import com.douglasbruce.tasky.core.domain.mapper.toCreateTaskRequest
 import com.douglasbruce.tasky.core.domain.mapper.toTask
 import com.douglasbruce.tasky.core.domain.mapper.toTaskEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateTaskRequest
 import com.douglasbruce.tasky.core.domain.repository.TaskRepository
+import com.douglasbruce.tasky.core.domain.utils.AlarmScheduler
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaItemType
@@ -24,6 +26,7 @@ class TaskRepositoryImpl @Inject constructor(
     private val taskyNetwork: RetrofitTaskyNetwork,
     private val dao: TaskDao,
     private val serializer: JsonSerializer,
+    private val alarmScheduler: AlarmScheduler,
 ) : TaskRepository {
 
     override suspend fun getTaskById(taskId: String): AuthResult<AgendaItem.Task> {
@@ -36,6 +39,7 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun createTask(task: AgendaItem.Task): AuthResult<Unit> {
         dao.upsertTask(task.toTaskEntity())
+        alarmScheduler.schedule(task.toAlarmItem())
 
         val result = authenticatedRetrofitCall(serializer) {
             taskyNetwork.createTask(task.toCreateTaskRequest())
@@ -58,6 +62,7 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun updateTask(task: AgendaItem.Task): AuthResult<Unit> {
         dao.upsertTask(task.toTaskEntity())
+        alarmScheduler.schedule(task.toAlarmItem())
 
         val result = authenticatedRetrofitCall(serializer) {
             taskyNetwork.updateTask(task.toUpdateTaskRequest())
@@ -81,6 +86,7 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun deleteTaskById(taskId: String): AuthResult<Unit> {
         val result = authenticatedRetrofitCall(serializer) {
             dao.deleteTaskById(taskId)
+            alarmScheduler.cancel(taskId)
             taskyNetwork.deleteTask(taskId)
             AuthResult.Success(Unit)
         }

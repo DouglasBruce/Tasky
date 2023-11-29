@@ -96,6 +96,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
+    // Accompanist
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
     // Proto Datastore
     implementation("androidx.datastore:datastore:1.0.0")
     implementation("com.google.protobuf:protobuf-kotlin-lite:3.25.1")

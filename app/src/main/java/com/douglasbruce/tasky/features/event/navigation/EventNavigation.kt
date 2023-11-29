@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.douglasbruce.tasky.features.event.EventRoute
 
 const val eventNavigationRoute = "event"
@@ -19,6 +20,9 @@ internal const val eventFromDateArg = "eventFromDate"
 
 @VisibleForTesting
 internal const val eventIsEditingArg = "eventIsEditing"
+
+private const val DEEP_LINK_EVENT_URI_PATTERN =
+    "https://www.tasky.com/event/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}"
 
 internal class EventArgs(
     val eventId: String?,
@@ -52,6 +56,9 @@ fun NavGraphBuilder.eventScreen(
 ) {
     composable(
         route = "$eventNavigationRoute/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}",
+        deepLinks = listOf(
+            navDeepLink { uriPattern = DEEP_LINK_EVENT_URI_PATTERN },
+        ),
         arguments = listOf(
             navArgument(eventFromDateArg) {
                 type = NavType.LongType

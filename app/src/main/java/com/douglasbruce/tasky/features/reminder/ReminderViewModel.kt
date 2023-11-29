@@ -105,8 +105,8 @@ class ReminderViewModel @Inject constructor(
             is ReminderEvent.OnSaveClick -> {
                 val reminder = AgendaItem.Reminder(
                     reminderId = state.id ?: UUID.randomUUID().toString(),
-                    reminderTitle = state.title ?: "",
-                    reminderDescription = state.description,
+                    reminderTitle = state.title ?: event.defaultTitle,
+                    reminderDescription = state.description ?: event.defaultDesc,
                     time = ZonedDateTime.of(
                         state.date,
                         state.time,

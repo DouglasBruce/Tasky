@@ -7,11 +7,13 @@ import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.EventDao
 import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
+import com.douglasbruce.tasky.core.domain.mapper.toAlarmItem
 import com.douglasbruce.tasky.core.domain.mapper.toCreateEventRequest
 import com.douglasbruce.tasky.core.domain.mapper.toEvent
 import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateEventRequest
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
+import com.douglasbruce.tasky.core.domain.utils.AlarmScheduler
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaItemType
 import com.douglasbruce.tasky.core.model.ModificationType
@@ -33,6 +35,7 @@ class EventRepositoryImpl @Inject constructor(
     private val taskyNetwork: RetrofitTaskyNetwork,
     private val dao: EventDao,
     private val serializer: MoshiSerializer,
+    private val alarmScheduler: AlarmScheduler,
 ) : EventRepository {
 
     private val localUserId: Flow<String> = userDataPreferences.userData.map { it.userId }
@@ -47,6 +50,7 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun createEvent(event: AgendaItem.Event): AuthResult<Unit> {
         dao.upsertEvent(event.toEventEntity())
+        alarmScheduler.schedule(event.toAlarmItem())
 
         val requestJson =
             serializer.toJson(event.toCreateEventRequest(), CreateEventRequest::class.java)
@@ -87,6 +91,7 @@ class EventRepositoryImpl @Inject constructor(
         val userId = localUserId.first()
 
         dao.upsertEvent(event.toEventEntity())
+        alarmScheduler.schedule(event.toAlarmItem())
 
         val requestJson = serializer.toJson(
             event.toUpdateEventRequest(
@@ -127,6 +132,7 @@ class EventRepositoryImpl @Inject constructor(
     override suspend fun deleteEventById(eventId: String): AuthResult<Unit> {
         val result = authenticatedRetrofitCall(serializer) {
             dao.deleteEventById(eventId)
+            alarmScheduler.cancel(eventId)
             taskyNetwork.deleteEvent(eventId)
             AuthResult.Success(Unit)
         }

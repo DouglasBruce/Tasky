@@ -118,6 +118,9 @@ internal fun TaskScreen(
         else -> taskUiState.date.format(titleDateFormatter)
     }
 
+    val defaultTitle = stringResource(R.string.new_task)
+    val defaultDesc = stringResource(R.string.task_description)
+
     if (taskUiState.showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { onEvent(TaskEvent.ToggleDeleteConfirmationClick(false)) },
@@ -153,7 +156,14 @@ internal fun TaskScreen(
                         {
                             TaskyTopAppBarTextButton(
                                 text = stringResource(R.string.save),
-                                onClick = { onEvent(TaskEvent.OnSaveClick) },
+                                onClick = {
+                                    onEvent(
+                                        TaskEvent.OnSaveClick(
+                                            defaultTitle = defaultTitle,
+                                            defaultDesc = defaultDesc,
+                                        )
+                                    )
+                                },
                                 color = White,
                             )
                         }

@@ -21,6 +21,7 @@ import com.douglasbruce.tasky.core.domain.mapper.toUpdateEventRequest
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateReminderRequest
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateTaskRequest
 import com.douglasbruce.tasky.core.domain.repository.AgendaRepository
+import com.douglasbruce.tasky.core.domain.utils.AlarmScheduler
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.ModificationType
@@ -50,6 +51,7 @@ class AgendaRepositoryImpl @Inject constructor(
     private val tasksDao: TaskDao,
     private val remindersDao: ReminderDao,
     private val serializer: JsonSerializer,
+    private val alarmScheduler: AlarmScheduler,
 ) : AgendaRepository {
 
     private val localUserId: Flow<String> = userDataPreferences.userData.map { it.userId }
@@ -81,6 +83,8 @@ class AgendaRepositoryImpl @Inject constructor(
             time = utcDateTime
         ).toAgendaItems()
 
+        alarmScheduler.scheduleAllFutureAlarms()
+
         val fetchedEvents: List<AgendaItem.Event> =
             agendaItems.filterIsInstance<AgendaItem.Event>()
         val fetchedTasks: List<AgendaItem.Task> =
@@ -107,6 +111,8 @@ class AgendaRepositoryImpl @Inject constructor(
                     result.data?.filterIsInstance<AgendaItem.Task>() ?: emptyList()
                 val fetchedReminders: List<AgendaItem.Reminder> =
                     result.data?.filterIsInstance<AgendaItem.Reminder>() ?: emptyList()
+
+                alarmScheduler.scheduleAllFutureAlarms()
 
                 saveAgendaItemsLocally(
                     events = fetchedEvents,

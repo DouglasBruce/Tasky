@@ -41,7 +41,7 @@ interface EventDao {
             AND `from` < :endOfDate
         """,
     )
-    fun getOneOffEventsForDate(startOfDate: Long, endOfDate: Long): List<EventEntity>
+    suspend fun getOneOffEventsForDate(startOfDate: Long, endOfDate: Long): List<EventEntity>
 
     @Query(
         value = """

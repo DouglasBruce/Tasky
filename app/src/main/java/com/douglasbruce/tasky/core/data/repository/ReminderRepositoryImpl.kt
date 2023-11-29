@@ -5,11 +5,13 @@ import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.data.database.dao.ReminderDao
 import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
+import com.douglasbruce.tasky.core.domain.mapper.toAlarmItem
 import com.douglasbruce.tasky.core.domain.mapper.toCreateReminderRequest
 import com.douglasbruce.tasky.core.domain.mapper.toReminder
 import com.douglasbruce.tasky.core.domain.mapper.toReminderEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateReminderRequest
 import com.douglasbruce.tasky.core.domain.repository.ReminderRepository
+import com.douglasbruce.tasky.core.domain.utils.AlarmScheduler
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaItemType
@@ -24,6 +26,7 @@ class ReminderRepositoryImpl @Inject constructor(
     private val taskyNetwork: RetrofitTaskyNetwork,
     private val dao: ReminderDao,
     private val serializer: JsonSerializer,
+    private val alarmScheduler: AlarmScheduler,
 ) : ReminderRepository {
     override suspend fun getReminderById(reminderId: String): AuthResult<AgendaItem.Reminder> {
         return authenticatedRetrofitCall(serializer) {
@@ -39,6 +42,7 @@ class ReminderRepositoryImpl @Inject constructor(
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
         dao.upsertReminder(reminder.toReminderEntity())
+        alarmScheduler.schedule(reminder.toAlarmItem())
 
         val result =  authenticatedRetrofitCall(serializer) {
             taskyNetwork.createReminder(reminder.toCreateReminderRequest())
@@ -61,6 +65,7 @@ class ReminderRepositoryImpl @Inject constructor(
 
     override suspend fun updateReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
         dao.upsertReminder(reminder.toReminderEntity())
+        alarmScheduler.schedule(reminder.toAlarmItem())
 
         val result = authenticatedRetrofitCall(serializer) {
             taskyNetwork.updateReminder(reminder.toUpdateReminderRequest())
@@ -84,6 +89,7 @@ class ReminderRepositoryImpl @Inject constructor(
     override suspend fun deleteReminderById(reminderId: String): AuthResult<Unit> {
         val result = authenticatedRetrofitCall(serializer) {
             dao.deleteReminderById(reminderId)
+            alarmScheduler.cancel(reminderId)
             taskyNetwork.deleteReminder(reminderId)
             AuthResult.Success(Unit)
         }
