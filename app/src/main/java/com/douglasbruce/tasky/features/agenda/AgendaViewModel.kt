@@ -44,6 +44,10 @@ class AgendaViewModel @Inject constructor(
         private set
 
     init {
+        viewModelScope.launch {
+            agendaRepository.fetchAgendaForDate(state.selectedDate.plusDays(state.selectedDay.toLong()))
+        }
+
         val fullName = runBlocking {
             userDataPreferences.userData.map { it.fullName }.first()
         }
