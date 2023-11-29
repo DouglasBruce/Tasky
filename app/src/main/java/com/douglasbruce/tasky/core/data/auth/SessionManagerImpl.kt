@@ -21,7 +21,9 @@ class SessionManagerImpl @Inject constructor(
         withContext(Dispatchers.IO + NonCancellable) {
             authRepository.logout()
             userDataPreferences.clearPreferences()
-            taskyDatabase.clearAllTables()
+            taskyDatabase.eventsDao().deleteAllEvents()
+            taskyDatabase.tasksDao().deleteAllTasks()
+            taskyDatabase.remindersDao().deleteAllReminders()
             alarmScheduler.cancelAll()
         }
     }

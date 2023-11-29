@@ -11,6 +11,7 @@ import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.common.utils.UiText
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
+import com.douglasbruce.tasky.core.domain.utils.NetworkMonitor
 import com.douglasbruce.tasky.core.domain.validation.EmailValidator
 import com.douglasbruce.tasky.core.domain.validation.ErrorType
 import com.douglasbruce.tasky.core.model.AgendaItem
@@ -24,9 +25,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -41,12 +44,14 @@ import javax.inject.Inject
 class EventViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     userDataPreferences: UserDataPreferences,
+    networkMonitor: NetworkMonitor,
     private val eventRepository: EventRepository,
     private val emailValidator: EmailValidator,
 ) : ViewModel() {
 
     private val eventArgs: EventArgs = EventArgs(savedStateHandle)
     private val localUserId: Flow<String> = userDataPreferences.userData.map { it.userId }
+    private val deletedRemotePhotos = MutableStateFlow<List<AgendaPhoto.Remote>>(emptyList())
 
     private val infoChannel = Channel<UiText>()
     val infoMessages = infoChannel.receiveAsFlow()
@@ -62,6 +67,14 @@ class EventViewModel @Inject constructor(
         )
     }
         private set
+
+    val isOffline = networkMonitor.isOnline
+        .map(Boolean::not)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
 
     init {
         state.id?.let { id ->

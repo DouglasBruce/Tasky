@@ -1,7 +1,6 @@
 package com.douglasbruce.tasky.core.data.di
 
 import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
-import com.douglasbruce.tasky.core.data.AlarmSchedulerImpl
 import com.douglasbruce.tasky.core.data.auth.SessionManagerImpl
 import com.douglasbruce.tasky.core.data.datastore.TaskyPreferencesDataSource
 import com.douglasbruce.tasky.core.data.notifications.SystemTrayNotifier
@@ -11,6 +10,10 @@ import com.douglasbruce.tasky.core.data.repository.EventRepositoryImpl
 import com.douglasbruce.tasky.core.data.repository.OfflineFirstUserDataRepository
 import com.douglasbruce.tasky.core.data.repository.ReminderRepositoryImpl
 import com.douglasbruce.tasky.core.data.repository.TaskRepositoryImpl
+import com.douglasbruce.tasky.core.data.utils.AlarmSchedulerImpl
+import com.douglasbruce.tasky.core.data.utils.ConnectivityManagerNetworkMonitor
+import com.douglasbruce.tasky.core.data.utils.PhotoByteConverterImpl
+import com.douglasbruce.tasky.core.data.utils.PhotoExtensionParserImpl
 import com.douglasbruce.tasky.core.data.validation.EmailMatcherImpl
 import com.douglasbruce.tasky.core.domain.auth.SessionManager
 import com.douglasbruce.tasky.core.domain.datastore.UserDataPreferences
@@ -23,6 +26,9 @@ import com.douglasbruce.tasky.core.domain.repository.TaskRepository
 import com.douglasbruce.tasky.core.domain.repository.UserDataRepository
 import com.douglasbruce.tasky.core.domain.utils.AlarmScheduler
 import com.douglasbruce.tasky.core.domain.utils.JsonSerializer
+import com.douglasbruce.tasky.core.domain.utils.NetworkMonitor
+import com.douglasbruce.tasky.core.domain.utils.PhotoByteConverter
+import com.douglasbruce.tasky.core.domain.utils.PhotoExtensionParser
 import com.douglasbruce.tasky.core.domain.validation.EmailMatcher
 import dagger.Binds
 import dagger.Module
@@ -92,4 +98,19 @@ interface DataModule {
     fun bindsNotifier(
         notifier: SystemTrayNotifier
     ): Notifier
+
+    @Binds
+    fun bindsPhotoByteConverter(
+        photoByteConverter: PhotoByteConverterImpl
+    ): PhotoByteConverter
+
+    @Binds
+    fun bindsPhotoExtensionParser(
+        photoExtensionParser: PhotoExtensionParserImpl
+    ): PhotoExtensionParser
+
+    @Binds
+    fun bindsNetworkMonitor(
+        networkMonitor: ConnectivityManagerNetworkMonitor
+    ): NetworkMonitor
 }

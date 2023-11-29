@@ -1,6 +1,8 @@
 package com.douglasbruce.tasky.core.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
@@ -61,8 +63,8 @@ interface TaskDao {
     )
     suspend fun deleteTaskById(taskId: String)
 
-    @Upsert
-    suspend fun upsertModifiedTask(modifiedTask: ModifiedAgendaItemEntity)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertModifiedTask(modifiedTask: ModifiedAgendaItemEntity)
 
     @Query(
         value = """
@@ -91,4 +93,11 @@ interface TaskDao {
         """,
     )
     suspend fun clearModifiedTasksWithModType(modificationType: ModificationType)
+
+    @Query(
+        value = """
+            DELETE FROM tasks
+        """,
+    )
+    suspend fun deleteAllTasks()
 }

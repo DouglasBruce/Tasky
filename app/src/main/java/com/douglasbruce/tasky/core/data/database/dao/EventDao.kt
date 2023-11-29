@@ -1,6 +1,8 @@
 package com.douglasbruce.tasky.core.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.EventEntity
@@ -69,8 +71,8 @@ interface EventDao {
     )
     suspend fun leaveEvent(eventId: String)
 
-    @Upsert
-    suspend fun upsertModifiedEvent(modifiedEvent: ModifiedAgendaItemEntity)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertModifiedEvent(modifiedEvent: ModifiedAgendaItemEntity)
 
     @Query(
         value = """
@@ -99,4 +101,11 @@ interface EventDao {
         """,
     )
     suspend fun clearModifiedEventsWithModType(modificationType: ModificationType)
+
+    @Query(
+        value = """
+            DELETE FROM events
+        """,
+    )
+    suspend fun deleteAllEvents()
 }

@@ -51,7 +51,7 @@ class ReminderRepositoryImpl @Inject constructor(
 
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedReminder(
+                dao.insertModifiedReminder(
                     ModifiedAgendaItemEntity(
                         id = reminder.id,
                         agendaItemType = AgendaItemType.Reminder,
@@ -74,7 +74,7 @@ class ReminderRepositoryImpl @Inject constructor(
 
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedReminder(
+                dao.insertModifiedReminder(
                     ModifiedAgendaItemEntity(
                         id = reminder.id,
                         agendaItemType = AgendaItemType.Reminder,
@@ -95,7 +95,7 @@ class ReminderRepositoryImpl @Inject constructor(
         }
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedReminder(
+                dao.insertModifiedReminder(
                     ModifiedAgendaItemEntity(
                         id = reminderId,
                         agendaItemType = AgendaItemType.Reminder,
