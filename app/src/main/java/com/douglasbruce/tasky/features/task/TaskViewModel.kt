@@ -105,8 +105,8 @@ class TaskViewModel @Inject constructor(
             is TaskEvent.OnSaveClick -> {
                 val task = AgendaItem.Task(
                     taskId = state.id ?: UUID.randomUUID().toString(),
-                    taskTitle = state.title ?: "",
-                    taskDescription = state.description,
+                    taskTitle = state.title ?: event.defaultTitle,
+                    taskDescription = state.description ?: event.defaultDesc,
                     time = ZonedDateTime.of(
                         state.date,
                         state.time,

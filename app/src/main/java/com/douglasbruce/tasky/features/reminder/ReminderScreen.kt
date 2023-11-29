@@ -119,6 +119,9 @@ internal fun ReminderScreen(
         else -> reminderUiState.date.format(titleDateFormatter)
     }
 
+    val defaultTitle = stringResource(R.string.new_reminder)
+    val defaultDesc = stringResource(R.string.reminder_description)
+
     if (reminderUiState.showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { onEvent(ReminderEvent.ToggleDeleteConfirmationClick(false)) },
@@ -154,7 +157,14 @@ internal fun ReminderScreen(
                         {
                             TaskyTopAppBarTextButton(
                                 text = stringResource(R.string.save),
-                                onClick = { onEvent(ReminderEvent.OnSaveClick) },
+                                onClick = {
+                                    onEvent(
+                                        ReminderEvent.OnSaveClick(
+                                            defaultTitle = defaultTitle,
+                                            defaultDesc = defaultDesc,
+                                        )
+                                    )
+                                },
                                 color = White,
                             )
                         }

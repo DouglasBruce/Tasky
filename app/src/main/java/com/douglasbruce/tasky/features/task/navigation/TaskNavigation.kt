@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.douglasbruce.tasky.features.task.TaskRoute
 
 const val taskNavigationRoute = "task"
@@ -19,6 +20,9 @@ internal const val taskDateArg = "taskDate"
 
 @VisibleForTesting
 internal const val taskIsEditingArg = "taskIsEditing"
+
+private const val DEEP_LINK_TASK_URI_PATTERN =
+    "https://www.tasky.com/task/{$taskDateArg}/{$taskIsEditingArg}?$taskIdArg={$taskIdArg}"
 
 internal class TaskArgs(val taskId: String?, val taskDateMilli: Long, val taskIsEditing: Boolean) {
     constructor(savedStateHandle: SavedStateHandle) :
@@ -47,6 +51,9 @@ fun NavGraphBuilder.taskScreen(
 ) {
     composable(
         route = "$taskNavigationRoute/{$taskDateArg}/{$taskIsEditingArg}?$taskIdArg={$taskIdArg}",
+        deepLinks = listOf(
+            navDeepLink { uriPattern = DEEP_LINK_TASK_URI_PATTERN },
+        ),
         arguments = listOf(
             navArgument(taskDateArg) {
                 type = NavType.LongType

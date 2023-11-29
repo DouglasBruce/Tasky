@@ -41,7 +41,7 @@ interface ReminderDao {
             AND time < :endOfDate
         """,
     )
-    fun getOneOffRemindersForDate(startOfDate: Long, endOfDate: Long): List<ReminderEntity>
+    suspend fun getOneOffRemindersForDate(startOfDate: Long, endOfDate: Long): List<ReminderEntity>
 
     @Query(
         value = """

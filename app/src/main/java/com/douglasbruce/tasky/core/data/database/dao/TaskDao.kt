@@ -41,7 +41,7 @@ interface TaskDao {
             AND time < :endOfDate
         """,
     )
-    fun getOneOffTasksForDate(startOfDate: Long, endOfDate: Long): List<TaskEntity>
+    suspend fun getOneOffTasksForDate(startOfDate: Long, endOfDate: Long): List<TaskEntity>
 
     @Query(
         value = """

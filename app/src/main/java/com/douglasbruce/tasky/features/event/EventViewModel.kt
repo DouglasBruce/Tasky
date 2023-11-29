@@ -198,8 +198,8 @@ class EventViewModel @Inject constructor(
 
                     val eventItem = AgendaItem.Event(
                         eventId = eventId,
-                        eventTitle = state.title ?: "",
-                        eventDescription = state.description,
+                        eventTitle = state.title ?: event.defaultTitle,
+                        eventDescription = state.description ?: event.defaultDesc,
                         from = ZonedDateTime.of(
                             state.fromDate,
                             state.fromTime,

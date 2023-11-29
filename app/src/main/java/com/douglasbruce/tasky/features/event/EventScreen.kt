@@ -141,6 +141,9 @@ internal fun EventScreen(
         else -> eventUiState.fromDate.format(titleDateFormatter)
     }
 
+    val defaultTitle = stringResource(R.string.new_event)
+    val defaultDesc = stringResource(R.string.event_description)
+
     if (eventUiState.showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { onEvent(EventFormEvent.ToggleDeleteConfirmationClick(false)) },
@@ -188,7 +191,14 @@ internal fun EventScreen(
                         {
                             TaskyTopAppBarTextButton(
                                 text = stringResource(R.string.save),
-                                onClick = { onEvent(EventFormEvent.OnSaveClick) },
+                                onClick = {
+                                    onEvent(
+                                        EventFormEvent.OnSaveClick(
+                                            defaultTitle = defaultTitle,
+                                            defaultDesc = defaultDesc,
+                                        )
+                                    )
+                                },
                                 color = White,
                             )
                         }

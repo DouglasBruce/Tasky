@@ -2,6 +2,7 @@ package com.douglasbruce.tasky.core.domain.mapper
 
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import com.douglasbruce.tasky.core.model.AgendaItem
+import com.douglasbruce.tasky.core.model.AlarmItem
 import com.douglasbruce.tasky.core.model.NotificationType
 import com.douglasbruce.tasky.core.network.model.NetworkTask
 import com.douglasbruce.tasky.core.network.model.request.CreateTaskRequest
@@ -73,5 +74,16 @@ fun AgendaItem.Task.toUpdateTaskRequest(): UpdateTaskRequest {
         time = this.time.toInstant().toEpochMilli(),
         remindAt = this.remindAtTime.toInstant().toEpochMilli(),
         isDone = this.isDone
+    )
+}
+
+fun AgendaItem.Task.toAlarmItem(): AlarmItem {
+    return AlarmItem(
+        id = this.taskId,
+        title = this.taskTitle,
+        text = this.taskDescription ?: "",
+        time = this.remindAtTime.toLocalDateTime(),
+        date = this.time.toInstant().toEpochMilli(),
+        type = "Task",
     )
 }

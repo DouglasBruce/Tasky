@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.douglasbruce.tasky.features.reminder.ReminderRoute
 
 const val reminderNavigationRoute = "reminder"
@@ -19,6 +20,9 @@ internal const val reminderDateArg = "reminderDate"
 
 @VisibleForTesting
 internal const val reminderIsEditingArg = "reminderIsEditing"
+
+private const val DEEP_LINK_REMINDER_URI_PATTERN =
+    "https://www.tasky.com/reminder/{$reminderDateArg}/{$reminderIsEditingArg}?$reminderIdArg={$reminderIdArg}"
 
 internal class ReminderArgs(
     val reminderId: String?,
@@ -51,6 +55,9 @@ fun NavGraphBuilder.reminderScreen(
 ) {
     composable(
         route = "$reminderNavigationRoute/{$reminderDateArg}/{$reminderIsEditingArg}?$reminderIdArg={$reminderIdArg}",
+        deepLinks = listOf(
+            navDeepLink { uriPattern = DEEP_LINK_REMINDER_URI_PATTERN },
+        ),
         arguments = listOf(
             navArgument(reminderDateArg) {
                 type = NavType.LongType

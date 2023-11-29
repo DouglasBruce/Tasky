@@ -3,6 +3,7 @@ package com.douglasbruce.tasky.core.domain.mapper
 import com.douglasbruce.tasky.core.data.database.model.EventEntity
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaPhoto
+import com.douglasbruce.tasky.core.model.AlarmItem
 import com.douglasbruce.tasky.core.model.NotificationType
 import com.douglasbruce.tasky.core.network.model.NetworkEvent
 import com.douglasbruce.tasky.core.network.model.request.CreateEventRequest
@@ -94,5 +95,16 @@ fun AgendaItem.Event.toUpdateEventRequest(
         attendeeIds = this.attendees.map { it.userId },
         deletedPhotoKeys = deletedPhotoKeys,
         isGoing = isGoing
+    )
+}
+
+fun AgendaItem.Event.toAlarmItem(): AlarmItem {
+    return AlarmItem(
+        id = this.eventId,
+        title = this.eventTitle,
+        text = this.eventDescription ?: "",
+        time = this.remindAtTime.toLocalDateTime(),
+        date = this.from.toInstant().toEpochMilli(),
+        type = "Event",
     )
 }
