@@ -22,7 +22,7 @@ internal const val eventFromDateArg = "eventFromDate"
 internal const val eventIsEditingArg = "eventIsEditing"
 
 private const val DEEP_LINK_EVENT_URI_PATTERN =
-    "https://www.tasky.com/event/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}"
+    "tasky://event/{$eventFromDateArg}/{$eventIsEditingArg}?$eventIdArg={$eventIdArg}"
 
 internal class EventArgs(
     val eventId: String?,
