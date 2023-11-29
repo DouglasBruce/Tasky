@@ -22,7 +22,7 @@ internal const val reminderDateArg = "reminderDate"
 internal const val reminderIsEditingArg = "reminderIsEditing"
 
 private const val DEEP_LINK_REMINDER_URI_PATTERN =
-    "https://www.tasky.com/reminder/{$reminderDateArg}/{$reminderIsEditingArg}?$reminderIdArg={$reminderIdArg}"
+    "tasky://reminder/{$reminderDateArg}/{$reminderIsEditingArg}?$reminderIdArg={$reminderIdArg}"
 
 internal class ReminderArgs(
     val reminderId: String?,

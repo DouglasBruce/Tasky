@@ -20,7 +20,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val NOTIFICATION_GROUP = "AGENDA_NOTIFICATIONS"
-private const val DEEP_LINK_SCHEME_AND_HOST = "https://www.tasky.com"
+private const val DEEP_LINK_SCHEME_AND_HOST = "tasky:/"
 
 /**
  * Implementation of [Notifier] that displays notifications in the system tray.

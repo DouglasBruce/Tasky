@@ -22,7 +22,7 @@ internal const val taskDateArg = "taskDate"
 internal const val taskIsEditingArg = "taskIsEditing"
 
 private const val DEEP_LINK_TASK_URI_PATTERN =
-    "https://www.tasky.com/task/{$taskDateArg}/{$taskIsEditingArg}?$taskIdArg={$taskIdArg}"
+    "tasky://task/{$taskDateArg}/{$taskIsEditingArg}?$taskIdArg={$taskIdArg}"
 
 internal class TaskArgs(val taskId: String?, val taskDateMilli: Long, val taskIsEditing: Boolean) {
     constructor(savedStateHandle: SavedStateHandle) :

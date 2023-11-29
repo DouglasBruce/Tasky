@@ -32,7 +32,7 @@ class AlarmSchedulerImpl @Inject constructor(
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun schedule(item: AlarmItem) {
-        if (shouldNotScheduleAlarmItem(item)) {
+        if (!shouldScheduleAlarmItem(item)) {
             return
         }
 
@@ -57,7 +57,7 @@ class AlarmSchedulerImpl @Inject constructor(
 
     override suspend fun scheduleAllFutureAlarms() {
         getAllFutureAlarmItems().forEach { item ->
-            if (shouldNotScheduleAlarmItem(item)) {
+            if (!shouldScheduleAlarmItem(item)) {
                 return@forEach
             }
 
@@ -102,13 +102,8 @@ class AlarmSchedulerImpl @Inject constructor(
         }
     }
 
-    private fun shouldNotScheduleAlarmItem(item: AlarmItem): Boolean {
-        val currentTime = LocalDateTime.now()
-        if (currentTime.isAfter(item.time)) {
-            return true
-        }
-
-        return false
+    private fun shouldScheduleAlarmItem(item: AlarmItem): Boolean {
+        return LocalDateTime.now() < item.time
     }
 
     private suspend fun getAllFutureAlarmItems(): List<AlarmItem> {
