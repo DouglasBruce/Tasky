@@ -1,5 +1,6 @@
 package com.douglasbruce.tasky.core.data.repository
 
+import android.net.Uri
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.auth.AuthResult
 import com.douglasbruce.tasky.core.common.utils.MoshiSerializer
@@ -14,6 +15,8 @@ import com.douglasbruce.tasky.core.domain.mapper.toEventEntity
 import com.douglasbruce.tasky.core.domain.mapper.toUpdateEventRequest
 import com.douglasbruce.tasky.core.domain.repository.EventRepository
 import com.douglasbruce.tasky.core.domain.utils.AlarmScheduler
+import com.douglasbruce.tasky.core.domain.utils.PhotoByteConverter
+import com.douglasbruce.tasky.core.domain.utils.PhotoExtensionParser
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaItemType
 import com.douglasbruce.tasky.core.model.ModificationType
@@ -23,11 +26,15 @@ import com.douglasbruce.tasky.core.network.model.request.UpdateEventRequest
 import com.douglasbruce.tasky.core.network.retrofit.RetrofitTaskyNetwork
 import com.douglasbruce.tasky.core.network.retrofit.authenticatedRetrofitCall
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.UUID
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
@@ -36,6 +43,8 @@ class EventRepositoryImpl @Inject constructor(
     private val dao: EventDao,
     private val serializer: MoshiSerializer,
     private val alarmScheduler: AlarmScheduler,
+    private val photoByteConvertor: PhotoByteConverter,
+    private val photoExtensionParser: PhotoExtensionParser,
 ) : EventRepository {
 
     private val localUserId: Flow<String> = userDataPreferences.userData.map { it.userId }
@@ -56,12 +65,30 @@ class EventRepositoryImpl @Inject constructor(
             serializer.toJson(event.toCreateEventRequest(), CreateEventRequest::class.java)
 
         val result = authenticatedRetrofitCall(serializer) {
+            val photos = supervisorScope {
+                event.photos.mapIndexed { index, agendaPhoto ->
+                    async {
+                        val parsedUri = Uri.parse(agendaPhoto.uri())
+                        val bytes = photoByteConvertor.uriToBytes(parsedUri)
+                        val extension = photoExtensionParser.extensionFromUri(parsedUri)
+
+                        MultipartBody.Part.createFormData(
+                            name = "photo$index",
+                            filename = UUID.randomUUID().toString() + "." + extension,
+                            body = bytes.toRequestBody()
+                        )
+                    }
+                }.map {
+                    it.await()
+                }
+            }
+
             val networkEvent = taskyNetwork.createEvent(
                 createEventRequest = MultipartBody.Part.createFormData(
                     "create_event_request",
                     requestJson!!
                 ),
-                photos = emptyList()
+                photos = photos
             )
 
             withContext(NonCancellable) {
@@ -72,7 +99,7 @@ class EventRepositoryImpl @Inject constructor(
 
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedEvent(
+                dao.insertModifiedEvent(
                     ModifiedAgendaItemEntity(
                         id = event.id,
                         agendaItemType = AgendaItemType.Event,
@@ -101,12 +128,30 @@ class EventRepositoryImpl @Inject constructor(
         )
 
         val result = authenticatedRetrofitCall(serializer) {
+            val photos = supervisorScope {
+                event.photos.mapIndexed { index, agendaPhoto ->
+                    async {
+                        val parsedUri = Uri.parse(agendaPhoto.uri())
+                        val bytes = photoByteConvertor.uriToBytes(parsedUri)
+                        val extension = photoExtensionParser.extensionFromUri(parsedUri)
+
+                        MultipartBody.Part.createFormData(
+                            name = "photo$index",
+                            filename = UUID.randomUUID().toString() + "." + extension,
+                            body = bytes.toRequestBody()
+                        )
+                    }
+                }.map {
+                    it.await()
+                }
+            }
+
             val networkEvent = taskyNetwork.updateEvent(
                 updateEventRequest = MultipartBody.Part.createFormData(
                     "update_event_request",
                     requestJson!!
                 ),
-                photos = emptyList()
+                photos = photos
             )
 
             withContext(NonCancellable) {
@@ -117,7 +162,7 @@ class EventRepositoryImpl @Inject constructor(
 
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedEvent(
+                dao.insertModifiedEvent(
                     ModifiedAgendaItemEntity(
                         id = event.id,
                         agendaItemType = AgendaItemType.Event,
@@ -138,7 +183,7 @@ class EventRepositoryImpl @Inject constructor(
         }
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedEvent(
+                dao.insertModifiedEvent(
                     ModifiedAgendaItemEntity(
                         id = eventId,
                         agendaItemType = AgendaItemType.Event,

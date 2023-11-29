@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
@@ -45,7 +47,9 @@ class AgendaViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            agendaRepository.fetchAgendaForDate(state.selectedDate.plusDays(state.selectedDay.toLong()))
+            val selectedDateTime =
+                ZonedDateTime.of(state.selectedDate.plusDays(state.selectedDay.toLong()), LocalTime.now(), ZoneId.systemDefault())
+            agendaRepository.syncLocalDatabase(selectedDateTime, true)
         }
 
         val fullName = runBlocking {

@@ -1,5 +1,6 @@
 package com.douglasbruce.tasky.core.domain.mapper
 
+import androidx.core.net.toUri
 import com.douglasbruce.tasky.core.data.database.model.EventEntity
 import com.douglasbruce.tasky.core.model.AgendaItem
 import com.douglasbruce.tasky.core.model.AgendaPhoto
@@ -23,7 +24,8 @@ fun AgendaItem.Event.toEventEntity(): EventEntity {
         host = this.host ?: "",
         notificationType = this.eventNotificationType,
         isUserEventCreator = this.isUserEventCreator,
-        attendees = this.attendees
+        attendees = this.attendees,
+        photos = this.photos.map { AgendaPhoto.Local(it.key(), it.uri().toUri()) },
     )
 }
 
@@ -43,7 +45,7 @@ fun EventEntity.toEvent(): AgendaItem.Event {
         host = this.host,
         eventNotificationType = this.notificationType,
         isUserEventCreator = this.isUserEventCreator,
-        photos = emptyList(), //TODO: Update value to reflect real state
+        photos = this.photos,
         attendees = this.attendees,
     )
 }

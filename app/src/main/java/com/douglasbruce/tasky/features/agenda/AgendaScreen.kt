@@ -54,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.utils.DateUtils
@@ -289,7 +290,9 @@ internal fun AgendaScreen(
                     PullRefreshIndicator(
                         agendaUiState.isRefreshing,
                         refreshState,
-                        Modifier.align(Alignment.TopCenter)
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .zIndex(9f)
                     )
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         item {

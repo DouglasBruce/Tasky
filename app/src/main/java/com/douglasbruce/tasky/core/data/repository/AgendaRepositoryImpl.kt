@@ -78,25 +78,30 @@ class AgendaRepositoryImpl @Inject constructor(
         val utcDateTime =
             ZonedDateTime.of(date, LocalTime.now(), zoneId).toInstant().toEpochMilli()
 
-        val agendaItems = taskyNetwork.getAgenda(
-            timeZone = zoneId.toString(),
-            time = utcDateTime
-        ).toAgendaItems()
+        val result = authenticatedRetrofitCall(serializer) {
+            val agendaItems = taskyNetwork.getAgenda(
+                timeZone = zoneId.toString(),
+                time = utcDateTime
+            ).toAgendaItems()
+            AuthResult.Success(agendaItems)
+        }
 
-        alarmScheduler.scheduleAllFutureAlarms()
+        if (result is AuthResult.Success) {
+            alarmScheduler.scheduleAllFutureAlarms()
 
-        val fetchedEvents: List<AgendaItem.Event> =
-            agendaItems.filterIsInstance<AgendaItem.Event>()
-        val fetchedTasks: List<AgendaItem.Task> =
-            agendaItems.filterIsInstance<AgendaItem.Task>()
-        val fetchedReminders: List<AgendaItem.Reminder> =
-            agendaItems.filterIsInstance<AgendaItem.Reminder>()
+            val fetchedEvents: List<AgendaItem.Event> =
+                result.data?.filterIsInstance<AgendaItem.Event>() ?: emptyList()
+            val fetchedTasks: List<AgendaItem.Task> =
+                result.data?.filterIsInstance<AgendaItem.Task>() ?: emptyList()
+            val fetchedReminders: List<AgendaItem.Reminder> =
+                result.data?.filterIsInstance<AgendaItem.Reminder>() ?: emptyList()
 
-        saveAgendaItemsLocally(
-            events = fetchedEvents,
-            tasks = fetchedTasks,
-            reminders = fetchedReminders,
-        )
+            saveAgendaItemsLocally(
+                events = fetchedEvents,
+                tasks = fetchedTasks,
+                reminders = fetchedReminders,
+            )
+        }
     }
 
     override suspend fun syncLocalDatabase(

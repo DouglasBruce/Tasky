@@ -48,7 +48,7 @@ class TaskRepositoryImpl @Inject constructor(
 
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedTask(
+                dao.insertModifiedTask(
                     ModifiedAgendaItemEntity(
                         id = task.id,
                         agendaItemType = AgendaItemType.Task,
@@ -71,7 +71,7 @@ class TaskRepositoryImpl @Inject constructor(
 
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedTask(
+                dao.insertModifiedTask(
                     ModifiedAgendaItemEntity(
                         id = task.id,
                         agendaItemType = AgendaItemType.Task,
@@ -92,7 +92,7 @@ class TaskRepositoryImpl @Inject constructor(
         }
         return if (result is AuthResult.Error) {
             withContext(NonCancellable) {
-                dao.upsertModifiedTask(
+                dao.insertModifiedTask(
                     ModifiedAgendaItemEntity(
                         id = taskId,
                         agendaItemType = AgendaItemType.Task,

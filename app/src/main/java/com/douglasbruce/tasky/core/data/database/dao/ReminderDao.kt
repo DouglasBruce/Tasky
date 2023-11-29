@@ -1,6 +1,8 @@
 package com.douglasbruce.tasky.core.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
@@ -61,8 +63,8 @@ interface ReminderDao {
     )
     suspend fun deleteReminderById(reminderId: String)
 
-    @Upsert
-    suspend fun upsertModifiedReminder(modifiedReminder: ModifiedAgendaItemEntity)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertModifiedReminder(modifiedReminder: ModifiedAgendaItemEntity)
 
     @Query(
         value = """
@@ -91,4 +93,11 @@ interface ReminderDao {
         """,
     )
     suspend fun clearModifiedRemindersWithModType(modificationType: ModificationType)
+
+    @Query(
+        value = """
+            DELETE FROM reminders
+        """,
+    )
+    suspend fun deleteAllReminders()
 }

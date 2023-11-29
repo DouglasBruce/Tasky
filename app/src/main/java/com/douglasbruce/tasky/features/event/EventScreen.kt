@@ -33,6 +33,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.douglasbruce.tasky.R
 import com.douglasbruce.tasky.core.common.utils.DateUtils
 import com.douglasbruce.tasky.core.designsystem.component.AddAttendeeButton
@@ -112,6 +114,8 @@ internal fun EventRoute(
         }
     }
 
+    val isOffline by viewModel.isOffline.collectAsStateWithLifecycle()
+
     EventScreen(
         onBackClick = onBackClick,
         onEditorClick = onEditorClick,
@@ -119,6 +123,7 @@ internal fun EventRoute(
         eventUiState = viewModel.state,
         onEvent = viewModel::onEvent,
         isEventEditable = viewModel.canEditEvent(),
+        isOffline = isOffline,
         modifier = modifier.fillMaxSize(),
     )
 }
@@ -132,6 +137,7 @@ internal fun EventScreen(
     eventUiState: EventState,
     onEvent: (EventFormEvent) -> Unit,
     isEventEditable: Boolean,
+    isOffline: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val titleDateFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
@@ -334,7 +340,7 @@ internal fun EventScreen(
                         onPhotosSelected = {
                             onEvent(EventFormEvent.OnAddPhotoClick(it))
                         },
-                        isReadOnly = !isEventEditable,
+                        isReadOnly = !isEventEditable || isOffline,
                     )
                     Spacer(Modifier.height(8.dp))
                     Divider(color = LightBlue)
@@ -505,6 +511,7 @@ fun EventPreview() {
             ),
             onEvent = {},
             isEventEditable = false,
+            isOffline = false,
         )
     }
 }

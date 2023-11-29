@@ -11,6 +11,7 @@ import com.douglasbruce.tasky.core.data.database.model.ModifiedAgendaItemEntity
 import com.douglasbruce.tasky.core.data.database.model.ReminderEntity
 import com.douglasbruce.tasky.core.data.database.model.TaskEntity
 import com.douglasbruce.tasky.core.data.database.util.AgendaItemTypeConverter
+import com.douglasbruce.tasky.core.data.database.util.AgendaPhotoConverter
 import com.douglasbruce.tasky.core.data.database.util.AttendeeConverter
 import com.douglasbruce.tasky.core.data.database.util.ModificationTypeConverter
 import com.douglasbruce.tasky.core.data.database.util.NotificationTypeConverter
@@ -30,6 +31,7 @@ import com.douglasbruce.tasky.core.data.database.util.NotificationTypeConverter
     AttendeeConverter::class,
     ModificationTypeConverter::class,
     AgendaItemTypeConverter::class,
+    AgendaPhotoConverter::class,
 )
 abstract class TaskyDatabase : RoomDatabase() {
     abstract fun eventsDao(): EventDao
