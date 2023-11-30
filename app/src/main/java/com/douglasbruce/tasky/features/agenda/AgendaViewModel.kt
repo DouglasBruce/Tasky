@@ -131,7 +131,9 @@ class AgendaViewModel @Inject constructor(
 
     fun refreshAgenda() {
         viewModelScope.launch {
-            agendaRepository.fetchAgendaForDate(state.selectedDate.plusDays(state.selectedDay.toLong()))
+            val selectedDateTime =
+                ZonedDateTime.of(state.selectedDate.plusDays(state.selectedDay.toLong()), LocalTime.now(), ZoneId.systemDefault())
+            agendaRepository.syncLocalDatabase(selectedDateTime, true)
         }
     }
 
