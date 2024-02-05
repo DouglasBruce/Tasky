@@ -3,7 +3,16 @@
 Offline-First Calendar application intended to portray all the new technologies I learn on a daily basis.
 This project aims to replicate the functionality of Google Calendar, allowing users to create and manage events and reminders.
 
-Will add demo screenshots shortly
+## Authentication Screens
+Login             |  Registration
+:-------------------------:|:-------------------------:
+![Login Screen](https://i.imgur.com/aeFMlIs.png) | ![Registration Screen](https://i.imgur.com/qVObVca.png)
+
+## Agenda Screen
+![Agenda Screen](https://i.imgur.com/0aZ1JHH.png)
+
+## 🎥 Demo Video
+![Demo Video of the App](https://i.imgur.com/PIdcjea.gif)
 
 ## 🛠 Tech Stack
 
